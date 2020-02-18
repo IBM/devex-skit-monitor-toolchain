@@ -207,6 +207,12 @@
             "key": "pagerduty-api-token"
         },
         {
+            "type": "label",
+            "title": {
+                "$ref": "#/messages/kubeEnv"
+            }
+        },
+        {
             "type": "table",
             "columnCount": 3,
             "widths": ["50%", "3%", "47%"],
@@ -240,12 +246,6 @@
                 },
                 "key": "registry-namespace"
             }]
-        },
-        {
-            "type": "label",
-            "title": {
-                "$ref": "#/messages/kubeEnv"
-            }
         },
         {
             "type": "table",
