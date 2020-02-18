@@ -141,7 +141,10 @@
     },
     "required": ["api-key", "registry-region", "registry-namespace", "prod-region", "prod-resource-group", "prod-cluster-name", "prod-cluster-namespace", 
                 "prod-organization", "prod-space",
-                "enable-cf", "enable-helm", "enable-knative", "slack-webhook-url", "slack-owners-channel", "pagerduty-api-token"],
+                "enable-cf", "enable-helm", "enable-knative", 
+                "slack-webhook-url",
+                "pagerduty-api-token"
+                ],
     "form": [
         {
             "type": "validator",
