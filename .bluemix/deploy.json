@@ -232,7 +232,7 @@
             "title": {
                 "$ref": "#/messages/verify.pagerDutyServiceNameTitle"
             },
-            "key": "pagerduty-api-token"
+            "key": "pagerduty-service-name"
         },
         {
             "type": "label",
