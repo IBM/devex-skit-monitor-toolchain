@@ -41,7 +41,7 @@ verify.slackWebhookURLDescription: "The URL of the Slack app used to post Slack 
 verify.slackOwnersChannelTitle: "Slack Owners Channel"
 verify.slackOwnersChannelDescription: "The name of the channel to which Slack messages will be sent. Can be a comma-separated list to support multiple channels."
 
-verify.pagerDutyIntegrationDescription: "Configure PagerDuty integration to trigger alerts when the app fails during certain stages in the pipeline."
+verify.pagerDutyIntegrationDescription: "**Configure PagerDuty integration to trigger alerts when the app fails during certain stages in the pipeline.**"
 verify.pagerDutyAPITokenTitle: "PagerDuty API Token"
 verify.pagerDutyAPITokenDescription: "API token to use to trigger PagerDuty alerts."
 verify.pagerDutyServiceNameTitle: "PagerDuty service name:"
