@@ -240,7 +240,14 @@
                 },
                 "key": "registry-namespace"
             }]
-        }, {
+        },
+        {
+            "type": "label",
+            "title": {
+                "$ref": "#/messages/kubeEnv"
+            }
+        },
+        {
             "type": "table",
             "columnCount": 7,
             "widths": ["24%", "2%", "24%", "3%", "23%", "1%", "23%"],
