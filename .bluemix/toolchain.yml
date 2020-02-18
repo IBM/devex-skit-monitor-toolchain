@@ -1,0 +1,152 @@
+version: '2'
+messages:
+  $i18n: locales.yml
+template:
+  description: DevX-Skit-CodeMonitor
+  name: Develop a code monitor for a starter kit
+  required:
+  - skitgitrepo
+  - pipeline_cf
+  - pipeline_helm
+  - pipeline_knative
+toolchain:
+  name: DevX-Skit-CodeMonitor
+services:
+  skitgitrepo:
+    parameters:
+      api_root_url: https://api.github.com
+      authorized: github
+      enable_traceability: false
+      extra_capabilities:
+      - capability_id: git.issues
+        dashboard_url: '{{services.skitgitrepo.parameters.source_repo_url}}/issues'
+        display_name: Issues
+        enabled: false
+        label: '{{services.repo.parameters.repo_name}} Issues'
+        readme: false
+        tags:
+        - think
+        - code
+      has_issues: false
+      label: '{{services.repo.parameters.repo_name}}'
+      legal: false
+      private_repo: false
+      source_repo_url: https://github.com/IBM/nodejs-cloudant.git
+      repo_name: nodejs-cloudant
+      token_url: https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
+      type: link
+    service_id: githubconsolidated
+  pipeline_helm:
+    parameters:
+      configuration:
+        content:
+          $text: pipeline_helm.yml
+        env:
+          GIT_REPO: skitgitrepo
+          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
+          APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
+          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
+          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
+          PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
+          PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
+          PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
+          ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
+          ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
+          ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
+          SLACK_WEBHOOK: '{{form.pipeline.parameters.slack-webhook-url}}'
+          OWNER_SLACK_CHANNEL: '{{form.pipeline.parameters.slack-owners-channel}}'
+          PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
+          PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
+          PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
+      label: Pipeline for deploying a skit app via Helm
+      name: Skit-Pipeline-Helm
+      services:
+      - skitgitrepo
+      type: classic
+      ui-pipeline: true
+    service_id: pipeline
+  pipeline_knative:
+    parameters:
+      configuration:
+        content:
+          $text: pipeline_knative.yml
+        env:
+          GIT_REPO: skitgitrepo
+          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
+          APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
+          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
+          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
+          PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
+          PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
+          PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
+          ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
+          ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
+          ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
+          SLACK_WEBHOOK: '{{form.pipeline.parameters.slack-webhook-url}}'
+          OWNER_SLACK_CHANNEL: '{{form.pipeline.parameters.slack-owners-channel}}'
+          PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
+          PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
+          PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
+      label: Pipeline for deploying a skit app via Knative
+      name: Skit-Pipeline-Knative
+      services:
+      - skitgitrepo
+      type: classic
+      ui_pipeline: true
+    service_id: pipeline
+  pipeline_cf:
+    parameters:
+      configuration:
+        content:
+          $text: pipeline_cf.yml
+        env:
+          GIT_REPO: skitgitrepo
+          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
+          APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
+          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
+          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
+          PROD_SPACE_NAME: '{{form.pipeline.parameters.prod-space}}'
+          PROD_ORG_NAME: '{{form.pipeline.parameters.prod-organization}}'
+          ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
+          ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
+          ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
+          SLACK_WEBHOOK: '{{form.pipeline.parameters.slack-webhook-url}}'
+          OWNER_SLACK_CHANNEL: '{{form.pipeline.parameters.slack-owners-channel}}'
+          PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
+          PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
+          PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
+      label: Pipeline for deploying a skit app via CF
+      name: Skit-Pipeline-CF
+      services:
+      - skitgitrepo
+      type: classic
+      ui_pipeline: true
+    service_id: pipeline
+form:
+  pipeline:
+    parameters:
+      prod-cluster-namespace: >
+        $env.prodClusterNamespace ?
+          '{{prodClusterNamespace}}' : 'default'
+      registry-region: '{{registryRegion}}'
+      registry-namespace: '{{registryNamespace}}'
+      api-key: '{{apiKey}}'
+      prod-region: '{{prodRegion}}'
+      prod-resource-group: '{{prodResourceGroup}}'
+      prod-cluster-name: '{{prodClusterName}}'
+      prod-space: '{{prodSpace}}'
+      prod-organization: '{{prodOrganization}}'
+      enable-cf: '{{enableCF}}'
+      enable-helm: '{{enableHelm}}'
+      enable-knative: '{{enableKnative}}'
+      slack-webhook-url: '{{slackWebhookURL}}'
+      slack-owners-channel: '{{slackOwnersChannel}}'
+      pagerduty-api-token: '{{pagerDutyAPIToken}}'
+    schema:
+      $ref: deploy.json

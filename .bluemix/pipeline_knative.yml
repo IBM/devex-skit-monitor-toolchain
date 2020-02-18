@@ -1,0 +1,206 @@
+stages:
+- name: Build
+  inputs:
+  - type: git
+    branch: master
+    service: skitgitrepo
+  jobs:
+  - name: Build Container Image
+    type: builder
+    build_type: cr
+    artifact_dir: ""
+    curatedDockerImage: default
+    image_name: ${IMAGE_NAME}
+    namespace: devex_namespace
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_KNATIVE}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_cr.sh")
+    target:
+      api_key: ${API_KEY}
+      region_id: ${REGISTRY_REGION_ID}
+  - name: Unit Tests
+    type: tester
+    test_type: simple
+    curatedDockerImage: default
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_KNATIVE}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_unit_test.sh")
+  - name: Check vulnerabilities
+    type: tester
+    test_type: vulnerabilityadvisor
+    use_image_from_build_input: true
+    fail_stage: false
+    target:
+      region_id: ${REGISTRY_REGION_ID}
+      api_key: ${API_KEY}
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_KNATIVE}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/check_vulnerabilities.sh")
+  properties:
+  - name: GIT_URL
+    type: text
+    value: ${GIT_URL}
+  - name: IMAGE_NAME
+    type: text
+    value: ${APP_NAME}-monitored-knative
+  - name: APP_PORT
+    type: text
+    value: ${APP_PORT}
+  - name: KUBECTL_VERSION
+    type: text
+    value: v1.13.3
+  - name: KUBECTL_DOWNLOAD_URL
+    type: text
+    value: https://storage.googleapis.com/kubernetes-release/release/v1.13.3/bin/linux/amd64/kubectl
+  - name: DEVX_SKIT_ASSETS_GIT
+    type: text
+    value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_URL
+    type: text
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
+  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+    type: text
+    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+    type: text
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEPLOY_TARGET
+    type: text
+    value: knative
+  - name: ENABLED_KNATIVE
+    type: text
+    value: ${ENABLED_KNATIVE}
+  triggers:
+  - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
+    type: git
+- name: Deploy
+  inputs:
+    - type: job
+      job: Build Container Image
+      stage: Build
+  jobs:
+  - name: Deploy
+    type: deployer
+    deploy_type: kubernetes
+    curatedDockerImage: default
+    script: |+
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_KNATIVE}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      ls -al
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_knative.sh")
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
+  - name: Test
+    type: deployer
+    deploy_type: kubernetes
+    curatedDockerImage: default
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_KNATIVE}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source build.properties
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/test_health_knative.sh")
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
+  properties:
+  - name: buildProperties
+    type: file
+    value: ${ARCHIVE_DIR}/build.properties
+  - name: CLUSTER_NAMESPACE
+    type: text
+    value: default
+  - name: SERVICE_FILE_UPDATE_INSTRUCTIONS
+    type: text
+    value: 'spec.template.spec.containers[0].image: REGISTRY_URL/REGISTRY_NAMESPACE/IMAGE_NAME:BUILD_NUMBER'
+  - name: SERVICE_FILE
+    type: text
+    value: service.yaml
+  - name: SERVICE_FILE_UPDATE_INSTRUCTIONS_FILE
+    type: text
+    value: service_update_instructions.yaml
+  - name: ENABLED_KNATIVE
+    type: text
+    value: ${ENABLED_KNATIVE}
+  triggers:
+  - type: stage
+- name: Verification
+  inputs:
+    - type: job
+      job: Build Container Image
+      stage: Build    
+  jobs:
+  - name: Experience Test
+    type: tester
+    test_type: simple
+    curatedDockerImage: default
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_KNATIVE}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+  properties:
+  - name: buildProperties
+    type: file
+    value: ${ARCHIVE_DIR}/build.properties
+  - name: SLACK_WEBHOOK
+    type: text
+    value: ${SLACK_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL
+    type: text
+    value: ${OWNER_SLACK_CHANNEL}
+  - name: ENABLED_KNATIVE
+    type: text
+    value: ${ENABLED_KNATIVE}
+  triggers:
+  - type: stage
+properties: []

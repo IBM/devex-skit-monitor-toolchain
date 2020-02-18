@@ -1,0 +1,143 @@
+stages:
+- name: Build
+  inputs:
+  - type: git
+    branch: master
+    service: skitgitrepo
+  jobs:
+  - name: Build
+    type: builder
+    build_type: shell
+    artifact_dir: ""
+    curatedDockerImage: default
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_CF}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_cf.sh")
+  properties:
+  - name: GIT_URL
+    type: text
+    value: ${GIT_URL}
+  - name: DEVX_SKIT_ASSETS_GIT
+    type: text
+    value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_URL
+    type: text
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
+  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+    type: text
+    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+    type: text
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEPLOY_TARGET
+    type: text
+    value: cf
+  - name: ENABLED_CF
+    type: text
+    value: ${ENABLED_CF}
+  triggers:
+  - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
+    type: git
+- name: Deploy
+  inputs:
+  - type: job
+    job: Build
+    stage: Build
+  jobs:
+  - name: Rolling Deploy
+    type: deployer
+    deploy_type: cf
+    curatedDockerImage: default
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_CF}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      pwd
+      ls -al
+      ls -al ./server/config
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_cf.sh")
+    target:
+      api_key: ${API_KEY}
+      application: ${APP_NAME}-monitored-cf
+      organization: ${PROD_ORG_NAME}
+      space: ${PROD_SPACE_NAME}
+      region_id: ${PROD_REGION_ID}
+  properties:
+  - name: GIT_URL
+    type: text
+    value: ${GIT_URL}
+  - name: APP_NAME
+    type: text
+    value: ${APP_NAME}
+  - name: DEVX_SKIT_ASSETS_GIT
+    type: text
+    value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_URL
+    type: text
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
+  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+    type: text
+    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+    type: text
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEPLOY_TARGET
+    type: text
+    value: cf
+  - name: ENABLED_CF
+    type: text
+    value: ${ENABLED_CF}
+  triggers:
+  - type: stage
+- name: Verification
+  inputs:
+  - type: job
+    job: Build
+    stage: Build
+  jobs:
+  - name: Experience Test
+    type: tester
+    test_type: simple
+    curatedDockerImage: default
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_CF}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+  properties:
+  - name: buildProperties
+    type: file
+    value: ${ARCHIVE_DIR}/build.properties
+  - name: SLACK_WEBHOOK
+    type: text
+    value: ${SLACK_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL
+    type: text
+    value: ${OWNER_SLACK_CHANNEL}
+  - name: ENABLED_CF
+    type: text
+    value: ${ENABLED_CF}
+  triggers:
+  - type: stage
+properties: []

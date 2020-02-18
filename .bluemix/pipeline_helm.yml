@@ -1,0 +1,230 @@
+stages:
+- name: Build
+  inputs:
+  - branch: master
+    dir_name: null
+    type: git
+    service: skitgitrepo
+  jobs:
+  - name: Fetch code
+    type: builder
+    build_type: shell
+    artifact_dir: ""
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_HELM}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_fetch_code.sh")
+  - name: Unit Tests
+    type: tester
+    test_type: simple
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_unit_test.sh")
+  properties:
+  - name: GIT_URL
+    type: text
+    value: ${GIT_URL}
+  - name: IMAGE_NAME
+    type: text
+    value: ${APP_NAME}-monitored-helm
+  - name: DEVX_SKIT_ASSETS_GIT
+    type: text
+    value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_URL
+    type: text
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
+  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+    type: text
+    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+    type: text
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
+  - name: DEPLOY_TARGET
+    type: text
+    value: helm
+  - name: ENABLED_HELM
+    type: text
+    value: ${ENABLED_HELM}
+  triggers:
+  - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
+    type: git
+- name: Containerize
+  inputs:
+  - type: job
+    job: Fetch code
+    stage: Build
+  jobs:
+  - name: Build container image
+    type: builder
+    artifact_dir: output
+    build_type: cr
+    image_name: ${IMAGE_NAME}
+    namespace: devex_namespace
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_HELM}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/containerize_build_container_img.sh")
+    target:
+      api_key: ${API_KEY}
+      region_id: ${REGISTRY_REGION_ID}
+  - name: Check vulnerabilities
+    type: tester
+    test_type: vulnerabilityadvisor
+    use_image_from_build_input: true
+    fail_stage: false
+    target:
+      region_id: ${REGISTRY_REGION_ID}
+      api_key: ${API_KEY}
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_HELM}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/check_vulnerabilities.sh")
+  properties:
+  - name: buildprops
+    type: file
+    value: build.properties
+  - name: DOCKER_ROOT
+    type: text
+    value: .
+  - name: DOCKER_FILE
+    type: text
+    value: Dockerfile
+  - name: PIPELINE_IMAGE_URL
+    type: text
+    value: ""
+  - name: ENABLED_HELM
+    type: text
+    value: ${ENABLED_HELM}
+  triggers:
+  - type: stage
+- name: Deploy
+  inputs:
+  - type: job
+    job: Build container image
+    stage: Containerize
+  jobs:
+  - name: Deploy with Helm
+    type: deployer
+    deploy_type: kubernetes
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_HELM}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      ls -al
+      ls -al ./chart
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_helm.sh")
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
+  - name: Check health
+    type: deployer
+    deploy_type: kubernetes
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_HELM}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_check_health.sh")
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
+  properties:
+  - name: buildprops
+    type: file
+    value: build.properties
+  - name: CLUSTER_NAMESPACE
+    type: text
+    value: default
+  - name: CHART_ROOT
+    type: text
+    value: chart
+  - name: APP_URL
+    type: text
+    value: ""
+  - name: ENABLED_HELM
+    type: text
+    value: ${ENABLED_HELM}
+  triggers:
+  - type: stage
+- name: Verification
+  inputs:
+  - type: job
+    job: Build container image
+    stage: Containerize
+  jobs:
+  - name: Experience Test
+    type: tester
+    test_type: simple
+    curatedDockerImage: default
+    script: |-
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_HELM}" == "false" ]; then
+          echo "CF pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+  properties:
+  - name: buildProperties
+    type: file
+    value: ${ARCHIVE_DIR}/build.properties
+  - name: SLACK_WEBHOOK
+    type: text
+    value: ${SLACK_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL
+    type: text
+    value: ${OWNER_SLACK_CHANNEL}
+  - name: ENABLED_HELM
+    type: text
+    value: ${ENABLED_HELM}
+  triggers:
+  - type: stage
+properties:
+- name: IBM_CLOUD_API_KEY
+  type: secure
+- name: HELM_VERSION
+  type: text
+  value: ""
