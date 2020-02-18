@@ -29,19 +29,23 @@ deploy.organizationDescription: "The IBM Cloud org (for Cloud Foundry deployment
 deploy.spaceDescription: "The IBM Cloud space (for Cloud Foundry deployments)"
 
 deploy.enableCfTitle: "Enable the Cloud Foundry Pipeline"
-deploy.enableCfDescription: "Create a pipeline to deploy to Cloud Foundry."
+deploy.enableCfDescription: "If checked, a pipeline to deploy to Cloud Foundry will be created."
 deploy.enableHelmTitle: "Enable the Helm Pipeline"
-deploy.enableHelmDescription: "Create a pipeline to deploy to Kubernetes using Helm."
+deploy.enableHelmDescription: "If checked, a pipeline to deploy to Kubernetes using Helm will be created."
 deploy.enableKnativeTitle: "Enable the Knative Pipeline"
-deploy.enableKnativeDescription: "Create a pipeline to deploy to Kubernetes using Knative."
+deploy.enableKnativeDescription: "If checked, a pipeline to deploy to Kubernetes using Knative will be created."
 
+verify.slackIntegrationDescription: "**Configure Slack integration to send messages when an app succeeds or fails during certain stages in the pipeline.**"
 verify.slackWebhookURLTitle: "Slack Webhook URL"
-verify.slackWebhookURLDescription: "The URL of the Slack app used to post Slack notifications."
+verify.slackWebhookURLDescription: "The URL of the Slack app used to post Slack messages. Can be a comma-separated list to support multiple apps."
 verify.slackOwnersChannelTitle: "Slack Owners Channel"
-verify.slackOwnersChannelDescription: "The name of the channel of the owners of the Slack webhook."
+verify.slackOwnersChannelDescription: "The name of the channel to which Slack messages will be sent. Can be a comma-separated list to support multiple channels."
 
+verify.pagerDutyIntegrationDescription: "Configure PagerDuty integration to trigger alerts when the app fails during certain stages in the pipeline."
 verify.pagerDutyAPITokenTitle: "PagerDuty API Token"
 verify.pagerDutyAPITokenDescription: "API token to use to trigger PagerDuty alerts."
+verify.pagerDutyServiceNameTitle: "PagerDuty service name:"
+verify.pagerDutyServiceNameDescription: "Type the name of the PagerDuty service to post alerts to."
 
 region: "Cluster region"
 organization: "Organization"

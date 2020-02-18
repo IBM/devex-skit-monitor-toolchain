@@ -137,13 +137,18 @@
             },
             "type": "string",
             "pattern": "\\S"
+        },
+        "pagerduty-service-name": {
+            "description": {
+                "$ref": "#/messages/verify.pagerDutyServiceNameDescription"
+            },
+            "type": "string",
+            "pattern": "\\S"
         }
     },
     "required": ["api-key", "registry-region", "registry-namespace", "prod-region", "prod-resource-group", "prod-cluster-name", "prod-cluster-namespace", 
                 "prod-organization", "prod-space",
-                "enable-cf", "enable-helm", "enable-knative", 
-                "slack-webhook-url",
-                "pagerduty-api-token"
+                "enable-cf", "enable-helm", "enable-knative"
                 ],
     "form": [
         {
@@ -186,6 +191,12 @@
             "key": "api-key"
         },
         {
+            "type": "label",
+            "title": {
+                "$ref": "#/messages/verify.slackIntegrationDescription"
+            }
+        },
+        {
             "type": "string",
             "readonly": false,
             "title": {
@@ -202,10 +213,24 @@
             "key": "slack-owners-channel"
         },
         {
+            "type": "label",
+            "title": {
+                "$ref": "#/messages/verify.pagerDutyIntegrationDescription"
+            }
+        },
+        {
             "type": "password",
             "readonly": false,
             "title": {
                 "$ref": "#/messages/verify.pagerDutyAPITokenTitle"
+            },
+            "key": "pagerduty-api-token"
+        },
+        {
+            "type": "string",
+            "readonly": false,
+            "title": {
+                "$ref": "#/messages/verify.pagerDutyServiceNameTitle"
             },
             "key": "pagerduty-api-token"
         },
