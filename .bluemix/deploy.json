@@ -147,8 +147,7 @@
         }
     },
     "required": ["api-key", "registry-region", "registry-namespace", "prod-region", "prod-resource-group", "prod-cluster-name", "prod-cluster-namespace", 
-                "prod-organization", "prod-space",
-                "enable-cf", "enable-helm", "enable-knative"
+                "prod-organization", "prod-space"
                 ],
     "form": [
         {
