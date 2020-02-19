@@ -231,7 +231,7 @@
             "key": "pagerduty-api-token"
         },
         {
-            "type": "string",
+            "type": "password",
             "readonly": false,
             "title": {
                 "$ref": "#/messages/verify.pagerDutyServiceNameTitle"

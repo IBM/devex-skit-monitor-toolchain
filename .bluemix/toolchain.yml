@@ -60,7 +60,8 @@ services:
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
-      label: Pipeline for deploying a skit app via Helm
+          PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
+      label: Pipeline for deploying a starter kit app via Helm
       name: Skit-Pipeline-Helm
       services:
       - skitgitrepo
@@ -91,7 +92,8 @@ services:
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
-      label: Pipeline for deploying a skit app via Knative
+          PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
+      label: Pipeline for deploying a starter kit app via Knative
       name: Skit-Pipeline-Knative
       services:
       - skitgitrepo
@@ -121,7 +123,8 @@ services:
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
-      label: Pipeline for deploying a skit app via CF
+          PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
+      label: Pipeline for deploying a starter kit app via Cloud Foundry
       name: Skit-Pipeline-CF
       services:
       - skitgitrepo
@@ -148,5 +151,6 @@ form:
       slack-webhook-url: '{{slackWebhookURL}}'
       slack-owners-channel: '{{slackOwnersChannel}}'
       pagerduty-api-token: '{{pagerDutyAPIToken}}'
+      pagerduty-service-name: '{{pagerDutySvcName}}'
     schema:
       $ref: deploy.json

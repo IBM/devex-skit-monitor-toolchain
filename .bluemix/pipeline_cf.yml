@@ -144,6 +144,9 @@ stages:
   - name: PAGERDUTY_API_TOKEN
     type: secure
     value: ${PAGERDUTY_API_TOKEN}
+  - name: PAGERDUTY_SVC_NAME
+    type: secure
+    value: ${PAGERDUTY_SVC_NAME}
   - name: ENABLED_CF
     type: text
     value: ${ENABLED_CF}
