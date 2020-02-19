@@ -66,10 +66,6 @@ stages:
           exit 0
       fi
 
-      pwd
-      ls -al
-      ls -al ./server/config
-
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_cf.sh")
     target:
       api_key: ${API_KEY}

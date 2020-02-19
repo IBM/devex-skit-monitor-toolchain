@@ -140,9 +140,6 @@ stages:
           exit 0
       fi
 
-      ls -al
-      ls -al ./chart
-
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_helm.sh")
     target:
       region_id: ${PROD_REGION_ID}

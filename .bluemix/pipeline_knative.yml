@@ -117,8 +117,6 @@ stages:
           exit 0
       fi
 
-      ls -al
-
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_knative.sh")
     target:
       region_id: ${PROD_REGION_ID}
@@ -139,7 +137,6 @@ stages:
           exit 0
       fi
 
-      source build.properties
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/test_health_knative.sh")
     target:
       region_id: ${PROD_REGION_ID}
@@ -149,7 +146,7 @@ stages:
   properties:
   - name: buildProperties
     type: file
-    value: ${ARCHIVE_DIR}/build.properties
+    value: build.properties
   - name: CLUSTER_NAMESPACE
     type: text
     value: default
@@ -191,7 +188,7 @@ stages:
   properties:
   - name: buildProperties
     type: file
-    value: ${ARCHIVE_DIR}/build.properties
+    value: build.properties
   - name: SLACK_WEBHOOK
     type: text
     value: ${SLACK_WEBHOOK}
