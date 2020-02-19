@@ -111,13 +111,21 @@
             "description": {
                 "$ref": "#/messages/deploy.organizationDescription"
             },
-            "type": "string"
+            "type": "string",
+            "validator": {
+                "v-type": "cf-org",
+                "params": ["prod-region"]
+            }
         },
         "prod-space": {
             "description": {
                 "$ref": "#/messages/deploy.spaceDescription"
             },
-            "type": "string"
+            "type": "string",
+            "validator": {
+                "v-type": "cf-space",
+                "params": ["prod-organization"]
+            }
         },
         "slack-webhook-url": {
             "description": {
