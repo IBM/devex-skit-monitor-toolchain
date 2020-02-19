@@ -198,6 +198,15 @@ stages:
   - name: OWNER_SLACK_CHANNEL
     type: text
     value: ${OWNER_SLACK_CHANNEL}
+  - name: PAGERDUTY_API_URL
+    type: text
+    value: ${PAGERDUTY_API_URL}
+  - name: PAGERDUTY_EVENTS_API_URL
+    type: text
+    value: ${PAGERDUTY_EVENTS_API_URL}
+  - name: PAGERDUTY_API_TOKEN
+    type: secure
+    value: ${PAGERDUTY_API_TOKEN}
   - name: ENABLED_KNATIVE
     type: text
     value: ${ENABLED_KNATIVE}
