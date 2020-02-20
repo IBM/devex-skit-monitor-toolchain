@@ -124,7 +124,7 @@ stages:
   properties:
   - name: buildProperties
     type: file
-    value: ${ARCHIVE_DIR}/build.properties
+    value: build.properties
   - name: SLACK_WEBHOOK
     type: text
     value: ${SLACK_WEBHOOK}
