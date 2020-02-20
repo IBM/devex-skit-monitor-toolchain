@@ -146,6 +146,9 @@ stages:
   - name: ENABLED_CF
     type: text
     value: ${ENABLED_CF}
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   triggers:
   - type: stage
 properties: []

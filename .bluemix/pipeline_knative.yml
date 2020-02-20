@@ -210,6 +210,9 @@ stages:
   - name: ENABLED_KNATIVE
     type: text
     value: ${ENABLED_KNATIVE}
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   triggers:
   - type: stage
 properties: []

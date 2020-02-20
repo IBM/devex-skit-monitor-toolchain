@@ -229,6 +229,9 @@ stages:
   - name: ENABLED_HELM
     type: text
     value: ${ENABLED_HELM}
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   triggers:
   - type: stage
 properties:
