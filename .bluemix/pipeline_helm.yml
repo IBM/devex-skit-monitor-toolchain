@@ -2,7 +2,6 @@ stages:
 - name: Build
   inputs:
   - branch: master
-    dir_name: null
     type: git
     service: skitgitrepo
   jobs:

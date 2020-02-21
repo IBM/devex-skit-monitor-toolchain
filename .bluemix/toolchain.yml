@@ -42,6 +42,7 @@ services:
           $text: pipeline_helm.yml
         env:
           GIT_REPO: skitgitrepo
+          GIT_URL: ${GIT_URLS}
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -73,6 +74,7 @@ services:
           $text: pipeline_knative.yml
         env:
           GIT_REPO: skitgitrepo
+          GIT_URL: ${GIT_URLS}
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -104,6 +106,7 @@ services:
           $text: pipeline_cf.yml
         env:
           GIT_REPO: skitgitrepo
+          GIT_URL: ${GIT_URLS}
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
