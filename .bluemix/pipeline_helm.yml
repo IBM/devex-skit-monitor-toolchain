@@ -165,7 +165,7 @@ stages:
       api_key: ${API_KEY}
       kubernetes_cluster: ${PROD_CLUSTER_NAME}
   properties:
-  - name: buildprops
+  - name: buildProperties
     type: file
     value: build.properties
   - name: CLUSTER_NAMESPACE

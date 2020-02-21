@@ -74,9 +74,9 @@ stages:
       space: ${PROD_SPACE_NAME}
       region_id: ${PROD_REGION_ID}
   properties:
-  - name: GIT_URL
-    type: text
-    value: ${GIT_URL}
+  - name: buildProperties
+    type: file
+    value: build.properties
   - name: APP_NAME
     type: text
     value: ${APP_NAME}
