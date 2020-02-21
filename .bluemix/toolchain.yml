@@ -10,7 +10,9 @@ template:
   - pipeline_helm
   - pipeline_knative
 toolchain:
-  name: DevX-Skit-CodeMonitor
+  name: >
+    $env.toolchainName ? '{{toolchainName}}' :
+      'My-Skit-CodeMonitor'
 services:
   skitgitrepo:
     parameters:
