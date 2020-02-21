@@ -107,8 +107,8 @@ stages:
     stage: Build
   jobs:
   - name: Experience Test
-    type: tester
-    test_type: simple
+    type: deployer
+    deploy_type: cf
     curatedDockerImage: default
     script: |-
       #!/bin/bash
@@ -121,6 +121,12 @@ stages:
       fi
 
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+    target:
+      api_key: ${API_KEY}
+      application: ${APP_NAME}-monitored-cf
+      organization: ${PROD_ORG_NAME}
+      space: ${PROD_SPACE_NAME}
+      region_id: ${PROD_REGION_ID}
   properties:
   - name: buildProperties
     type: file

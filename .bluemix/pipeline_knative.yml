@@ -18,7 +18,7 @@ stages:
       # set -x
 
       if [ "${ENABLED_KNATIVE}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Knative pipeline is disabled for this toolchain"
           exit 0
       fi
 
@@ -36,7 +36,7 @@ stages:
       # set -x
 
       if [ "${ENABLED_KNATIVE}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Knative pipeline is disabled for this toolchain"
           exit 0
       fi
 
@@ -55,7 +55,7 @@ stages:
       # set -x
 
       if [ "${ENABLED_KNATIVE}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Knative pipeline is disabled for this toolchain"
           exit 0
       fi
 
@@ -113,7 +113,7 @@ stages:
       # set -x
 
       if [ "${ENABLED_KNATIVE}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Knative pipeline is disabled for this toolchain"
           exit 0
       fi
 
@@ -133,7 +133,7 @@ stages:
       # set -x
 
       if [ "${ENABLED_KNATIVE}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Knative pipeline is disabled for this toolchain"
           exit 0
       fi
 
@@ -171,8 +171,8 @@ stages:
       stage: Build    
   jobs:
   - name: Experience Test
-    type: tester
-    test_type: simple
+    type: deployer
+    deploy_type: kubernetes
     curatedDockerImage: default
     script: |-
       #!/bin/bash
@@ -180,11 +180,16 @@ stages:
       # set -x
 
       if [ "${ENABLED_KNATIVE}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Knative pipeline is disabled for this toolchain"
           exit 0
       fi
 
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
   properties:
   - name: buildProperties
     type: file

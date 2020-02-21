@@ -190,9 +190,8 @@ stages:
     stage: Containerize
   jobs:
   - name: Experience Test
-    type: tester
-    test_type: simple
-    curatedDockerImage: default
+    type: deployer
+    deploy_type: kubernetes
     script: |-
       #!/bin/bash
       # uncomment to debug the script
@@ -204,6 +203,11 @@ stages:
       fi
 
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
   properties:
   - name: buildProperties
     type: file

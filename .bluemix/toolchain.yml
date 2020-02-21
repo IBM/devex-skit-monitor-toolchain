@@ -3,7 +3,7 @@ messages:
   $i18n: locales.yml
 template:
   description: DevX-Skit-CodeMonitor
-  name: Develop a code monitor for a starter kit
+  name: Create a code monitor for a starter kit
   required:
   - skitgitrepo
   - pipeline_cf
@@ -28,11 +28,10 @@ services:
         - think
         - code
       has_issues: false
-      label: '{{services.repo.parameters.repo_name}}'
       legal: false
       private_repo: false
-      source_repo_url: https://github.com/IBM/nodejs-cloudant.git
-      repo_name: nodejs-cloudant
+      source_repo_url: ''
+      repo_name: ''
       token_url: https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
       type: link
     service_id: githubconsolidated
