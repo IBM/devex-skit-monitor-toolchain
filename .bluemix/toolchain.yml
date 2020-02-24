@@ -32,6 +32,8 @@ services:
       has_issues: false
       legal: false
       private_repo: false
+      repo_url: >
+        $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.com/IBM/nodejs-cloudant'
       source_repo_url: >
         $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.com/IBM/nodejs-cloudant'
       token_url: https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
