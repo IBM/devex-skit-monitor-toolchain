@@ -94,6 +94,27 @@ stages:
   - name: ENABLED_KNATIVE
     type: text
     value: ${ENABLED_KNATIVE}
+  - name: SLACK_WEBHOOK
+    type: text
+    value: ${SLACK_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL
+    type: text
+    value: ${OWNER_SLACK_CHANNEL}
+  - name: PAGERDUTY_API_URL
+    type: text
+    value: ${PAGERDUTY_API_URL}
+  - name: PAGERDUTY_EVENTS_API_URL
+    type: text
+    value: ${PAGERDUTY_EVENTS_API_URL}
+  - name: PAGERDUTY_API_TOKEN
+    type: secure
+    value: ${PAGERDUTY_API_TOKEN}
+  - name: PAGERDUTY_SVC_NAME
+    type: secure
+    value: ${PAGERDUTY_SVC_NAME}
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   triggers:
   - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
     type: git
@@ -147,6 +168,9 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   - name: CLUSTER_NAMESPACE
     type: text
     value: default
@@ -159,9 +183,6 @@ stages:
   - name: SERVICE_FILE_UPDATE_INSTRUCTIONS_FILE
     type: text
     value: service_update_instructions.yaml
-  - name: ENABLED_KNATIVE
-    type: text
-    value: ${ENABLED_KNATIVE}
   triggers:
   - type: stage
 - name: Verification
@@ -194,27 +215,6 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
-  - name: SLACK_WEBHOOK
-    type: text
-    value: ${SLACK_WEBHOOK}
-  - name: OWNER_SLACK_CHANNEL
-    type: text
-    value: ${OWNER_SLACK_CHANNEL}
-  - name: PAGERDUTY_API_URL
-    type: text
-    value: ${PAGERDUTY_API_URL}
-  - name: PAGERDUTY_EVENTS_API_URL
-    type: text
-    value: ${PAGERDUTY_EVENTS_API_URL}
-  - name: PAGERDUTY_API_TOKEN
-    type: secure
-    value: ${PAGERDUTY_API_TOKEN}
-  - name: PAGERDUTY_SVC_NAME
-    type: secure
-    value: ${PAGERDUTY_SVC_NAME}
-  - name: ENABLED_KNATIVE
-    type: text
-    value: ${ENABLED_KNATIVE}
   - name: ENABLE_PD_ALERTS
     type: text
     value: "true"
