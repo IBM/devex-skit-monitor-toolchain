@@ -20,7 +20,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_cf.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cf.sh")
   properties:
   - name: GIT_URL
     type: text
@@ -28,21 +28,45 @@ stages:
   - name: DEVX_SKIT_ASSETS_GIT
     type: text
     value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_BRANCH
+    type: text
+    value: master
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
   - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
     type: text
-    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
+    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}/${DEVX_SKIT_ASSETS_GIT_BRANCH}
   - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
     type: text
-    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_BRANCH}
   - name: DEPLOY_TARGET
     type: text
     value: cf
   - name: ENABLED_CF
     type: text
     value: ${ENABLED_CF}
+  - name: SLACK_WEBHOOK
+    type: text
+    value: ${SLACK_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL
+    type: text
+    value: ${OWNER_SLACK_CHANNEL}
+  - name: PAGERDUTY_API_URL
+    type: text
+    value: ${PAGERDUTY_API_URL}
+  - name: PAGERDUTY_EVENTS_API_URL
+    type: text
+    value: ${PAGERDUTY_EVENTS_API_URL}
+  - name: PAGERDUTY_API_TOKEN
+    type: secure
+    value: ${PAGERDUTY_API_TOKEN}
+  - name: PAGERDUTY_SVC_NAME
+    type: secure
+    value: ${PAGERDUTY_SVC_NAME}
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   triggers:
   - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
     type: git
@@ -66,7 +90,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_cf.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_cf.sh")
     target:
       api_key: ${API_KEY}
       application: ${APP_NAME}-monitored-cf
@@ -77,27 +101,9 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
-  - name: APP_NAME
+  - name: ENABLE_PD_ALERTS
     type: text
-    value: ${APP_NAME}
-  - name: DEVX_SKIT_ASSETS_GIT
-    type: text
-    value: IBM/devex-skit-assets
-  - name: DEVX_SKIT_ASSETS_GIT_URL
-    type: text
-    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
-  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
-    type: text
-    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
-  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
-    type: text
-    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
-  - name: DEPLOY_TARGET
-    type: text
-    value: cf
-  - name: ENABLED_CF
-    type: text
-    value: ${ENABLED_CF}
+    value: "true"
   triggers:
   - type: stage
 - name: Verification
@@ -120,7 +126,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
     target:
       api_key: ${API_KEY}
       application: ${APP_NAME}-monitored-cf
@@ -131,27 +137,6 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
-  - name: SLACK_WEBHOOK
-    type: text
-    value: ${SLACK_WEBHOOK}
-  - name: OWNER_SLACK_CHANNEL
-    type: text
-    value: ${OWNER_SLACK_CHANNEL}
-  - name: PAGERDUTY_API_URL
-    type: text
-    value: ${PAGERDUTY_API_URL}
-  - name: PAGERDUTY_EVENTS_API_URL
-    type: text
-    value: ${PAGERDUTY_EVENTS_API_URL}
-  - name: PAGERDUTY_API_TOKEN
-    type: secure
-    value: ${PAGERDUTY_API_TOKEN}
-  - name: PAGERDUTY_SVC_NAME
-    type: secure
-    value: ${PAGERDUTY_SVC_NAME}
-  - name: ENABLED_CF
-    type: text
-    value: ${ENABLED_CF}
   - name: ENABLE_PD_ALERTS
     type: text
     value: "true"

@@ -19,7 +19,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_fetch_code.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_fetch_code.sh")
   - name: Unit Tests
     type: tester
     test_type: simple
@@ -28,7 +28,7 @@ stages:
       # uncomment to debug the script
       # set -x
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/build_unit_test.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
   properties:
   - name: GIT_URL
     type: text
@@ -39,21 +39,45 @@ stages:
   - name: DEVX_SKIT_ASSETS_GIT
     type: text
     value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_BRANCH
+    type: text
+    value: master
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
   - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
     type: text
-    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
+    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}/${DEVX_SKIT_ASSETS_GIT_BRANCH}
   - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
     type: text
-    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_BRANCH}
   - name: DEPLOY_TARGET
     type: text
     value: helm
   - name: ENABLED_HELM
     type: text
     value: ${ENABLED_HELM}
+  - name: SLACK_WEBHOOK
+    type: text
+    value: ${SLACK_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL
+    type: text
+    value: ${OWNER_SLACK_CHANNEL}
+  - name: PAGERDUTY_API_URL
+    type: text
+    value: ${PAGERDUTY_API_URL}
+  - name: PAGERDUTY_EVENTS_API_URL
+    type: text
+    value: ${PAGERDUTY_EVENTS_API_URL}
+  - name: PAGERDUTY_API_TOKEN
+    type: secure
+    value: ${PAGERDUTY_API_TOKEN}
+  - name: PAGERDUTY_SVC_NAME
+    type: secure
+    value: ${PAGERDUTY_SVC_NAME}
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   triggers:
   - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
     type: git
@@ -79,7 +103,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/containerize_build_container_img.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/containerize_build_container_img.sh")
     target:
       api_key: ${API_KEY}
       region_id: ${REGISTRY_REGION_ID}
@@ -101,11 +125,14 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/check_vulnerabilities.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/check_vulnerabilities.sh")
   properties:
   - name: buildprops
     type: file
     value: build.properties
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   - name: DOCKER_ROOT
     type: text
     value: .
@@ -115,9 +142,6 @@ stages:
   - name: PIPELINE_IMAGE_URL
     type: text
     value: ""
-  - name: ENABLED_HELM
-    type: text
-    value: ${ENABLED_HELM}
   triggers:
   - type: stage
 - name: Deploy
@@ -139,7 +163,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_helm.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_helm.sh")
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -158,7 +182,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/deploy_check_health.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_check_health.sh")
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -168,18 +192,15 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
   - name: CLUSTER_NAMESPACE
     type: text
     value: default
   - name: CHART_ROOT
     type: text
     value: chart
-  - name: APP_URL
-    type: text
-    value: ""
-  - name: ENABLED_HELM
-    type: text
-    value: ${ENABLED_HELM}
   triggers:
   - type: stage
 - name: Verification
@@ -201,7 +222,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/master/scripts/verification_experience_test.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -211,27 +232,6 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
-  - name: SLACK_WEBHOOK
-    type: text
-    value: ${SLACK_WEBHOOK}
-  - name: OWNER_SLACK_CHANNEL
-    type: text
-    value: ${OWNER_SLACK_CHANNEL}
-  - name: PAGERDUTY_API_URL
-    type: text
-    value: ${PAGERDUTY_API_URL}
-  - name: PAGERDUTY_EVENTS_API_URL
-    type: text
-    value: ${PAGERDUTY_EVENTS_API_URL}
-  - name: PAGERDUTY_API_TOKEN
-    type: secure
-    value: ${PAGERDUTY_API_TOKEN}
-  - name: PAGERDUTY_SVC_NAME
-    type: secure
-    value: ${PAGERDUTY_SVC_NAME}
-  - name: ENABLED_HELM
-    type: text
-    value: ${ENABLED_HELM}
   - name: ENABLE_PD_ALERTS
     type: text
     value: "true"

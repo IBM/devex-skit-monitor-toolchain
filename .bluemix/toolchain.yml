@@ -32,6 +32,8 @@ services:
       has_issues: false
       legal: false
       private_repo: false
+      repo_url: >
+        $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.com/IBM/nodejs-cloudant'
       source_repo_url: >
         $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.com/IBM/nodejs-cloudant'
       token_url: https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
@@ -45,6 +47,8 @@ services:
         env:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
+          DEVX_SKIT_ASSETS_GIT_BRANCH: >
+            $env.skitAssetsBranch || master
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -77,6 +81,8 @@ services:
         env:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
+          DEVX_SKIT_ASSETS_GIT_BRANCH: >
+            $env.skitAssetsBranch || master
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -109,6 +115,8 @@ services:
         env:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
+          DEVX_SKIT_ASSETS_GIT_BRANCH: >
+            $env.skitAssetsBranch || master
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -146,9 +154,9 @@ form:
       prod-cluster-name: '{{prodClusterName}}'
       prod-space: '{{prodSpace}}'
       prod-organization: '{{prodOrganization}}'
-      enable-cf: '{{enableCF}}'
-      enable-helm: '{{enableHelm}}'
-      enable-knative: '{{enableKnative}}'
+      enable-cf: "$env.enableCF === 'true'"
+      enable-helm: "$env.enableHelm === 'true'"
+      enable-knative: "$env.enableKnative === 'true'"
       slack-webhook-url: '{{slackWebhookURL}}'
       slack-owners-channel: '{{slackOwnersChannel}}'
       pagerduty-api-token: '{{pagerDutyAPIToken}}'
