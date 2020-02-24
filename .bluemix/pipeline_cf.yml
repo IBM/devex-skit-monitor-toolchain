@@ -28,15 +28,18 @@ stages:
   - name: DEVX_SKIT_ASSETS_GIT
     type: text
     value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_BRANCH
+    type: text
+    value: master
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
   - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
     type: text
-    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}
+    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}/${DEVX_SKIT_ASSETS_GIT_BRANCH}
   - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
     type: text
-    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_BRANCH}
   - name: DEPLOY_TARGET
     type: text
     value: cf
