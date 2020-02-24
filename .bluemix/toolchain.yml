@@ -48,7 +48,7 @@ services:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
           DEVX_SKIT_ASSETS_GIT_BRANCH: >
-            $env.skitAssetsBranch || master'
+            $env.skitAssetsBranch || master
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -82,7 +82,7 @@ services:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
           DEVX_SKIT_ASSETS_GIT_BRANCH: >
-            $env.skitAssetsBranch || master'
+            $env.skitAssetsBranch || master
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -116,7 +116,7 @@ services:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
           DEVX_SKIT_ASSETS_GIT_BRANCH: >
-            $env.skitAssetsBranch || master'
+            $env.skitAssetsBranch || master
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
