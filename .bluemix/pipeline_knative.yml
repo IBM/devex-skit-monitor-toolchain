@@ -25,7 +25,7 @@ stages:
       function check_exit
       {
         rv=$?
-        if [ $rv == 1 ]; then
+        if [ $rv != 0 ]; then
             msg="Build Container Image Failed :spinning-siren:"
             echo "${msg}"
             source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
@@ -57,7 +57,7 @@ stages:
       function check_exit
       {
         rv=$?
-        if [ $rv == 1 ]; then
+        if [ $rv != 0 ]; then
             msg="Unit Tests Failed :spinning-siren:"
             echo "${msg}"
             source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
@@ -172,7 +172,7 @@ stages:
       function check_exit
       {
         rv=$?
-        if [ $rv == 1 ]; then
+        if [ $rv != 0 ]; then
             msg="Deploy Failed :spinning-siren:"
             echo "${msg}"
             source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
@@ -206,7 +206,7 @@ stages:
       function check_exit
       {
         rv=$?
-        if [ $rv == 1 ]; then
+        if [ $rv != 0 ]; then
             msg="Check Health Failed :spinning-siren:"
             echo "${msg}"
             source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
