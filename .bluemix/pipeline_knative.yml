@@ -22,7 +22,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cr.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cr.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Build Container Image Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
     target:
       api_key: ${API_KEY}
       region_id: ${REGISTRY_REGION_ID}
@@ -40,7 +49,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Unit Tests Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
   - name: Check vulnerabilities
     type: tester
     test_type: vulnerabilityadvisor
@@ -141,7 +159,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_knative.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_knative.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Deploy Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -161,7 +188,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/test_health_knative.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/test_health_knative.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Check Health Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -207,7 +243,7 @@ stages:
           echo "Knative pipeline is disabled for this toolchain"
           exit 0
       fi
-
+      
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
     target:
       region_id: ${PROD_REGION_ID}

@@ -20,7 +20,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cf.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cf.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Build Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
   properties:
   - name: GIT_URL
     type: text
@@ -90,7 +99,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_cf.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_cf.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Deploy Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
     target:
       api_key: ${API_KEY}
       application: ${APP_NAME}-monitored-cf

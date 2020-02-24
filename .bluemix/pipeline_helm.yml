@@ -19,7 +19,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_fetch_code.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_fetch_code.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Build Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
   - name: Unit Tests
     type: tester
     test_type: simple
@@ -28,7 +37,16 @@ stages:
       # uncomment to debug the script
       # set -x
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Unit Tests Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
   properties:
   - name: GIT_URL
     type: text
@@ -103,7 +121,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/containerize_build_container_img.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/containerize_build_container_img.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Build Container Image Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
     target:
       api_key: ${API_KEY}
       region_id: ${REGISTRY_REGION_ID}
@@ -163,7 +190,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_helm.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_helm.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Deploy Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -182,7 +218,16 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_check_health.sh")
+      set -e
+      EXIT_CODE=0
+
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_check_health.sh") || EXIT_CODE=$?
+      if [ $EXIT_CODE != 0 ]; then
+          msg="Check Health Failed :spinning-siren:"
+          echo $msg
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$msg"
+          exit 1
+      fi
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
