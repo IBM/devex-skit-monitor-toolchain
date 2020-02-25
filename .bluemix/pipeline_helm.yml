@@ -91,7 +91,7 @@ stages:
     type: text
     value: ${ENABLED_HELM}
   - name: SLACK_WEBHOOK
-    type: text
+    type: secure
     value: ${SLACK_WEBHOOK}
   - name: OWNER_SLACK_CHANNEL
     type: text

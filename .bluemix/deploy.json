@@ -201,7 +201,7 @@
             }
         },
         {
-            "type": "string",
+            "type": "password",
             "readonly": false,
             "title": {
                 "$ref": "#/messages/verify.slackWebhookURLTitle"
