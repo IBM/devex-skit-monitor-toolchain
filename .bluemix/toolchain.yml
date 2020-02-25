@@ -145,12 +145,12 @@ form:
     parameters:
       prod-cluster-namespace: >
         $env.prodClusterNamespace ?
-          '{{prodClusterNamespace}}' : 'default'
+          "{{prodClusterNamespace}}" : "default"
       registry-region: '{{registryRegion}}'
       registry-namespace: '{{registryNamespace}}'
       api-key: '{{apiKey}}'
       skit-assets-branch: >
-        '$env.skitAssetsBranch ? {{skitAssetsBranch}} : 'master'
+        $env.skitAssetsBranch ? "{{skitAssetsBranch}}" : "master"
       prod-region: '{{prodRegion}}'
       prod-resource-group: '{{prodResourceGroup}}'
       prod-cluster-name: '{{prodClusterName}}'
