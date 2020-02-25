@@ -15,10 +15,24 @@ stages:
       # set -x
 
       if [ "${ENABLED_HELM}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Helm pipeline is disabled for this toolchain"
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Fetch Code Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_fetch_code.sh")
   - name: Unit Tests
     type: tester
@@ -28,6 +42,25 @@ stages:
       # uncomment to debug the script
       # set -x
 
+      if [ "${ENABLED_HELM}" == "false" ]; then
+          echo "Helm pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Unit Tests Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
   properties:
   - name: GIT_URL
@@ -99,10 +132,24 @@ stages:
       # set -x
 
       if [ "${ENABLED_HELM}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Helm pipeline is disabled for this toolchain"
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Build Container Image Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/containerize_build_container_img.sh")
     target:
       api_key: ${API_KEY}
@@ -159,10 +206,24 @@ stages:
       # set -x
 
       if [ "${ENABLED_HELM}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Helm pipeline is disabled for this toolchain"
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Deploy Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_helm.sh")
     target:
       region_id: ${PROD_REGION_ID}
@@ -178,10 +239,24 @@ stages:
       # set -x
 
       if [ "${ENABLED_HELM}" == "false" ]; then
-          echo "CF pipeline is disabled for this toolchain"
+          echo "Helm pipeline is disabled for this toolchain"
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Check Health Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_check_health.sh")
     target:
       region_id: ${PROD_REGION_ID}

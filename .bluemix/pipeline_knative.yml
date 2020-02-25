@@ -22,6 +22,20 @@ stages:
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Build Container Image Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cr.sh")
     target:
       api_key: ${API_KEY}
@@ -40,6 +54,20 @@ stages:
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Unit Tests Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
   - name: Check vulnerabilities
     type: tester
@@ -141,6 +169,20 @@ stages:
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Deploy Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_knative.sh")
     target:
       region_id: ${PROD_REGION_ID}
@@ -161,6 +203,20 @@ stages:
           exit 0
       fi
 
+      function check_exit
+      {
+        rv=$?
+        if [ $rv != 0 ]; then
+            msg="Check Health Failed :spinning-siren:"
+            echo "${msg}"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            exit 1
+        else
+            exit 0
+        fi
+      }
+
+      trap 'check_exit' EXIT
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/test_health_knative.sh")
     target:
       region_id: ${PROD_REGION_ID}
