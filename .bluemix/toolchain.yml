@@ -66,6 +66,8 @@ services:
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
           PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
+          ENABLE_PD_ALERTS: >
+            $env.enablePDAlerts || true
       label: Pipeline for deploying a starter kit app via Helm
       name: Skit-Pipeline-Helm
       services:
@@ -100,6 +102,8 @@ services:
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
           PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
+          ENABLE_PD_ALERTS: >
+            $env.enablePDAlerts || true
       label: Pipeline for deploying a starter kit app via Knative
       name: Skit-Pipeline-Knative
       services:
@@ -133,6 +137,8 @@ services:
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
           PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
+          ENABLE_PD_ALERTS: >
+            $env.enablePDAlerts || true
       label: Pipeline for deploying a starter kit app via Cloud Foundry
       name: Skit-Pipeline-CF
       services:
@@ -149,6 +155,7 @@ form:
       registry-region: '{{registryRegion}}'
       registry-namespace: '{{registryNamespace}}'
       api-key: '{{apiKey}}'
+      skit-assets-branch: '{{skitAssetsBranch}}'
       prod-region: '{{prodRegion}}'
       prod-resource-group: '{{prodResourceGroup}}'
       prod-cluster-name: '{{prodClusterName}}'
@@ -161,5 +168,6 @@ form:
       slack-owners-channel: '{{slackOwnersChannel}}'
       pagerduty-api-token: '{{pagerDutyAPIToken}}'
       pagerduty-service-name: '{{pagerDutySvcName}}'
+      enable-pd-alerts: '{{enablePDAlerts}}'
     schema:
       $ref: deploy.json
