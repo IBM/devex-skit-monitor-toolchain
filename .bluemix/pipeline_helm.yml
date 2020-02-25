@@ -177,9 +177,6 @@ stages:
   - name: buildprops
     type: file
     value: build.properties
-  - name: ENABLE_PD_ALERTS
-    type: text
-    value: "true"
   - name: DOCKER_ROOT
     type: text
     value: .
@@ -267,9 +264,6 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
-  - name: ENABLE_PD_ALERTS
-    type: text
-    value: "true"
   - name: CLUSTER_NAMESPACE
     type: text
     value: default
@@ -307,9 +301,6 @@ stages:
   - name: buildProperties
     type: file
     value: build.properties
-  - name: ENABLE_PD_ALERTS
-    type: text
-    value: "true"
   triggers:
   - type: stage
 properties:
