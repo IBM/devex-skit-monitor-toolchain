@@ -25,7 +25,11 @@ stages:
         if [ $rv != 0 ]; then
             msg="Fetch Code Failed :spinning-siren:"
             echo "${msg}"
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+            #    source ./scripts/slack_message.sh
+            # alternatively, you can source it from online script:
+            #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/slack_message.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/slack_message.sh") "${msg}"
             exit 1
         else
             exit 0
@@ -33,7 +37,11 @@ stages:
       }
 
       trap 'check_exit' EXIT
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_fetch_code.sh")
+      # copy the script below into your app code repo (e.g. ./scripts/build_fetch_code.sh) and 'source' it from your pipeline job
+      #    source ./scripts/build_fetch_code.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/build_fetch_code.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/build_fetch_code.sh")
   - name: Unit Tests
     type: tester
     test_type: simple
@@ -53,7 +61,11 @@ stages:
         if [ $rv != 0 ]; then
             msg="Unit Tests Failed :spinning-siren:"
             echo "${msg}"
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+            #    source ./scripts/slack_message.sh
+            # alternatively, you can source it from online script:
+            #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/slack_message.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/slack_message.sh") "${msg}"
             exit 1
         else
             exit 0
@@ -61,7 +73,11 @@ stages:
       }
 
       trap 'check_exit' EXIT
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
+      # copy the script below into your app code repo (e.g. ./scripts/build_unit_test.sh) and 'source' it from your pipeline job
+      #    source ./scripts/build_unit_test.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/build_unit_test.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/build_unit_test.sh")
   properties:
   - name: GIT_URL
     type: text
@@ -75,6 +91,9 @@ stages:
   - name: DEVX_SKIT_ASSETS_GIT_BRANCH
     type: text
     value: master
+  - name: DEVX_SKIT_ASSETS_VERSION
+    type: text
+    value: v1
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
@@ -142,7 +161,11 @@ stages:
         if [ $rv != 0 ]; then
             msg="Build Container Image Failed :spinning-siren:"
             echo "${msg}"
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+            #    source ./scripts/slack_message.sh
+            # alternatively, you can source it from online script:
+            #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/slack_message.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/slack_message.sh") "${msg}"
             exit 1
         else
             exit 0
@@ -150,7 +173,11 @@ stages:
       }
 
       trap 'check_exit' EXIT
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/containerize_build_container_img.sh")
+      # copy the script below into your app code repo (e.g. ./scripts/containerize_build_container_img.sh) and 'source' it from your pipeline job
+      #    source ./scripts/containerize_build_container_img.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/containerize_build_container_img.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/containerize_build_container_img.sh")
     target:
       api_key: ${API_KEY}
       region_id: ${REGISTRY_REGION_ID}
@@ -172,7 +199,11 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/check_vulnerabilities.sh")
+      # copy the script below into your app code repo (e.g. ./scripts/check_vulnerabilities.sh) and 'source' it from your pipeline job
+      #    source ./scripts/check_vulnerabilities.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/check_vulnerabilities.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/check_vulnerabilities.sh")
   properties:
   - name: buildprops
     type: file
@@ -213,7 +244,11 @@ stages:
         if [ $rv != 0 ]; then
             msg="Deploy Failed :spinning-siren:"
             echo "${msg}"
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+            #    source ./scripts/slack_message.sh
+            # alternatively, you can source it from online script:
+            #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/slack_message.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/slack_message.sh") "${msg}"
             exit 1
         else
             exit 0
@@ -221,7 +256,11 @@ stages:
       }
 
       trap 'check_exit' EXIT
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_helm.sh")
+      # copy the script below into your app code repo (e.g. ./scripts/deploy_helm.sh) and 'source' it from your pipeline job
+      #    source ./scripts/deploy_helm.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/deploy_helm.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/deploy_helm.sh")
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -246,7 +285,11 @@ stages:
         if [ $rv != 0 ]; then
             msg="Check Health Failed :spinning-siren:"
             echo "${msg}"
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+            #    source ./scripts/slack_message.sh
+            # alternatively, you can source it from online script:
+            #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/slack_message.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/slack_message.sh") "${msg}"
             exit 1
         else
             exit 0
@@ -254,7 +297,11 @@ stages:
       }
 
       trap 'check_exit' EXIT
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_check_health.sh")
+      # copy the script below into your app code repo (e.g. ./scripts/deploy_check_health.sh) and 'source' it from your pipeline job
+      #    source ./scripts/deploy_check_health.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/deploy_check_health.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/deploy_check_health.sh")
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -291,7 +338,11 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
+      # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
+      #    source ./scripts/verification_experience_test.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/verification_experience_test.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/verification_experience_test.sh")
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
