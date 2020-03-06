@@ -52,7 +52,7 @@ stages:
     value: IBM/devex-skit-assets
   - name: DEVX_SKIT_ASSETS_GIT_RELEASE
     type: text
-    value: v0.9.0
+    value: v1.0.0
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
