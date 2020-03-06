@@ -29,8 +29,8 @@ stages:
             # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
             #    source ./scripts/slack_message.sh
             # alternatively, you can source it from online script:
-            #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/slack_message.sh")
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/slack_message.sh") "${msg}"
+            #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
             exit 1
         else
             exit 0
@@ -41,8 +41,8 @@ stages:
       # copy the script below into your app code repo (e.g. ./scripts/build_cf.sh) and 'source' it from your pipeline job
       #    source ./scripts/build_cf.sh
       # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/build_cf.sh")
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/build_cf.sh")
+      #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/build_cf.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cf.sh")
   properties:
   - name: GIT_URL
     type: text
@@ -50,21 +50,18 @@ stages:
   - name: DEVX_SKIT_ASSETS_GIT
     type: text
     value: IBM/devex-skit-assets
-  - name: DEVX_SKIT_ASSETS_GIT_BRANCH
+  - name: DEVX_SKIT_ASSETS_GIT_RELEASE
     type: text
-    value: master
-  - name: DEVX_SKIT_ASSETS_VERSION
-    type: text
-    value: v1
+    value: v0.9.0
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
   - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
     type: text
-    value: https://raw.githubusercontent.com/${DEVX_SKIT_ASSETS_GIT}/${DEVX_SKIT_ASSETS_GIT_BRANCH}
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}/raw/${DEVX_SKIT_ASSETS_GIT_RELEASE}
   - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
     type: text
-    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_BRANCH}
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_RELEASE}
   - name: DEPLOY_TARGET
     type: text
     value: cf
@@ -124,8 +121,8 @@ stages:
             # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
             #    source ./scripts/slack_message.sh
             # alternatively, you can source it from online script:
-            #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/slack_message.sh")
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/slack_message.sh") "${msg}"
+            #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
             exit 1
         else
             exit 0
@@ -136,8 +133,8 @@ stages:
       # copy the script below into your app code repo (e.g. ./scripts/deploy_cf.sh) and 'source' it from your pipeline job
       #    source ./scripts/deploy_cf.sh
       # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/IBM/devex-skit-assets/master/scripts/v1/deploy_cf.sh")
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/deploy_cf.sh")
+      #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/deploy_cf.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_cf.sh")
     target:
       api_key: ${API_KEY}
       application: ${APP_NAME}-monitored-cf
@@ -170,7 +167,7 @@ stages:
           exit 0
       fi
 
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/$DEVX_SKIT_ASSETS_VERSION/verification_experience_test.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
     target:
       api_key: ${API_KEY}
       application: ${APP_NAME}-monitored-cf
