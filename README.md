@@ -14,13 +14,13 @@ The toolchain can connect to a public GitHub repository and monitor one of its b
 ### Continuous Delivery Pipelines
 Pipelines are provided to deploy to Cloud Foundry environments or Kubernetes clusters using Helm and/or Knative. Each pipeline contains common `Build` and `Deploy` stages as well as an additional `Verification` stage that verifies the app is functioning properly after deployment. This is accomplished by executing an `experience_test.sh` script contained in the app's repository which executes UI or service tests to ensure app endpoints are working as expected.
 
-Each stage has one or more jobs whose scripts define the actions that take place when the stage is running. The scripts in the template largely delegate to scripts found in the [starter kit assets repository](https://github.com/IBM/devex-skit-assets/tree/master/scripts) but can be modified entirely or in part to meet the application's needs.
+Each stage has one or more jobs whose scripts define the actions that take place when the stage is running. The scripts in the template largely delegate to scripts found in the [starter kit assets repository](https://github.com/IBM/devex-skit-assets/tree/master/scripts), but they can be modified entirely or in part to meet the application's needs.
 
 ### Slack
 Delivery Pipelines can send [Slack](https://slack.com/) messages to a specific channel using [Slack bots](https://api.slack.com/bot-users). By providing a webhook for the bot and the channel name, the pipelines can notify users in the channel when various stages fail or if the `Verification` stage passes or fails.
 
 ### PagerDuty
-By providing a [PagerDuty](https://www.pagerduty.com/) API token and service integration key, the included pipelines can create an alert to notify on-call developers of breaking changes to application code during the `Verification` stage. Other stages can incorporate this integration by modifying their scripts. Alerts are created using the [Events API v2](https://v2.developer.pagerduty.com/docs/events-api-v2).
+By providing a [PagerDuty](https://www.pagerduty.com/) API token and service integration key, the included pipelines can create an alert to notify on-call developers of breaking changes to application code during the `Verification` stage. Other stages can incorporate this integration by modifying their scripts. Alerts are created using the PagerDuty [Events API v2](https://v2.developer.pagerduty.com/docs/events-api-v2).
 
 ## Creating toolchain instances
 
@@ -28,11 +28,10 @@ There are two ways of creating toolchain instances based on this template.
 
 ### DevOps Console
 To get started in the DevOps console, click this button:
+
 [![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https%3A%2F%2Fgithub.com%2FIBM%2Fdevex-skit-monitor-toolchain&env_id=ibm:yp:us-south)
 
-Fill out the required information for the GitHub and Delivery Pipeline services. Note that for successful deployment, the application's deployment assets should be included with the application code. Alternatively, modify the scripts in the Build stages of each pipeline in order to download deployment assets before the application is built and sent to subsequent stages. After creating an instance of the toolchain, click on the gear icon of each stage to modify the scripts of its jobs.
-
-For example, [this script](https://github.com/IBM/devex-skit-assets/blob/master/scripts/build_cr.sh) is used in the [Knative pipeline](https://github.com/IBM/devex-skit-monitor-toolchain/blob/master/.bluemix/pipeline_knative.yml) in the template to download assets before building the container image used during deployment. You can copy the contents of this script, paste them into the Knative pipeline's Build stage editor, and modify accordingly.
+Fill out the required information for the GitHub and Delivery Pipeline services. You can delete any pipelines that your app does not support.
 
 ### Headless 
 This toolchain template also supports headless creation using `curl` commands against the DevOps REST APIs. See the [Toolchain Creation Page documentation](https://github.com/open-toolchain/sdk/wiki/Toolchain-Creation-page-parameters) for details.
@@ -98,3 +97,11 @@ curl -X POST -H "Authorization: $IAM_TOKEN" -H "Accept: application/json" \
   -k https://cloud.ibm.com/devops/setup/deploy?env_id=ibm:yp:us-south
 echo "Toolchain $TOOLCHAIN_NAME created successfully!"
 ```
+
+### Deployment assets
+Note that for successful deployment, the application will need deployment assets for all supported pipelines (Cloud Foundry, Kubernetes with Helm, Kubernetes with Knative). These can be provided by following these steps:
+
+1. Create a fork of the [skit assets repository](https://github.com/IBM/devex-skit-assets).
+1. In your forked repository, add your deployment assets to the `deployment-assets` folder inside of a folder named the same as the starter kit based on its GitHub URL. Follow the pattern set by the existing deployment assets.
+1. After creating an instance of the toolchain as described above, go to the configuration page for the Build stage of each pipeline and change the `DEVX_SKIT_ASSETS_GIT` environment property to point to your forked repository. Save your changes.
+1. Run the pipeline(s) and check that all stages succeed.
