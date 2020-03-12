@@ -28,6 +28,7 @@ There are two ways of creating toolchain instances based on this template.
 
 ### DevOps Console
 To get started in the DevOps console, click this button:
+
 [![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https%3A%2F%2Fgithub.com%2FIBM%2Fdevex-skit-monitor-toolchain&env_id=ibm:yp:us-south)
 
 Fill out the required information for the GitHub and Delivery Pipeline services. You can delete any pipelines that your app does not support.
