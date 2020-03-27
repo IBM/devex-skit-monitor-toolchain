@@ -66,6 +66,7 @@ services:
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
           PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
           ENABLE_PD_ALERTS: '{{form.pipeline.parameters.enable-pd-alerts}}'
+          SKIT_REG_ENDPOINT: '{{form.pipeline.parameters.skit-reg-endpoint}}'
           SKIT_REG_AUTH_TOKEN: '{{form.pipeline.parameters.skit-reg-auth-token}}'
       label: Pipeline for deploying a starter kit app via Helm
       name: Skit-Pipeline-Helm
@@ -101,6 +102,7 @@ services:
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
           PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
           ENABLE_PD_ALERTS: '{{form.pipeline.parameters.enable-pd-alerts}}'
+          SKIT_REG_ENDPOINT: '{{form.pipeline.parameters.skit-reg-endpoint}}'
           SKIT_REG_AUTH_TOKEN: '{{form.pipeline.parameters.skit-reg-auth-token}}'
       label: Pipeline for deploying a starter kit app via Knative
       name: Skit-Pipeline-Knative
@@ -135,6 +137,7 @@ services:
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
           PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
           ENABLE_PD_ALERTS: '{{form.pipeline.parameters.enable-pd-alerts}}'
+          SKIT_REG_ENDPOINT: '{{form.pipeline.parameters.skit-reg-endpoint}}'
           SKIT_REG_AUTH_TOKEN: '{{form.pipeline.parameters.skit-reg-auth-token}}'
       label: Pipeline for deploying a starter kit app via Cloud Foundry
       name: Skit-Pipeline-CF
@@ -167,6 +170,7 @@ form:
       pagerduty-api-token: '{{pagerDutyAPIToken}}'
       pagerduty-service-name: '{{pagerDutySvcName}}'
       enable-pd-alerts: "$env.enablePDAlerts === 'true'"
+      skit-reg-endpoint: "{{skitRegEndpoint}}"
       skit-reg-auth-token: "{{skitRegAuthToken}}"
     schema:
       $ref: deploy.json

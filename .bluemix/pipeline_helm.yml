@@ -127,6 +127,9 @@ stages:
   - name: ENABLE_PD_ALERTS
     type: text
     value: "true"
+  - name: SKIT_REG_ENDPOINT
+    type: text
+    value: ${SKIT_REG_ENDPOINT}
   - name: SKIT_REG_AUTH_TOKEN
     type: secure
     value: ${SKIT_REG_AUTH_TOKEN}
