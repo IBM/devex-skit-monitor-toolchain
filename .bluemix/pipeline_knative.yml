@@ -166,6 +166,12 @@ stages:
   - name: ENABLE_PD_ALERTS
     type: text
     value: "true"
+  - name: SKIT_REG_ENDPOINT
+    type: text
+    value: ${SKIT_REG_ENDPOINT}
+  - name: SKIT_REG_AUTH_TOKEN
+    type: secure
+    value: ${SKIT_REG_AUTH_TOKEN}
   triggers:
   - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
     type: git
