@@ -85,29 +85,6 @@ stages:
       # alternatively, you can source it from online script:
       #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/build_unit_test.sh")
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
-  - name: Check vulnerabilities
-    type: tester
-    test_type: vulnerabilityadvisor
-    use_image_from_build_input: true
-    fail_stage: false
-    target:
-      region_id: ${REGISTRY_REGION_ID}
-      api_key: ${API_KEY}
-    script: |
-      #!/bin/bash
-      # uncomment to debug the script
-      # set -x
-
-      if [ "${ENABLED_KNATIVE}" == "false" ]; then
-          echo "Knative pipeline is disabled for this toolchain"
-          exit 0
-      fi
-
-      # copy the script below into your app code repo (e.g. ./scripts/check_vulnerabilities.sh) and 'source' it from your pipeline job
-      #    source ./scripts/check_vulnerabilities.sh
-      # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/check_vulnerabilities.sh")
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/check_vulnerabilities.sh")
   properties:
   - name: GIT_URL
     type: text
@@ -129,7 +106,7 @@ stages:
     value: IBM/devex-skit-assets
   - name: DEVX_SKIT_ASSETS_GIT_RELEASE
     type: text
-    value: v1.1.0
+    value: v1.1.2
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
@@ -181,6 +158,29 @@ stages:
       job: Build Container Image
       stage: Build
   jobs:
+  - name: Check vulnerabilities
+    type: tester
+    test_type: vulnerabilityadvisor
+    use_image_from_build_input: true
+    fail_stage: false
+    target:
+      region_id: ${REGISTRY_REGION_ID}
+      api_key: ${API_KEY}
+    script: |
+      #!/bin/bash
+      # uncomment to debug the script
+      # set -x
+
+      if [ "${ENABLED_KNATIVE}" == "false" ]; then
+          echo "Knative pipeline is disabled for this toolchain"
+          exit 0
+      fi
+
+      # copy the script below into your app code repo (e.g. ./scripts/check_vulnerabilities.sh) and 'source' it from your pipeline job
+      #    source ./scripts/check_vulnerabilities.sh
+      # alternatively, you can source it from online script:
+      #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/check_vulnerabilities.sh")
+      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/check_vulnerabilities.sh")
   - name: Deploy
     type: deployer
     deploy_type: kubernetes
