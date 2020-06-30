@@ -90,7 +90,7 @@ stages:
     value: IBM/devex-skit-assets
   - name: DEVX_SKIT_ASSETS_GIT_RELEASE
     type: text
-    value: v1.1.3
+    value: v1.1.4
   - name: DEVX_SKIT_ASSETS_GIT_URL
     type: text
     value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
@@ -106,12 +106,12 @@ stages:
   - name: ENABLED_HELM
     type: text
     value: ${ENABLED_HELM}
-  - name: SLACK_WEBHOOK
+  - name: DEVX_SLACK_CHANNEL_WEBHOOK
     type: secure
-    value: ${SLACK_WEBHOOK}
-  - name: OWNER_SLACK_CHANNEL
-    type: text
-    value: ${OWNER_SLACK_CHANNEL}
+    value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL_WEBHOOK
+    type: secure
+    value: ${OWNER_SLACK_CHANNEL_WEBHOOK}
   - name: PAGERDUTY_API_URL
     type: text
     value: ${PAGERDUTY_API_URL}

@@ -59,8 +59,8 @@ services:
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
           ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
-          SLACK_WEBHOOK: '{{form.pipeline.parameters.slack-webhook-url}}'
-          OWNER_SLACK_CHANNEL: '{{form.pipeline.parameters.slack-owners-channel}}'
+          DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
+          OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
@@ -95,8 +95,8 @@ services:
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
           ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
-          SLACK_WEBHOOK: '{{form.pipeline.parameters.slack-webhook-url}}'
-          OWNER_SLACK_CHANNEL: '{{form.pipeline.parameters.slack-owners-channel}}'
+          DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
+          OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
@@ -130,8 +130,8 @@ services:
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
           ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
-          SLACK_WEBHOOK: '{{form.pipeline.parameters.slack-webhook-url}}'
-          OWNER_SLACK_CHANNEL: '{{form.pipeline.parameters.slack-owners-channel}}'
+          DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
+          OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
           PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
           PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
@@ -165,8 +165,8 @@ form:
       enable-cf: "$env.enableCF === 'true'"
       enable-helm: "$env.enableHelm === 'true'"
       enable-knative: "$env.enableKnative === 'true'"
-      slack-webhook-url: '{{slackWebhookURL}}'
-      slack-owners-channel: '{{slackOwnersChannel}}'
+      devx-slack-channel-webhook: '{{devxSlackChannelWebhook}}'
+      owner-slack-channel-webhook: '{{ownersSlackChannelWebhook}}'
       pagerduty-api-token: '{{pagerDutyAPIToken}}'
       pagerduty-service-name: '{{pagerDutySvcName}}'
       enable-pd-alerts: "$env.enablePDAlerts === 'true'"
