@@ -155,8 +155,7 @@ form:
       registry-region: '{{registryRegion}}'
       registry-namespace: '{{registryNamespace}}'
       api-key: '{{apiKey}}'
-      skit-assets-release: >
-        $env.skitAssetsRelease ? "{{skitAssetsRelease}}" : "master"
+      skit-assets-release: '{{skitAssetsRelease}}'
       prod-region: '{{prodRegion}}'
       prod-resource-group: '{{prodResourceGroup}}'
       prod-cluster-name: '{{prodClusterName}}'
