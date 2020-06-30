@@ -38,7 +38,7 @@ deploy.enableKnativeDescription: "If checked, a pipeline to deploy to Kubernetes
 verify.slackIntegrationDescription: "**Configure Slack integration to send messages when the app succeeds or fails during certain stages in the pipeline.**"
 verify.devxSlackWebhookURLTitle: "DevX Slack Channel Webhook URL"
 verify.devxSlackWebhookURLDescription: "The webhook URL of the Slack app used to post messages to the devx-skit-monitoring channel."
-verify.ownersSlackWebhookURLTitle: "Owners Slack Channel Webhook URL"
+verify.ownersSlackWebhookURLTitle: "Skit Owner's Slack Channel Webhook URL"
 verify.ownersSlackWebhookURLDescription: "The webhook URL of the Slack app used to post messages to the skit owner's channel."
 
 verify.pagerDutyIntegrationDescription: "**Configure PagerDuty integration to trigger alerts when the app fails during certain stages in the pipeline.**"
