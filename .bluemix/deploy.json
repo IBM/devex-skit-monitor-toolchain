@@ -127,15 +127,15 @@
                 "params": ["prod-organization"]
             }
         },
-        "slack-webhook-url": {
+        "devx-slack-channel-webhook": {
             "description": {
-                "$ref": "#/messages/verify.slackWebhookURLDescription"
+                "$ref": "#/messages/verify.devxSlackWebhookURLDescription"
             },
             "type": "string"
         },
-        "slack-owners-channel": {
+        "owner-slack-channel-webhook": {
             "description": {
-                "$ref": "#/messages/verify.slackOwnersChannelDescription"
+                "$ref": "#/messages/verify.ownersSlackWebhookURLDescription"
             },
             "type": "string"
         },
@@ -204,17 +204,17 @@
             "type": "password",
             "readonly": false,
             "title": {
-                "$ref": "#/messages/verify.slackWebhookURLTitle"
+                "$ref": "#/messages/verify.devxSlackWebhookURLTitle"
             },
-            "key": "slack-webhook-url"
+            "key": "devx-slack-channel-webhook"
         },
         {
-            "type": "string",
+            "type": "password",
             "readonly": false,
             "title": {
-                "$ref": "#/messages/verify.slackOwnersChannelTitle"
+                "$ref": "#/messages/verify.ownersSlackWebhookURLTitle"
             },
-            "key": "slack-owners-channel"
+            "key": "owner-slack-channel-webhook"
         },
         {
             "type": "label",
