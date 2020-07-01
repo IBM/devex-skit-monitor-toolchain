@@ -47,7 +47,7 @@ services:
         env:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
-          DEVX_SKIT_ASSETS_GIT_BRANCH: '{{form.pipeline.parameters.skit-assets-branch}}'
+          DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -83,7 +83,7 @@ services:
         env:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
-          DEVX_SKIT_ASSETS_GIT_BRANCH: '{{form.pipeline.parameters.skit-assets-branch}}'
+          DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -119,7 +119,7 @@ services:
         env:
           GIT_REPO: skitgitrepo
           GIT_URL: ${GIT_URLS}
-          DEVX_SKIT_ASSETS_GIT_BRANCH: '{{form.pipeline.parameters.skit-assets-branch}}'
+          DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -155,8 +155,7 @@ form:
       registry-region: '{{registryRegion}}'
       registry-namespace: '{{registryNamespace}}'
       api-key: '{{apiKey}}'
-      skit-assets-branch: >
-        $env.skitAssetsBranch ? "{{skitAssetsBranch}}" : "master"
+      skit-assets-release: '{{skitAssetsRelease}}'
       prod-region: '{{prodRegion}}'
       prod-resource-group: '{{prodResourceGroup}}'
       prod-cluster-name: '{{prodClusterName}}'
