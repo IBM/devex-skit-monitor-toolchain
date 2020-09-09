@@ -281,6 +281,9 @@ stages:
   - name: SERVICE_FILE_UPDATE_INSTRUCTIONS_FILE
     type: text
     value: service_update_instructions.yaml
+  - name: APP_URL
+    type: text
+    value: ""
   triggers:
   - type: stage
 - name: Verification
