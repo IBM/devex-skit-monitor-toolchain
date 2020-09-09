@@ -103,5 +103,5 @@ Note that for successful deployment, the application will need deployment assets
 
 1. Create a fork of the [skit assets repository](https://github.com/IBM/devex-skit-assets).
 1. In your forked repository, add your deployment assets to the `deployment-assets` folder inside of a folder named the same as the starter kit based on its GitHub URL. Follow the pattern set by the existing deployment assets.
-1. After creating an instance of the toolchain as described above, go to the configuration page for the Build stage of each pipeline and change the `DEVX_SKIT_ASSETS_GIT` environment property to point to your forked repository. Save your changes.
+1. After creating an instance of the toolchain as described above, go to the configuration page for the Build stage of each pipeline and change the `DEVX_SKIT_ASSETS_GIT` environment property to point to your forked repository, and the `DEVX_SKIT_ASSETS_GIT_RELEASE` to the latest version (Ex. Use 'v1.0.0'). Save your changes.
 1. Run the pipeline(s) and check that all stages succeed.

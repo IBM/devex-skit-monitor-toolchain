@@ -320,6 +320,9 @@ stages:
   - name: CHART_ROOT
     type: text
     value: chart
+  - name: APP_URL
+    type: text
+    value: ""
   triggers:
   - type: stage
 - name: Verification
