@@ -158,29 +158,32 @@ stages:
           exit 0
       fi
 
-      function check_exit
-      {
-        rv=$?
-        if [ $rv != 0 ]; then
-            msg="Build Container Image Failed :spinning-siren:"
-            echo "${msg}"
-            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
-            #    source ./scripts/slack_message.sh
-            # alternatively, you can source it from online script:
-            #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
-            exit 1
-        else
-            exit 0
+      for i in {1..3}
+      do
+        echo "Beginning Build Container Image attempt $i"
+        set -e
+        EXIT_CODE=0
+        # copy the script below into your app code repo (e.g. ./scripts/containerize_build_container_img.sh) and 'source' it from your pipeline job
+        #    source ./scripts/containerize_build_container_img.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/containerize_build_container_img.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/containerize_build_container_img.sh") || EXIT_CODE=$?
+        if [ "${EXIT_CODE}" == "0" ]; then
+          echo "Build Container Image succeeded"
+          break
         fi
-      }
+      done
 
-      trap 'check_exit' EXIT
-      # copy the script below into your app code repo (e.g. ./scripts/containerize_build_container_img.sh) and 'source' it from your pipeline job
-      #    source ./scripts/containerize_build_container_img.sh
-      # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/containerize_build_container_img.sh")
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/containerize_build_container_img.sh")
+      if [ "${EXIT_CODE}" != "0" ]; then
+        msg="Build Container Image Failed :spinning-siren:"
+        echo "${msg}"
+        # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+        #    source ./scripts/slack_message.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+        exit 1
+      fi
     target:
       api_key: ${API_KEY}
       region_id: ${REGISTRY_REGION_ID}
@@ -241,29 +244,32 @@ stages:
           exit 0
       fi
 
-      function check_exit
-      {
-        rv=$?
-        if [ $rv != 0 ]; then
-            msg="Deploy Failed :spinning-siren:"
-            echo "${msg}"
-            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
-            #    source ./scripts/slack_message.sh
-            # alternatively, you can source it from online script:
-            #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
-            exit 1
-        else
-            exit 0
+      for i in {1..3}
+      do
+        echo "Beginning Deploy attempt $i"
+        set -e
+        EXIT_CODE=0
+        # copy the script below into your app code repo (e.g. ./scripts/deploy_helm.sh) and 'source' it from your pipeline job
+        #    source ./scripts/deploy_helm.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/deploy_helm.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_helm.sh") || EXIT_CODE=$?
+        if [ "${EXIT_CODE}" == "0" ]; then
+          echo "Deploy succeeded"
+          break
         fi
-      }
+      done
 
-      trap 'check_exit' EXIT
-      # copy the script below into your app code repo (e.g. ./scripts/deploy_helm.sh) and 'source' it from your pipeline job
-      #    source ./scripts/deploy_helm.sh
-      # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/deploy_helm.sh")
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_helm.sh")
+      if [ "${EXIT_CODE}" != "0" ]; then
+        msg="Deploy Failed :spinning-siren:"
+        echo "${msg}"
+        # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+        #    source ./scripts/slack_message.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+        exit 1
+      fi
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
@@ -282,29 +288,32 @@ stages:
           exit 0
       fi
 
-      function check_exit
-      {
-        rv=$?
-        if [ $rv != 0 ]; then
-            msg="Check Health Failed :spinning-siren:"
-            echo "${msg}"
-            # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
-            #    source ./scripts/slack_message.sh
-            # alternatively, you can source it from online script:
-            #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
-            exit 1
-        else
-            exit 0
+      for i in {1..3}
+      do
+        echo "Beginning Check Health attempt $i"
+        set -e
+        EXIT_CODE=0
+        # copy the script below into your app code repo (e.g. ./scripts/deploy_check_health.sh) and 'source' it from your pipeline job
+        #    source ./scripts/deploy_check_health.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/deploy_check_health.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_check_health.sh") || EXIT_CODE=$?
+        if [ "${EXIT_CODE}" == "0" ]; then
+          echo "Check Health succeeded"
+          break
         fi
-      }
+      done
 
-      trap 'check_exit' EXIT
-      # copy the script below into your app code repo (e.g. ./scripts/deploy_check_health.sh) and 'source' it from your pipeline job
-      #    source ./scripts/deploy_check_health.sh
-      # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/deploy_check_health.sh")
-      source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_check_health.sh")
+      if [ "${EXIT_CODE}" != "0" ]; then
+        msg="Check Health Failed :spinning-siren:"
+        echo "${msg}"
+        # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
+        #    source ./scripts/slack_message.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/slack_message.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
+        exit 1
+      fi
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
