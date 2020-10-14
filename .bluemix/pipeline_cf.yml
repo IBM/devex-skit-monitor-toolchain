@@ -35,19 +35,21 @@ stages:
       for i in {1..3}
       do
         echo "Beginning Build attempt $i"
-        trap 'check_exit' EXIT
+        set -e
+        EXIT_CODE=0
+        # trap 'check_exit' EXIT
         # copy the script below into your app code repo (e.g. ./scripts/deploy_cf.sh) and 'source' it from your pipeline job
         #    source ./scripts/deploy_cf.sh
         # alternatively, you can source it from online script:
         #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/build_cf.sh")
-        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cf.sh")
-        if [ "${PASSED}" == "true" ]; then
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cf.sh") || EXIT_CODE=$?
+        if [ "${EXIT_CODE}" == "0" ]; then
           echo "Build succeeded"
           exit 0
         fi
       done
       
-      if [ "${PASSED}" == "false" ]; then
+      if [ "${EXIT_CODE}" != "0" ]; then
         msg="Build Failed :spinning-siren:"
         echo "${msg}"
         # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
