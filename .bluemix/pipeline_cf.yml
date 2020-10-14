@@ -20,24 +20,11 @@ stages:
           exit 0
       fi
 
-      PASSED=false
-      function check_exit
-      {
-        rv=$?
-        if [ $rv != 0 ]; then
-          echo "Build attempt failed"
-          PASSED=false
-        else
-          PASSED=true
-        fi
-      }
-
       for i in {1..3}
       do
         echo "Beginning Build attempt $i"
         set -e
         EXIT_CODE=0
-        # trap 'check_exit' EXIT
         # copy the script below into your app code repo (e.g. ./scripts/deploy_cf.sh) and 'source' it from your pipeline job
         #    source ./scripts/deploy_cf.sh
         # alternatively, you can source it from online script:
@@ -134,22 +121,9 @@ stages:
           exit 0
       fi
 
-      PASSED=false
-      function check_exit
-      {
-        rv=$?
-        if [ $rv != 0 ]; then
-          echo "Deploy attempt failed"
-          PASSED=false
-        else
-          PASSED=true
-        fi
-      }
-
       for i in {1..3}
       do
         echo "Beginning Deploy attempt $i"
-        trap 'check_exit' EXIT
         set -e
         EXIT_CODE=0
         # copy the script below into your app code repo (e.g. ./scripts/deploy_cf.sh) and 'source' it from your pipeline job
