@@ -38,18 +38,20 @@ stages:
       do
         echo "Beginning Build Container Image attempt $i"
         trap 'check_exit' EXIT
+        set -e
+        EXIT_CODE=0
         # copy the script below into your app code repo (e.g. ./scripts/build_cr.sh) and 'source' it from your pipeline job
         #    source ./scripts/build_cr.sh
         # alternatively, you can source it from online script:
         #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/build_cr.sh")
-        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cr.sh")
-        if [ "${PASSED}" == "true" ]; then
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_cr.sh") || EXIT_CODE=$?
+        if [ "${EXIT_CODE}" == "0" ]; then
           echo "Build Container Image succeeded"
-          exit 0
+          break
         fi
       done
 
-      if [ "${PASSED}" == "false" ]; then
+      if [ "${EXIT_CODE}" != "0" ]; then
         msg="Build Container Image Failed :spinning-siren:"
         echo "${msg}"
         # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
@@ -225,18 +227,20 @@ stages:
       do
         echo "Beginning Deploy attempt $i"
         trap 'check_exit' EXIT
+        set -e
+        EXIT_CODE=0
         # copy the script below into your app code repo (e.g. ./scripts/deploy_knative.sh) and 'source' it from your pipeline job
         #    source ./scripts/deploy_knative.sh
         # alternatively, you can source it from online script:
         #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/deploy_knative.sh")
-        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_knative.sh")
-        if [ "${PASSED}" == "true" ]; then
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/deploy_knative.sh") || EXIT_CODE=$?
+        if [ "${EXIT_CODE}" == "0" ]; then
           echo "Deploy succeeded"
-          exit 0
+          break
         fi
       done
 
-      if [ "${PASSED}" == "false" ]; then
+      if [ "${EXIT_CODE}" != "0" ]; then
         msg="Deploy Failed :spinning-siren:"
         echo "${msg}"
         # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
@@ -281,18 +285,20 @@ stages:
       do
         echo "Beginning Check Health attempt $i"
         trap 'check_exit' EXIT
+        set -e
+        EXIT_CODE=0
         # copy the script below into your app code repo (e.g. ./scripts/test_health_knative.sh) and 'source' it from your pipeline job
         #    source ./scripts/test_health_knative.sh
         # alternatively, you can source it from online script:
         #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/test_health_knative.sh")
-        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/test_health_knative.sh")
-        if [ "${PASSED}" == "true" ]; then
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/test_health_knative.sh") || EXIT_CODE=$?
+        if [ "${EXIT_CODE}" == "0" ]; then
           echo "Check Health succeeded"
-          exit 0
+          break
         fi
       done
 
-      if [ "${PASSED}" == "false" ]; then
+      if [ "${EXIT_CODE}" != "0" ]; then
         msg="Check Health Failed :spinning-siren:"
         echo "${msg}"
         # copy the script below into your app code repo (e.g. ./scripts/slack_message.sh) and 'source' it from your pipeline job
