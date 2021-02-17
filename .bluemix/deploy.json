@@ -38,13 +38,6 @@
             "type": "boolean",
             "default": true
         },
-        "enable-knative": {
-            "description": {
-                "$ref": "#/messages/deploy.enableKnativeDescription"
-            },
-            "type": "boolean",
-            "default": true
-        },
         "registry-region": {
             "description": {
                 "$ref": "#/messages/deploy.registryRegionDescription"
@@ -177,14 +170,6 @@
                 "$ref": "#/messages/deploy.enableHelmTitle"
             },
             "key": "enable-helm"
-        },
-        {
-            "type": "boolean",
-            "default": true,
-            "title": {
-                "$ref": "#/messages/deploy.enableKnativeTitle"
-            },
-            "key": "enable-knative"
         },
         {
             "type": "password",
