@@ -12,7 +12,7 @@ This template provides integration with a public GitHub repository to track code
 The toolchain can connect to a public GitHub repository and monitor one of its branches for changes (by default, the master branch is selected). This integration can react to commits on the specified branch or on pull requests. After creating the toolchain instance using the template, modify the input of the `Build` stage in each pipeline to change the configuration.
 
 ### Continuous Delivery Pipelines
-Pipelines are provided to deploy to Cloud Foundry environments or Kubernetes clusters using Helm and/or Knative. Each pipeline contains common `Build` and `Deploy` stages as well as an additional `Verification` stage that verifies the app is functioning properly after deployment. This is accomplished by executing an `experience_test.sh` script contained in the app's repository which executes UI or service tests to ensure app endpoints are working as expected.
+Pipelines are provided to deploy to Cloud Foundry environments or Kubernetes clusters using Helm. Each pipeline contains common `Build` and `Deploy` stages as well as an additional `Verification` stage that verifies the app is functioning properly after deployment. This is accomplished by executing an `experience_test.sh` script contained in the app's repository which executes UI or service tests to ensure app endpoints are working as expected.
 
 Each stage has one or more jobs whose scripts define the actions that take place when the stage is running. The scripts in the template largely delegate to scripts found in the [starter kit assets repository](https://github.com/IBM/devex-skit-assets/tree/master/scripts), but they can be modified entirely or in part to meet the application's needs.
 
@@ -45,11 +45,10 @@ For example, the following script can be used to create an instance of the toolc
 SKIT_NAME=$1
 ENABLE_CF=$2
 ENABLE_HELM=$3
-ENABLE_KNATIVE=$4
-SLACK_WEBHOOK=$5
-OWNER_SLACK_CHANNEL=$6
-PAGERDUTY_API_TOKEN=$7
-PAGERDUTY_SVC_NAME=$8
+SLACK_WEBHOOK=$4
+OWNER_SLACK_CHANNEL=$5
+PAGERDUTY_API_TOKEN=$6
+PAGERDUTY_SVC_NAME=$7
 
 TEMPLATE_GIT_URL="https%3A%2F%2Fgithub.com%2FIBM%2Fdevex-skit-monitor-toolchain"
 TEMPLATE_GIT_BRANCH="master"
@@ -93,13 +92,13 @@ fi
 
 echo "Creating new toolchain $TOOLCHAIN_NAME..."
 curl -X POST -H "Authorization: $IAM_TOKEN" -H "Accept: application/json" \
-  -d "repository=$TEMPLATE_GIT_URL&branch=$TEMPLATE_GIT_BRANCH&autocreate=true&apiKey=$IAM_KEY&env_Id=ibm:yp:$IBM_CLOUD_REGION&resourceGroupId=$RESOURCE_GROUP_ID&toolchainName=$TOOLCHAIN_NAME&sourceRepoUrl=$SKIT_REPO_URL&skitAssetsBranch=$DEVX_SKIT_ASSETS_GIT_BRANCH&prodRegion=$PROD_REGION_ID&prodResourceGroup=$RESOURCE_GROUP&prodClusterName=$PROD_CLUSTER_NAME&prodClusterNamespace=$PROD_CLUSTER_NAMESPACE&prodOrganization=$ORG&prodSpace=$SPACE&registryRegion=ibm:yp:$CONTAINER_REGISTRY_REGION&registryNamespace=$CONTAINER_REGISTRY_NAMESPACE&enableCF=$ENABLE_CF&enableHelm=$ENABLE_HELM&enableKnative=$ENABLE_KNATIVE&slackWebhookURL=$SLACK_WEBHOOK&slackOwnersChannel=$OWNER_SLACK_CHANNEL&pagerDutyAPIToken=$PAGERDUTY_API_TOKEN&pagerDutySvcName=$PAGERDUTY_SVC_NAME&enablePDAlerts=$ENABLE_PD_ALERTS" \
+  -d "repository=$TEMPLATE_GIT_URL&branch=$TEMPLATE_GIT_BRANCH&autocreate=true&apiKey=$IAM_KEY&env_Id=ibm:yp:$IBM_CLOUD_REGION&resourceGroupId=$RESOURCE_GROUP_ID&toolchainName=$TOOLCHAIN_NAME&sourceRepoUrl=$SKIT_REPO_URL&skitAssetsBranch=$DEVX_SKIT_ASSETS_GIT_BRANCH&prodRegion=$PROD_REGION_ID&prodResourceGroup=$RESOURCE_GROUP&prodClusterName=$PROD_CLUSTER_NAME&prodClusterNamespace=$PROD_CLUSTER_NAMESPACE&prodOrganization=$ORG&prodSpace=$SPACE&registryRegion=ibm:yp:$CONTAINER_REGISTRY_REGION&registryNamespace=$CONTAINER_REGISTRY_NAMESPACE&enableCF=$ENABLE_CF&enableHelm=$ENABLE_HELM&slackWebhookURL=$SLACK_WEBHOOK&slackOwnersChannel=$OWNER_SLACK_CHANNEL&pagerDutyAPIToken=$PAGERDUTY_API_TOKEN&pagerDutySvcName=$PAGERDUTY_SVC_NAME&enablePDAlerts=$ENABLE_PD_ALERTS" \
   -k https://cloud.ibm.com/devops/setup/deploy?env_id=ibm:yp:us-south
 echo "Toolchain $TOOLCHAIN_NAME created successfully!"
 ```
 
 ### Deployment assets
-Note that for successful deployment, the application will need deployment assets for all supported pipelines (Cloud Foundry, Kubernetes with Helm, Kubernetes with Knative). These can be provided by following these steps:
+Note that for successful deployment, the application will need deployment assets for all supported pipelines (Cloud Foundry, Kubernetes with Helm). These can be provided by following these steps:
 
 1. Create a fork of the [skit assets repository](https://github.com/IBM/devex-skit-assets).
 1. In your forked repository, add your deployment assets to the `deployment-assets` folder inside of a folder named the same as the starter kit based on its GitHub URL. Follow the pattern set by the existing deployment assets.

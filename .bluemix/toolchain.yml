@@ -8,7 +8,6 @@ template:
   - skitgitrepo
   - pipeline_cf
   - pipeline_helm
-  - pipeline_knative
 toolchain:
   name: >
     $env.toolchainName ? '{{toolchainName}}' :
@@ -58,7 +57,6 @@ services:
           PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
-          ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
           DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
           OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
@@ -74,42 +72,6 @@ services:
       - skitgitrepo
       type: classic
       ui-pipeline: true
-    service_id: pipeline
-  pipeline_knative:
-    parameters:
-      configuration:
-        content:
-          $text: pipeline_knative.yml
-        env:
-          GIT_REPO: skitgitrepo
-          GIT_URL: ${GIT_URLS}
-          DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
-          APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
-          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
-          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
-          API_KEY: '{{form.pipeline.parameters.api-key}}'
-          PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
-          PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
-          PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
-          PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
-          ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
-          ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
-          ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
-          DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
-          OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
-          PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
-          PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
-          PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
-          PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
-          ENABLE_PD_ALERTS: '{{form.pipeline.parameters.enable-pd-alerts}}'
-          SKIT_REG_ENDPOINT: '{{form.pipeline.parameters.skit-reg-endpoint}}'
-          SKIT_REG_AUTH_TOKEN: '{{form.pipeline.parameters.skit-reg-auth-token}}'
-      label: Pipeline for deploying a starter kit app via Knative
-      name: Skit-Pipeline-Knative
-      services:
-      - skitgitrepo
-      type: classic
-      ui_pipeline: true
     service_id: pipeline
   pipeline_cf:
     parameters:
@@ -129,7 +91,6 @@ services:
           PROD_ORG_NAME: '{{form.pipeline.parameters.prod-organization}}'
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
-          ENABLED_KNATIVE: '{{form.pipeline.parameters.enable-knative}}'
           DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
           OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
@@ -163,7 +124,6 @@ form:
       prod-organization: '{{prodOrganization}}'
       enable-cf: "$env.enableCF === 'true'"
       enable-helm: "$env.enableHelm === 'true'"
-      enable-knative: "$env.enableKnative === 'true'"
       devx-slack-channel-webhook: '{{devxSlackChannelWebhook}}'
       owner-slack-channel-webhook: '{{ownersSlackChannelWebhook}}'
       pagerduty-api-token: '{{pagerDutyAPIToken}}'
