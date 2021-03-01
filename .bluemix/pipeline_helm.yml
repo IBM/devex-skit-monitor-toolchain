@@ -1,9 +1,73 @@
+properties:
+- name: IBM_CLOUD_API_KEY
+  type: secure
+- name: HELM_VERSION
+  type: text
+  value: ""
 stages:
 - name: Build
   inputs:
   - branch: master
     type: git
     service: skitgitrepo
+  properties:
+  - name: GIT_URL
+    type: text
+    value: ${GIT_URL}
+  - name: IMAGE_NAME
+    type: text
+    value: ${APP_NAME}-monitored-helm
+  - name: DEVX_SKIT_ASSETS_GIT
+    type: text
+    value: IBM/devex-skit-assets
+  - name: DEVX_SKIT_ASSETS_GIT_RELEASE
+    type: text
+    value: ${DEVX_SKIT_ASSETS_GIT_RELEASE}
+  - name: DEVX_SKIT_ASSETS_GIT_URL
+    type: text
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
+  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+    type: text
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}/raw/${DEVX_SKIT_ASSETS_GIT_RELEASE}
+  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+    type: text
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_RELEASE}
+  - name: DEPLOY_TARGET
+    type: text
+    value: helm
+  - name: ENABLED_HELM
+    type: text
+    value: ${ENABLED_HELM}
+  - name: DEVX_SLACK_CHANNEL_WEBHOOK
+    type: secure
+    value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
+  - name: OWNER_SLACK_CHANNEL_WEBHOOK
+    type: secure
+    value: ${OWNER_SLACK_CHANNEL_WEBHOOK}
+  - name: PAGERDUTY_API_URL
+    type: text
+    value: ${PAGERDUTY_API_URL}
+  - name: PAGERDUTY_EVENTS_API_URL
+    type: text
+    value: ${PAGERDUTY_EVENTS_API_URL}
+  - name: PAGERDUTY_API_TOKEN
+    type: secure
+    value: ${PAGERDUTY_API_TOKEN}
+  - name: PAGERDUTY_SVC_NAME
+    type: secure
+    value: ${PAGERDUTY_SVC_NAME}
+  - name: ENABLE_PD_ALERTS
+    type: text
+    value: "true"
+  - name: SKIT_REG_ENDPOINT
+    type: text
+    value: ${SKIT_REG_ENDPOINT}
+  - name: SKIT_REG_AUTH_TOKEN
+    type: secure
+    value: ${SKIT_REG_AUTH_TOKEN}
+  triggers:
+  - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
+    type: git
   jobs:
   - name: Fetch code
     type: builder
@@ -78,69 +142,26 @@ stages:
       # alternatively, you can source it from online script:
       #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/build_unit_test.sh")
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/build_unit_test.sh")
-  properties:
-  - name: GIT_URL
-    type: text
-    value: ${GIT_URL}
-  - name: IMAGE_NAME
-    type: text
-    value: ${APP_NAME}-monitored-helm
-  - name: DEVX_SKIT_ASSETS_GIT
-    type: text
-    value: IBM/devex-skit-assets
-  - name: DEVX_SKIT_ASSETS_GIT_RELEASE
-    type: text
-    value: ${DEVX_SKIT_ASSETS_GIT_RELEASE}
-  - name: DEVX_SKIT_ASSETS_GIT_URL
-    type: text
-    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
-  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
-    type: text
-    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}/raw/${DEVX_SKIT_ASSETS_GIT_RELEASE}
-  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
-    type: text
-    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_RELEASE}
-  - name: DEPLOY_TARGET
-    type: text
-    value: helm
-  - name: ENABLED_HELM
-    type: text
-    value: ${ENABLED_HELM}
-  - name: DEVX_SLACK_CHANNEL_WEBHOOK
-    type: secure
-    value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
-  - name: OWNER_SLACK_CHANNEL_WEBHOOK
-    type: secure
-    value: ${OWNER_SLACK_CHANNEL_WEBHOOK}
-  - name: PAGERDUTY_API_URL
-    type: text
-    value: ${PAGERDUTY_API_URL}
-  - name: PAGERDUTY_EVENTS_API_URL
-    type: text
-    value: ${PAGERDUTY_EVENTS_API_URL}
-  - name: PAGERDUTY_API_TOKEN
-    type: secure
-    value: ${PAGERDUTY_API_TOKEN}
-  - name: PAGERDUTY_SVC_NAME
-    type: secure
-    value: ${PAGERDUTY_SVC_NAME}
-  - name: ENABLE_PD_ALERTS
-    type: text
-    value: "true"
-  - name: SKIT_REG_ENDPOINT
-    type: text
-    value: ${SKIT_REG_ENDPOINT}
-  - name: SKIT_REG_AUTH_TOKEN
-    type: secure
-    value: ${SKIT_REG_AUTH_TOKEN}
-  triggers:
-  - events: '{"push":true,"pull_request":false,"pull_request_closed":false}'
-    type: git
 - name: Containerize
   inputs:
   - type: job
     job: Fetch code
     stage: Build
+  properties:
+  - name: buildprops
+    type: file
+    value: build.properties
+  - name: DOCKER_ROOT
+    type: text
+    value: .
+  - name: DOCKER_FILE
+    type: text
+    value: Dockerfile
+  - name: PIPELINE_IMAGE_URL
+    type: text
+    value: ""
+  triggers:
+  - type: stage
   jobs:
   - name: Build container image
     type: builder
@@ -148,7 +169,10 @@ stages:
     build_type: cr
     image_name: ${IMAGE_NAME}
     namespace: devex_namespace
-    script: |
+    target:
+      api_key: ${API_KEY}
+      region_id: ${REGISTRY_REGION_ID}
+    script: |-
       #!/bin/bash
       # uncomment to debug the script
       # set -x
@@ -184,9 +208,6 @@ stages:
         source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
         exit 1
       fi
-    target:
-      api_key: ${API_KEY}
-      region_id: ${REGISTRY_REGION_ID}
   - name: Check vulnerabilities
     type: tester
     test_type: vulnerabilityadvisor
@@ -210,31 +231,36 @@ stages:
       # alternatively, you can source it from online script:
       #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/check_vulnerabilities.sh")
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/check_vulnerabilities.sh")
-  properties:
-  - name: buildprops
-    type: file
-    value: build.properties
-  - name: DOCKER_ROOT
-    type: text
-    value: .
-  - name: DOCKER_FILE
-    type: text
-    value: Dockerfile
-  - name: PIPELINE_IMAGE_URL
-    type: text
-    value: ""
-  triggers:
-  - type: stage
 - name: Deploy
   inputs:
   - type: job
     job: Build container image
     stage: Containerize
+  properties:
+  - name: buildProperties
+    type: file
+    value: build.properties
+  - name: CLUSTER_NAMESPACE
+    type: text
+    value: default
+  - name: CHART_ROOT
+    type: text
+    value: chart
+  - name: APP_URL
+    type: text
+    value: ""
+  triggers:
+  - type: stage
   jobs:
   - name: Deploy with Helm
     type: deployer
     deploy_type: kubernetes
-    script: |
+    target:
+      region_id: ${PROD_REGION_ID}
+      resource_group: ${PROD_RESOURCE_GROUP}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${PROD_CLUSTER_NAME}
+    script: |-
       #!/bin/bash
       # uncomment to debug the script
       # set -x
@@ -270,15 +296,15 @@ stages:
         source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
         exit 1
       fi
+  - name: Check health
+    type: deployer
+    deploy_type: kubernetes
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
       api_key: ${API_KEY}
       kubernetes_cluster: ${PROD_CLUSTER_NAME}
-  - name: Check health
-    type: deployer
-    deploy_type: kubernetes
-    script: |
+    script: |-
       #!/bin/bash
       # uncomment to debug the script
       # set -x
@@ -314,35 +340,44 @@ stages:
         source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "${msg}"
         exit 1
       fi
+  - name: Export App URL
+    type: builder
+    curatedDockerImage: default
+    artifact_dir: ''
+    build_type: shell
+    script: |-
+      #!/bin/bash
+      # your script here
+      set -x
+
+      # If already defined build.properties from prior build job, append to it.
+      cp build.properties $ARCHIVE_DIR/ || :
+
+      # APP_URL is used by experience test
+      echo "APP_URL=${APP_URL}" >> $ARCHIVE_DIR/build.properties
+      echo "File 'build.properties' created for passing env variables to subsequent pipeline jobs:"
+      cat $ARCHIVE_DIR/build.properties | grep -v -i password
+- name: Verification
+  inputs:
+  - type: job
+    stage: Deploy
+    job: Export App URL
+    dir_name: null
+  properties:
+  - name: buildProperties
+    type: file
+    value: build.properties
+  triggers:
+  - type: stage
+  jobs:
+  - name: Experience Test
+    type: deployer
+    deploy_type: kubernetes
     target:
       region_id: ${PROD_REGION_ID}
       resource_group: ${PROD_RESOURCE_GROUP}
       api_key: ${API_KEY}
       kubernetes_cluster: ${PROD_CLUSTER_NAME}
-  properties:
-  - name: buildProperties
-    type: file
-    value: build.properties
-  - name: CLUSTER_NAMESPACE
-    type: text
-    value: default
-  - name: CHART_ROOT
-    type: text
-    value: chart
-  - name: APP_URL
-    type: text
-    value: ""
-  triggers:
-  - type: stage
-- name: Verification
-  inputs:
-  - type: job
-    job: Build container image
-    stage: Containerize
-  jobs:
-  - name: Experience Test
-    type: deployer
-    deploy_type: kubernetes
     script: |-
       #!/bin/bash
       # uncomment to debug the script
@@ -358,20 +393,3 @@ stages:
       # alternatively, you can source it from online script:
       #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
       source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
-    target:
-      region_id: ${PROD_REGION_ID}
-      resource_group: ${PROD_RESOURCE_GROUP}
-      api_key: ${API_KEY}
-      kubernetes_cluster: ${PROD_CLUSTER_NAME}
-  properties:
-  - name: buildProperties
-    type: file
-    value: build.properties
-  triggers:
-  - type: stage
-properties:
-- name: IBM_CLOUD_API_KEY
-  type: secure
-- name: HELM_VERSION
-  type: text
-  value: ""
