@@ -73,7 +73,7 @@ services:
             }
         env:
           GIT_REPO: skitgitrepo
-          GIT_URL: ${GIT_URLS}
+          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
           DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
@@ -133,7 +133,7 @@ services:
             }
         env:
           GIT_REPO: skitgitrepo
-          GIT_URL: ${GIT_URLS}
+          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
           DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
