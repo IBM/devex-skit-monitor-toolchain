@@ -72,10 +72,10 @@ properties:
     type: text
   - name: DEVX_SLACK_CHANNEL_WEBHOOK
     value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
-    type: text
+    type: secure
   - name: OWNER_SLACK_CHANNEL_WEBHOOK
     value: ${OWNER_SLACK_CHANNEL_WEBHOOK}
-    type: text
+    type: secure
   - name: PAGERDUTY_API_URL
     value: ${PAGERDUTY_API_URL}
     type: text
@@ -84,10 +84,10 @@ properties:
     type: text
   - name: PAGERDUTY_API_TOKEN
     value: ${PAGERDUTY_API_TOKEN}
-    type: text
+    type: secure
   - name: PAGERDUTY_SVC_NAME
     value: ${PAGERDUTY_SVC_NAME}
-    type: text
+    type: secure
   - name: ENABLE_PD_ALERTS
     value: ${ENABLE_PD_ALERTS}
     type: text
@@ -96,7 +96,7 @@ properties:
     type: text
   - name: SKIT_REG_AUTH_TOKEN
     value: ${SKIT_REG_AUTH_TOKEN}
-    type: text
+    type: secure
   - name: DEPLOY_TARGET
     value: cf
     type: text
