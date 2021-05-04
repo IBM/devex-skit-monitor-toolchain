@@ -30,7 +30,7 @@ triggers:
 properties:
   - type: text
     name: cf-app
-    value: ${APP_NAME}
+    value: ${APP_NAME}-mon-cf
   - type: text
     name: cf-org
     value: ${PROD_ORG_NAME}

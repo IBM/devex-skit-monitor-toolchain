@@ -23,7 +23,7 @@ services:
         dashboard_url: '{{services.skitgitrepo.parameters.source_repo_url}}/issues'
         display_name: Issues
         enabled: false
-        label: '{{services.repo.parameters.repo_name}} Issues'
+        label: '{{services.skitgitrepo.parameters.repo_name}} Issues'
         readme: false
         tags:
         - think
@@ -41,14 +41,12 @@ services:
 
   pipeline-repo:
     service_id: >
-      $env.pipeline_type === 'tekton' ? $env.source_provider ? $env.source_provider : 'githubconsolidated' : ''
+      $env.pipeline_type === 'tekton' ? 'githubconsolidated' : ''
     parameters:
-      repo_name: >
-        $env.toolchainName ? '{{toolchainName}}-pipeline' : 'skit-codemonitor-helm-toolchain-{{timestamp}}'
       repo_url: >
         $env.repository
       source_repo_url: "https://github.com/IBM/devex-skit-monitor-toolchain"
-      type: $env.type || 'clone'
+      type: "link"
       has_issues: false
       enable_traceability: false
       kind: ['pipeline']

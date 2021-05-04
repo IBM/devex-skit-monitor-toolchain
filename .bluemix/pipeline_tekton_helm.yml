@@ -64,7 +64,7 @@ properties:
     value: ${APP_NAME}
     type: text
   - name: app-name
-    value: ${APP_NAME}
+    value: ${APP_NAME}-mon-helm
     type: text
   - name: dev-cluster-namespace
     value: ${PROD_CLUSTER_NAMESPACE}
