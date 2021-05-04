@@ -61,10 +61,13 @@ properties:
     value: ${REGISTRY_NAMESPACE}
     type: text
   - name: image-name
-    value: ${APP_NAME}
+    value: ${APP_NAME}-monitored-helm
     type: text
   - name: app-name
-    value: ${APP_NAME}-mon-helm
+    value: ${APP_NAME}
+    type: text
+  - name: APP_NAME
+    value: ${APP_NAME}
     type: text
   - name: dev-cluster-namespace
     value: ${PROD_CLUSTER_NAMESPACE}
@@ -77,4 +80,46 @@ properties:
     type: text
   - name: dev-resource-group
     value: ${PROD_RESOURCE_GROUP}
+    type: text
+  - name: GIT_URL
+    value: ${GIT_URL}
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_RELEASE
+    value: ${DEVX_SKIT_ASSETS_GIT_RELEASE}
+    type: text
+  - name: ENABLED_CF
+    value: ${ENABLED_CF}
+    type: text
+  - name: ENABLED_HELM
+    value: ${ENABLED_HELM}
+    type: text
+  - name: DEVX_SLACK_CHANNEL_WEBHOOK
+    value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
+    type: text
+  - name: OWNER_SLACK_CHANNEL_WEBHOOK
+    value: ${OWNER_SLACK_CHANNEL_WEBHOOK}
+    type: text
+  - name: PAGERDUTY_API_URL
+    value: ${PAGERDUTY_API_URL}
+    type: text
+  - name: PAGERDUTY_EVENTS_API_URL
+    value: ${PAGERDUTY_EVENTS_API_URL}
+    type: text
+  - name: PAGERDUTY_API_TOKEN
+    value: ${PAGERDUTY_API_TOKEN}
+    type: text
+  - name: PAGERDUTY_SVC_NAME
+    value: ${PAGERDUTY_SVC_NAME}
+    type: text
+  - name: ENABLE_PD_ALERTS
+    value: ${ENABLE_PD_ALERTS}
+    type: text
+  - name: SKIT_REG_ENDPOINT
+    value: ${SKIT_REG_ENDPOINT}
+    type: text
+  - name: SKIT_REG_AUTH_TOKEN
+    value: ${SKIT_REG_AUTH_TOKEN}
+    type: text
+  - name: DEPLOY_TARGET
+    value: helm
     type: text
