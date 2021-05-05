@@ -131,11 +131,11 @@ spec:
         - name: app-name
           value: $(params.app-name)
         - name: git-repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: $(tasks.skit-git-clone.results.git-repository)
         - name: git-branch
-          value: $(tasks.git-clone.results.git-branch)
+          value: $(tasks.skit-git-clone.results.git-branch)
         - name: git-commit
-          value: $(tasks.git-clone.results.git-commit)
+          value: $(tasks.skit-git-clone.results.git-commit)
     - name: docker-lint
       runAfter: [skit-git-clone, assets-git-clone]
       taskRef:
@@ -233,8 +233,8 @@ spec:
             # Minting image tag using format: BUILD_NUMBER-BRANCH-COMMIT_ID-TIMESTAMP
             # e.g. 3-master-50da6912-20181123114435
             # (use build number as first segment to allow image tag as a patch release name according to semantic versioning)
-            GIT_BRANCH="$(tasks.git-clone.results.git-branch)"
-            GIT_COMMIT="$(tasks.git-clone.results.git-commit)"
+            GIT_BRANCH="$(tasks.skit-git-clone.results.git-branch)"
+            GIT_COMMIT="$(tasks.skit-git-clone.results.git-commit)"
             TIMESTAMP=$( date -u "+%Y%m%d%H%M%S")
             IMAGE_TAG=${TIMESTAMP}
             if [ ! -z "${GIT_COMMIT}" ]; then
@@ -366,7 +366,7 @@ spec:
         - name: environment-label
           value: "$(params.cluster-name) namespace:$(params.dev-cluster-namespace)"
         - name: git-inputs
-          value: "$(tasks.git-clone.results.git-repository),$(tasks.git-clone.results.git-commit),$(tasks.git-clone.results.git-branch)"
+          value: "$(tasks.skit-git-clone.results.git-repository),$(tasks.skit-git-clone.results.git-commit),$(tasks.skit-git-clone.results.git-branch)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: check-health
