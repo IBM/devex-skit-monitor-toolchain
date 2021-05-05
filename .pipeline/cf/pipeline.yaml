@@ -86,7 +86,7 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: build
-      runAfter: [clone-task]
+      runAfter: [skit-git-clone, assets-git-clone]
       workspaces:
         - name: output
           workspace: pipeline-ws
