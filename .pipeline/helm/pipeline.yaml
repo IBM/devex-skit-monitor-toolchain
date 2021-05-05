@@ -315,8 +315,6 @@ spec:
           value: $(params.dev-resource-group)
         - name: cluster-name
           value: $(params.cluster-name)
-        - name: helm-chart-path
-          value: /artifacts/devex-skit-assets/deployment-assets/$(params.app-name)/helm
         - name: setup-script
           value: |
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"

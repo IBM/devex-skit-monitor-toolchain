@@ -101,7 +101,7 @@ spec:
           - name: fail-on-scanned-issues
             value: $(params.fail-on-scanned-issues)
           - name: helm-chart-path
-            value: $(params.helm-chart-path)
+            value: /artifacts/devex-skit-assets/deployment-assets/$(params.app-name)/helm
           - name: dev-region
             value: $(params.dev-region)
           - name: dev-resource-group
