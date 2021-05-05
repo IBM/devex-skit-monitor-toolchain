@@ -20,7 +20,7 @@ triggers:
   - type: git
     name: commit-push
     eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
-    service: ${SAMPLE_REPO}
+    service: ${GIT_REPO}
     branch: master
     events: { "push": true }
   - type: manual
