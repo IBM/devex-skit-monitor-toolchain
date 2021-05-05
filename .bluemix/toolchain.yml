@@ -189,6 +189,25 @@ services:
         $env.pipeline_type === 'tekton' ? 'tekton': 'classic'
       ui_pipeline: true
     service_id: pipeline
+  
+  slack-devx-skit-monitoring:
+    service_id: slack
+    api_token: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
+    channel_name: 'devx-skit-monitoring'
+    team_url: 'ibm-cloudplatform'
+
+  slack-owner-skit-monitoring:
+    service_id: >
+      if ( '{{form.pipeline.parameters.owner-slack-channel-webhook}}' != '{{form.pipeline.parameters.devx-slack-channel-webhook}}' ) {
+        'slack';
+      } else {
+        '';
+      }
+    api_token: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
+    channel_name: >
+      $env.ownerSlackChannel ? '{{ownerSlackChannel}}' : 'devx-skit-monitoring'
+    team_url: 'ibm-cloudplatform'
+
 form:
   pipeline:
     parameters:
