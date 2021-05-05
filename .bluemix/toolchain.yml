@@ -62,6 +62,16 @@ services:
       has_issues: false
       enable_traceability: false
       kind: ['pipeline']
+  
+  skit-assets-repo:
+    service_id: >
+      $env.pipeline_type === 'tekton' ? 'githubconsolidated' : ''
+    parameters:
+      repo_url: "https://github.com/IBM/devex-skit-assets"
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
 
   pipeline_helm:
     parameters:
