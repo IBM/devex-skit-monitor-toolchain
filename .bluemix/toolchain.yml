@@ -123,7 +123,7 @@ services:
               'grit-or-gitlab-commit';
             }
       label: Pipeline for deploying a starter kit app via Helm
-      name: Skit-Pipeline-Helm
+      name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-helm'
       services:
       - skitgitrepo
       type: >
@@ -182,7 +182,7 @@ services:
               'grit-or-gitlab-commit';
             }
       label: Pipeline for deploying a starter kit app via Cloud Foundry
-      name: Skit-Pipeline-CF
+      name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-cf'
       services:
       - skitgitrepo
       type: >
