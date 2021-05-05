@@ -84,8 +84,20 @@ properties:
   - name: GIT_URL
     value: ${GIT_URL}
     type: text
+  - name: DEVX_SKIT_ASSETS_GIT
+    value: IBM/devex-skit-assets
+    type: text
   - name: DEVX_SKIT_ASSETS_GIT_RELEASE
     value: ${DEVX_SKIT_ASSETS_GIT_RELEASE}
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_URL
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}/raw/${DEVX_SKIT_ASSETS_GIT_RELEASE}
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_RELEASE}
     type: text
   - name: ENABLED_CF
     value: ${ENABLED_CF}
