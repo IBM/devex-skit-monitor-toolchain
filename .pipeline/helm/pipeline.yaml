@@ -137,7 +137,7 @@ spec:
         - name: git-commit
           value: $(tasks.git-clone.results.git-commit)
     - name: docker-lint
-      runAfter: [git-clone]
+      runAfter: [skit-git-clone, assets-git-clone]
       taskRef:
         name: linter-docker-lint
       params:
@@ -153,7 +153,7 @@ spec:
         - name: workspace
           workspace: pipeline-ws
     - name: build
-      runAfter: [git-clone]
+      runAfter: [skit-git-clone, assets-git-clone]
       taskRef:
         name: toolchain-build
       params:
