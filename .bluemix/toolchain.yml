@@ -198,11 +198,7 @@ services:
 
   slack-owner-skit-monitoring:
     service_id: >
-      if ( '{{form.pipeline.parameters.owner-slack-channel-webhook}}' != '{{form.pipeline.parameters.devx-slack-channel-webhook}}' ) {
-        'slack';
-      } else {
-        '';
-      }
+      '{{form.pipeline.parameters.owner-slack-channel-webhook}}' != '{{form.pipeline.parameters.devx-slack-channel-webhook}}' ? 'slack' : ''
     api_token: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
     channel_name: >
       $env.ownerSlackChannel ? '{{ownerSlackChannel}}' : 'devx-skit-monitoring'
