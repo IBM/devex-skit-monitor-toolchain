@@ -146,7 +146,7 @@ spec:
         name: linter-docker-lint
       params:
         - name: path-to-dockerfile
-          value: $(params.path-to-dockerfile)
+          value: /artifacts/$(params.app-name)/Dockerfile
         - name: dockerfile
           value: $(params.dockerfile)
         - name: fail-on-lint-errors
@@ -229,7 +229,7 @@ spec:
         - name: path-to-context
           value: $(params.path-to-context)
         - name: path-to-dockerfile
-          value: $(params.path-to-dockerfile)
+          value: /artifacts/$(params.app-name)/Dockerfile
         - name: dockerfile
           value: $(params.dockerfile)
         - name: docker-commands
@@ -315,6 +315,8 @@ spec:
           value: $(params.dev-resource-group)
         - name: cluster-name
           value: $(params.cluster-name)
+        - name: helm-chart-path
+          value: /artifacts/devex-skit-assets/deployment-assets/$(params.app-name)/helm
         - name: setup-script
           value: |
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
