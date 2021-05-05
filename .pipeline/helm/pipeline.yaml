@@ -54,6 +54,8 @@ spec:
     - name: helm-upgrade-extra-args
       description: complementary argument for the helm upgrade command
       default: ""
+    - name: devex-skit-assets-git-release
+      description: the release version of the devex-skit-assets repo to use
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -68,7 +70,7 @@ spec:
           value: '. as $toolchain | ["$(params.repository)"] | if .[0]=="" then $toolchain | .services[] | select(.toolchain_binding.name=="skitgitrepo") | .dashboard_url else .[0] end'
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: git-clone
+    - name: skit-git-clone
       taskRef:
         name: git-clone-repo
       params:
@@ -80,6 +82,25 @@ spec:
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: branch
           value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: assets-git-clone
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: repository
+          value: https://github.com/IBM/devex-skit-assets
+        - name: branch
+          value: $(params.devex-skit-assets-git-release)
         - name: revision
           value: $(params.revision)
         - name: pipeline-debug

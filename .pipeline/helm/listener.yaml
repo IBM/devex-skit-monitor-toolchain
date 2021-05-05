@@ -50,6 +50,8 @@ spec:
     - name: helm-upgrade-extra-args
       description: complementary argument for the helm upgrade command. Can be used to specify an additional values file
       default: ""
+    - name: DEVX_SKIT_ASSETS_GIT_RELEASE
+      description: the release version of the devex-skit-assets repo to use
     - name: pipeline-debug
       default: "0"
   resourcetemplates:
@@ -110,6 +112,8 @@ spec:
             value: $(params.dev-cluster-namespace)
           - name: helm-upgrade-extra-args
             value: $(params.helm-upgrade-extra-args)
+          - name: devex-skit-assets-git-release
+            value: $(params.DEVX_SKIT_ASSETS_GIT_RELEASE)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
