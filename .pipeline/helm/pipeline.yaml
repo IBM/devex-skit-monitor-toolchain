@@ -146,7 +146,7 @@ spec:
         name: linter-docker-lint
       params:
         - name: path-to-dockerfile
-          value: /artifacts/$(params.app-name)/Dockerfile
+          value: /artifacts/$(params.app-name)
         - name: dockerfile
           value: $(params.dockerfile)
         - name: fail-on-lint-errors
