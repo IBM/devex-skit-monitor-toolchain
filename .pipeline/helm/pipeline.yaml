@@ -106,7 +106,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
-        - name: output
+        - name: assets
           workspace: pipeline-ws
     - name: extract-doi-enablement
       taskRef:
