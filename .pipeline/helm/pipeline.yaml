@@ -229,7 +229,7 @@ spec:
         - name: path-to-context
           value: $(params.path-to-context)
         - name: path-to-dockerfile
-          value: /artifacts/$(params.app-name)/Dockerfile
+          value: /artifacts/$(params.app-name)
         - name: dockerfile
           value: $(params.dockerfile)
         - name: docker-commands
