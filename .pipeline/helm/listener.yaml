@@ -92,8 +92,6 @@ spec:
             value: $(params.registry-namespace)
           - name: image-name
             value: $(params.image-name)
-          - name: helm-chart-name
-            value: $(params.HELM_CHART_NAME)
           - name: path-to-context
             value: $(params.path-to-context)
           - name: path-to-dockerfile
@@ -105,7 +103,7 @@ spec:
           - name: fail-on-scanned-issues
             value: $(params.fail-on-scanned-issues)
           - name: helm-chart-path
-            value: /artifacts/devex-skit-assets/deployment-assets/$(params.app-name)/helm/$(params.helm-chart-name)
+            value: /artifacts/devex-skit-assets/deployment-assets/$(params.app-name)/helm/$(params.HELM_CHART_NAME)
           - name: dev-region
             value: $(params.dev-region)
           - name: dev-resource-group
