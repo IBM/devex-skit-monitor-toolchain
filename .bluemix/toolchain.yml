@@ -192,7 +192,7 @@ services:
   
   slack-devx-skit-monitoring:
     service_id: slack
-    api_token: '$env.devxSlackChannelWebhook'
+    api_token: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
     channel_name: 'devx-skit-monitoring'
     team_url: 'ibm-cloudplatform'
 
