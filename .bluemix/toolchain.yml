@@ -196,13 +196,13 @@ services:
     channel_name: 'devx-skit-monitoring'
     team_url: 'ibm-cloudplatform'
 
-  slack-owner-skit-monitoring:
-    service_id: >
-      '{{ownersSlackChannelWebhook}}' != '{{devxSlackChannelWebhook}}' ? 'slack' : ''
-    api_token: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
-    channel_name: >
-      $env.ownerSlackChannel ? '{{ownerSlackChannel}}' : 'devx-skit-monitoring'
-    team_url: 'ibm-cloudplatform'
+  # slack-owner-skit-monitoring:
+  #   service_id: >
+  #     '{{ownersSlackChannelWebhook}}' != '{{devxSlackChannelWebhook}}' ? 'slack' : ''
+  #   api_token: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
+  #   channel_name: >
+  #     $env.ownerSlackChannel ? '{{ownerSlackChannel}}' : 'devx-skit-monitoring'
+  #   team_url: 'ibm-cloudplatform'
 
 form:
   pipeline:
