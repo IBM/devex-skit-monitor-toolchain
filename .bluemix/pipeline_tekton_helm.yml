@@ -138,3 +138,5 @@ properties:
   - name: DEPLOY_TARGET
     value: helm
     type: text
+settings:
+  slackEnabled: true

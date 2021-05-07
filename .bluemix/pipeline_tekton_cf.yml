@@ -112,3 +112,5 @@ properties:
   - name: DEPLOY_TARGET
     value: cf
     type: text
+settings:
+  slackEnabled: true
