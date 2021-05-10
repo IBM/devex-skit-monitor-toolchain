@@ -73,6 +73,16 @@ spec:
       description: the skit registration endpoint URL
     - name: SKIT_REG_AUTH_TOKEN
       description: the skit registration authentication token
+    - name: DEVX_SLACK_CHANNEL_WEBHOOK
+      description: devx skit monitoring slack channel webhook
+    - name: OWNER_SLACK_CHANNEL_WEBHOOK
+      description: skit monitoring slack channel webhook for the skit owner (if different from devx)
+    - name: ENABLE_PD_ALERTS
+      description: whether or not to enable PagerDuty alerts
+    - name: PAGERDUTY_EVENTS_API_URL
+      description: PagerDuty Events API URL
+    - name: PAGERDUTY_API_TOKEN
+      description: PagerDuty API token
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -149,6 +159,16 @@ spec:
             value: $(params.SKIT_REG_ENDPOINT)
           - name: skit-reg-auth-token
             value: $(params.SKIT_REG_AUTH_TOKEN)
+          - name: devx-slack-channel-webhook
+            value: $(params.DEVX_SLACK_CHANNEL_WEBHOOK)
+          - name: owner-slack-channel-webhook
+            value: $(params.OWNER_SLACK_CHANNEL_WEBHOOK)
+          - name: enable-pd-alerts
+            value: $(params.ENABLE_PD_ALERTS)
+          - name: pagerduty-events-api-url
+            value: $(params.PAGERDUTY_EVENTS_API_URL)
+          - name: pagerduty-api-token
+            value: $(params.PAGERDUTY_API_TOKEN)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
