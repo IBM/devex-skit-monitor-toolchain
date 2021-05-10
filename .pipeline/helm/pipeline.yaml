@@ -440,6 +440,7 @@ spec:
           value: |
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
             export APP_NAME="$(params.deploy-target)"
+            export ENABLED_HELM="$(params.enabled-helm)"
             export DEVX_SKIT_ASSETS_GIT="$(params.devex-skit-assets-git)"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW="$(params.devex-skit-assets-git-url-raw)"
             export SKIT_REG_ENDPOINT="$(params.skit-reg-endpoint)"

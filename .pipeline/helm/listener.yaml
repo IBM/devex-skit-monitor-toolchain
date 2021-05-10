@@ -83,6 +83,9 @@ spec:
       description: PagerDuty Events API URL
     - name: PAGERDUTY_API_TOKEN
       description: PagerDuty API token
+    - name: ENABLED_HELM
+      description: whether or not this pipeline is enabled
+      default: "true"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -169,6 +172,8 @@ spec:
             value: $(params.PAGERDUTY_EVENTS_API_URL)
           - name: pagerduty-api-token
             value: $(params.PAGERDUTY_API_TOKEN)
+          - name: enabled-helm
+            value: $(params.ENABLED_HELM)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
