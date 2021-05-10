@@ -455,6 +455,8 @@ spec:
             export ENABLE_PD_ALERTS="$(params.enable-pd-alerts)"
             export PAGERDUTY_EVENTS_API_URL="$(params.pagerduty-events-api-url)"
             export PAGERDUTY_API_TOKEN="$(params.pagerduty-api-token)"
+        - name: image-url
+          value: "ibmcom/pipeline-base-image:2.12"
         - name: script
           value: |
             #!/bin/bash
