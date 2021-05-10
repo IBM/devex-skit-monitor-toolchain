@@ -54,6 +54,8 @@ spec:
     - name: helm-upgrade-extra-args
       description: complementary argument for the helm upgrade command
       default: ""
+    - name: git-url
+      description: the repo URL of the skit repo
     - name: devex-skit-assets-git
       description: the org and repo containing skit assets
     - name: devex-skit-assets-git-release
@@ -73,6 +75,7 @@ spec:
     - name: enable-pd-alerts
     - name: pagerduty-events-api-url
     - name: pagerduty-api-token
+    - name: enabled-helm
     - name: pipeline-debug
       default: "0"
   workspaces:
