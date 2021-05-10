@@ -66,9 +66,6 @@ properties:
   - name: app-name
     value: ${APP_NAME}
     type: text
-  - name: APP_NAME
-    value: ${APP_NAME}
-    type: text
   - name: dev-cluster-namespace
     value: ${PROD_CLUSTER_NAMESPACE}
     type: text

@@ -54,8 +54,20 @@ spec:
     - name: helm-upgrade-extra-args
       description: complementary argument for the helm upgrade command
       default: ""
+    - name: devex-skit-assets-git
+      description: the org and repo containing skit assets
     - name: devex-skit-assets-git-release
       description: the release version of the devex-skit-assets repo to use
+    - name: devex-skit-assets-git-url
+      description: the repo URL to the skit assets repo
+    - name: devex-skit-assets-git-url-code
+      description: the repo URL used to download skit asset releases
+    - name: devex-skit-assets-git-url-raw
+      description: the repo URL used to download skit asset raw code
+    - name: deploy-target
+      description: the deployment target
+    - name: skit-reg-endpoint
+    - name: skit-reg-auth-token
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -389,6 +401,8 @@ spec:
         - name: setup-script
           value: |
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
+        - name: APP_NAME
+          value: $(params.app-name)
         - name: script
           value: |
             # uncomment to debug the script
@@ -401,6 +415,53 @@ spec:
             # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh
             # Check liveness and readiness probes to confirm application is healthy
             source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: experience-test
+      taskRef:
+        name: iks-deploy-to-kubernetes
+      runAfter: [deploy-to-kubernetes]
+      params:
+        - name: shuttle-properties-file
+          value: "build.properties"
+        - name: cluster-region
+          value: $(params.dev-region)
+        - name: resource-group
+          value: $(params.dev-resource-group)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: setup-script
+          value: |
+            export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: DEPLOY_TARGET
+          value: $(params.deploy-target)
+        - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: SKIT_REG_ENDPOINT
+          value: $(params.skit-reg-endpoint)
+        - name: SKIT_REG_AUTH_TOKEN
+          value: $(params.skit-reg-auth-token)
+        - name: script
+          value: |
+            #!/bin/bash
+            # uncomment to debug the script
+            # set -x
+
+            if [ "${ENABLED_HELM}" == "false" ]; then
+                echo "CF pipeline is disabled for this toolchain"
+                exit 0
+            fi
+
+            # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
+            #    source ./scripts/verification_experience_test.sh
+            # alternatively, you can source it from online script:
+            #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
