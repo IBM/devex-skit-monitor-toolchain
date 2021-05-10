@@ -434,16 +434,10 @@ spec:
         - name: setup-script
           value: |
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
-        - name: APP_NAME
-          value: $(params.app-name)
-        - name: DEPLOY_TARGET
-          value: $(params.deploy-target)
-        - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
-          value: $(params.devex-skit-assets-git-url-raw)
-        - name: SKIT_REG_ENDPOINT
-          value: $(params.skit-reg-endpoint)
-        - name: SKIT_REG_AUTH_TOKEN
-          value: $(params.skit-reg-auth-token)
+            export APP_NAME="$(params.deploy-target)"
+            export DEVX_SKIT_ASSETS_GIT_URL_RAW="$(params.devex-skit-assets-git-url-raw)"
+            export SKIT_REG_ENDPOINT="$(params.skit-reg-endpoint)"
+            export SKIT_REG_AUTH_TOKEN="$(params.skit-reg-auth-token)"
         - name: script
           value: |
             #!/bin/bash
