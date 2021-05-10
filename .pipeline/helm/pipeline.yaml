@@ -401,8 +401,6 @@ spec:
         - name: setup-script
           value: |
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
-        - name: APP_NAME
-          value: $(params.app-name)
         - name: script
           value: |
             # uncomment to debug the script
