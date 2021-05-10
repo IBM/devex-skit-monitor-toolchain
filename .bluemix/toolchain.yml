@@ -202,17 +202,17 @@ services:
       pipeline_success: true
       pipeline_fail: true
 
-  # slack-owner-skit-monitoring:
-  #   service_id: >
-  #     '{{ownersSlackChannelWebhook}}' != '{{devxSlackChannelWebhook}}' ? 'slack' : ''
-  #   parameters:
-    #   api_token: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
-    #   channel_name: >
-    #     $env.ownerSlackChannel ? '{{ownerSlackChannel}}' : 'devx-skit-monitoring'
-    #   team_url: 'ibm-cloudplatform'
-    #   pipeline_start: false
-    #   pipeline_success: true
-    #   pipeline_fail: true
+  slack-owner-skit-monitoring:
+    service_id: >
+      '{{ownersSlackChannelWebhook}}' != '{{devxSlackChannelWebhook}}' ? 'slack' : ''
+    parameters:
+      api_token: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
+      channel_name: >
+        $env.ownerSlackChannel ? '{{ownerSlackChannel}}' : 'devx-skit-monitoring'
+      team_url: 'ibm-cloudplatform'
+      pipeline_start: false
+      pipeline_success: true
+      pipeline_fail: true
 
 form:
   pipeline:
