@@ -151,11 +151,11 @@ spec:
           - name: devex-skit-assets-git-release
             value: $(params.DEVX_SKIT_ASSETS_GIT_RELEASE)
           - name: devex-skit-assets-git-url
-            value: https://github.com/${params.DEVX_SKIT_ASSETS_GIT}.git
+            value: $(params.DEVX_SKIT_ASSETS_GIT_URL)
           - name: devex-skit-assets-git-url-code
-            value: https://codeload.github.com/${params.DEVX_SKIT_ASSETS_GIT}/tar.gz/$(params.DEVX_SKIT_ASSETS_GIT_RELEASE)
+            value: $(params.DEVX_SKIT_ASSETS_GIT_URL_CODE)
           - name: devex-skit-assets-git-url-raw
-            value: https://github.com/${params.DEVX_SKIT_ASSETS_GIT}/raw/$(params.DEVX_SKIT_ASSETS_GIT_RELEASE)
+            value: $(params.DEVX_SKIT_ASSETS_GIT_URL_RAW)
           - name: deploy-target
             value: $(params.DEPLOY_TARGET)
           - name: skit-reg-endpoint
