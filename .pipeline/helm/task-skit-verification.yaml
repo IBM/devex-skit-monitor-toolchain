@@ -1,0 +1,123 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: skit-verification
+spec:
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: shuttle-properties-file
+      description: name of the properties file that contain properties to include in the environment for the script execution
+      default: ""
+    - name: app-name
+      description: name of the skit
+    - name: git-url
+      description: repo URL of the skit
+    - name: enabled-helm
+      description: whether this task is enabled
+      default: "true"
+    - name: devex-skit-assets-git
+      description: the org and repo name where skit assets are stored
+      default: "IBM/devex-skit-assets"
+    - name: devex-skit-assets-git-url-raw
+      description: URL where skit asset releases are downloaded
+    - name: skit-reg-endpoint
+      description: the skit registration endpoint URL
+      default: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/111efe7d-5858-4d5b-a5b4-cdd1d591ff78/run/eefc7f6c-0cbe-4eab-848f-2dfa44bd31de"
+    - name: skit-reg-auth-token
+      description: authentication token for executing skit registration
+    - name: devx-slack-channel-webhook
+      description: webhook for the slack DevX skit monitoring channel
+    - name: owner-slack-channel-webhook
+      description: webhook for the slack skit owner's monitoring channel (if different)
+    - name: enable-pd-alerts
+      description: whether to enable PagerDuty alerts
+    - name: pagerduty-events-api-url
+      description: the PagerDuty Events API endpoint URL
+    - name: pagerduty-api-token
+      description: PagerDuty API token
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      default: "0"
+  results:
+    - name: app-url
+      description: The running application's URL (obtained from APP_URL variable set by the executed script)
+  workspaces:
+    - name: artifacts
+      description: A workspace
+      mountPath: /artifacts
+  steps:
+    - name: experience-test
+      image: ibmcom/pipeline-base-image:2.12
+      workingDir: /artifacts
+      env:
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: ENABLED_HELM
+          value: $(params.enabled-helm)
+        - name: GIT_URL
+          value: $(params.git-url)
+        - name: SHUTTLE_PROPERTIES_FILE
+          value: $(params.shuttle-properties-file)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: DEVX_SKIT_ASSETS_GIT
+          value: $(params.devex-skit-assets-git)
+        - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: SKIT_REG_ENDPOINT
+          value: $(params.skit-reg-endpoint)
+        - name: SKIT_REG_AUTH_TOKEN
+          value: $(params.skit-reg-auth-token)
+        - name: DEVX_SLACK_CHANNEL_WEBHOOK
+          value: $(params.devx-slack-channel-webhook)
+        - name: OWNER_SLACK_CHANNEL_WEBHOOK
+          value: $(params.owner-slack-channel-webhook)
+        - name: ENABLE_PD_ALERTS
+          value: $(params.enable-pd-alerts)
+        - name: PAGERDUTY_EVENTS_API_URL
+          value: $(params.pagerduty-events-api-url)
+        - name: PAGERDUTY_API_TOKEN
+          value: $(params.pagerduty-api-token)
+      script: |
+        #!/bin/bash
+        # uncomment to debug the script
+        # set -x
+
+        if [ "${ENABLED_HELM}" == "false" ]; then
+            echo "CF pipeline is disabled for this toolchain"
+            exit 0
+        fi
+
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          source $SHUTTLE_PROPERTIES_FILE
+          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
+        fi
+
+        # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
+        #    source ./scripts/verification_experience_test.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
+
+        # Record task results
+        echo -n "$APP_URL" > $(results.app-url.path)
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /artifacts/_toolchain.json
+          subPath: toolchain.json
+          name: cd-config-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

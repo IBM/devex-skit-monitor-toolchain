@@ -426,53 +426,37 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: experience-test
+    - name: skit-verification
       taskRef:
-        name: iks-deploy-to-kubernetes
+        name: skit-verification
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file
           value: "build.properties"
-        - name: cluster-region
-          value: $(params.dev-region)
-        - name: resource-group
-          value: $(params.dev-resource-group)
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: setup-script
-          value: |
-            export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
-            export APP_NAME="$(params.deploy-target)"
-            export GIT_URL="$(params.git-url)"
-            export ENABLED_HELM="$(params.enabled-helm)"
-            export DEVX_SKIT_ASSETS_GIT="$(params.devex-skit-assets-git)"
-            export DEVX_SKIT_ASSETS_GIT_URL_RAW="$(params.devex-skit-assets-git-url-raw)"
-            export SKIT_REG_ENDPOINT="$(params.skit-reg-endpoint)"
-            export SKIT_REG_AUTH_TOKEN="$(params.skit-reg-auth-token)"
-
-            export DEVX_SLACK_CHANNEL_WEBHOOK="$(params.devx-slack-channel-webhook)"
-            export OWNER_SLACK_CHANNEL_WEBHOOK="$(params.owner-slack-channel-webhook)"
-            export ENABLE_PD_ALERTS="$(params.enable-pd-alerts)"
-            export PAGERDUTY_EVENTS_API_URL="$(params.pagerduty-events-api-url)"
-            export PAGERDUTY_API_TOKEN="$(params.pagerduty-api-token)"
-        - name: image-url
-          value: "ibmcom/pipeline-base-image:2.12"
-        - name: script
-          value: |
-            #!/bin/bash
-            # uncomment to debug the script
-            # set -x
-
-            if [ "${ENABLED_HELM}" == "false" ]; then
-                echo "CF pipeline is disabled for this toolchain"
-                exit 0
-            fi
-
-            # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
-            #    source ./scripts/verification_experience_test.sh
-            # alternatively, you can source it from online script:
-            #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
+        - name: app-name
+          value: $(params.app-name)
+        - name: git-url
+          value: $(params.git-url)
+        - name: enabled-helm
+          value: $(params.enabled-helm)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: skit-reg-endpoint
+          value: $(params.skit-reg-endpoint)
+        - name: skit-reg-auth-token
+          value: $(params.skit-reg-auth-token)
+        - name: devx-slack-channel-webhook
+          value: $(params.devx-slack-channel-webhook)
+        - name: owner-slack-channel-webhook
+          value: $(params.owner-slack-channel-webhook)
+        - name: enable-pd-alerts
+          value: $(params.enable-pd-alerts)
+        - name: pagerduty-events-api-url
+          value: $(params.pagerduty-events-api-url)
+        - name: pagerduty-api-token
+          value: $(params.pagerduty-api-token)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
