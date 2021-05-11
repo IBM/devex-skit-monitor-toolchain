@@ -87,7 +87,7 @@ spec:
         # set -x
 
         if [ "${ENABLED_HELM}" == "false" ]; then
-            echo "CF pipeline is disabled for this toolchain"
+            echo "Helm pipeline is disabled for this toolchain"
             exit 0
         fi
 
