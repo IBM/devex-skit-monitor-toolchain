@@ -441,6 +441,8 @@ spec:
           value: $(params.enabled-helm)
         - name: devex-skit-assets-git
           value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
         - name: devex-skit-assets-git-url-raw
           value: $(params.devex-skit-assets-git-url-raw)
         - name: skit-reg-endpoint
