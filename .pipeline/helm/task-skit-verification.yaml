@@ -21,6 +21,8 @@ spec:
     - name: devex-skit-assets-git
       description: the org and repo name where skit assets are stored
       default: "IBM/devex-skit-assets"
+    - name: devex-skit-assets-git-release
+      description: the release branch for skit assets
     - name: devex-skit-assets-git-url-raw
       description: URL where skit asset releases are downloaded
     - name: skit-reg-endpoint
@@ -65,6 +67,8 @@ spec:
           value: $(params.pipeline-debug)
         - name: DEVX_SKIT_ASSETS_GIT
           value: $(params.devex-skit-assets-git)
+        - name: DEVX_SKIT_ASSETS_GIT_RELEASE
+          value: $(params.devex-skit-assets-git-release)
         - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
           value: $(params.devex-skit-assets-git-url-raw)
         - name: SKIT_REG_ENDPOINT
@@ -103,6 +107,9 @@ spec:
           source $SHUTTLE_PROPERTIES_FILE
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
+
+        # temporary fix
+        DEVX_SKIT_ASSETS_GIT_URL_RAW="https://github.com/${DEVX_SKIT_ASSETS_GIT}/raw/${DEVX_SKIT_ASSETS_GIT_RELEASE}"
 
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh
