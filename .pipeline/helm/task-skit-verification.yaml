@@ -81,10 +81,18 @@ spec:
           value: $(params.pagerduty-events-api-url)
         - name: PAGERDUTY_API_TOKEN
           value: $(params.pagerduty-api-token)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
       script: |
         #!/bin/bash
-        # uncomment to debug the script
-        # set -x
+        set -e -o pipefail
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+        fi
 
         if [ "${ENABLED_HELM}" == "false" ]; then
             echo "Helm pipeline is disabled for this toolchain"
