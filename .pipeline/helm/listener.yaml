@@ -13,6 +13,8 @@ spec:
     - name: revision
       description: the git revision/commit for the git repo
       default: ""
+    - name: apikey
+      description: IBM Cloud API key
     - name: app-name
       description: application name
     - name: fail-on-lint-errors
@@ -112,6 +114,8 @@ spec:
             value: $(params.branch)
           - name: revision
             value: $(params.revision)
+          - name: api-key
+            value: $(params.apikey)
           - name: app-name
             value: $(params.app-name)
           - name: fail-on-lint-errors

@@ -14,12 +14,8 @@ spec:
     - name: revision
       description: the git revision/commit for the git repo
       default: ""
-    - name: fail-on-lint-errors
-      description: force failure of task when docker lint errors are found
-      default: "true"
-    - name: fail-on-scanned-issues
-      description: force failure of task when vulnerability advisor scan issues are found
-      default: "true"
+    - name: api-key
+      description: IBM Cloud API key
     - name: path-to-context
       default: "."
     - name: path-to-dockerfile
@@ -433,6 +429,8 @@ spec:
       params:
         - name: shuttle-properties-file
           value: "build.properties"
+        - name: api-key
+          value: $(params.api-key)
         - name: app-name
           value: $(params.app-name)
         - name: git-url
