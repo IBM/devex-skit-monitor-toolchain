@@ -10,15 +10,15 @@ inputs:
     path: tasks/skit-verification
   - type: git
     service: ${TEKTON_CATALOG_REPO}
-    branch: ${TEKTON_CATALOG_REPO_BRANCH}
+    branch: master
     path: git
   - type: git
     service: ${TEKTON_CATALOG_REPO}
-    branch: ${TEKTON_CATALOG_REPO_BRANCH}
+    branch: master
     path: cloudfoundry
   - type: git
     service: ${TEKTON_CATALOG_REPO}
-    branch: ${TEKTON_CATALOG_REPO_BRANCH}
+    branch: master
     path: toolchain
 triggers:
   - type: git
