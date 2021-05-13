@@ -159,6 +159,7 @@ spec:
                 env
                 trap env EXIT
                 set -x
+                cat $SHUTTLE_PROPERTIES_FILE
             fi
 
             MANIFEST_FILE=/artifacts/devex-skit-assets/deployment-assets/${SKIT_NAME}/cf/manifest.yaml
