@@ -139,7 +139,7 @@ properties:
   - name: pipeline-debug
     type: single_select
     value:
-      "0": false
-      "1": true
+      "0": true
+      "1": false
 settings:
   slackEnabled: true
