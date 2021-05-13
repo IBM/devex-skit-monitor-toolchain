@@ -91,8 +91,36 @@ spec:
             value: $(params.cf-space)
           - name: cf-app
             value: $(params.cf-app)
+          - name: git-url
+            value: $(params.GIT_URL)
+          - name: devex-skit-assets-git
+            value: $(params.DEVX_SKIT_ASSETS_GIT)
           - name: devex-skit-assets-git-release
             value: $(params.DEVX_SKIT_ASSETS_GIT_RELEASE)
+          - name: devex-skit-assets-git-url
+            value: $(params.DEVX_SKIT_ASSETS_GIT_URL)
+          - name: devex-skit-assets-git-url-code
+            value: $(params.DEVX_SKIT_ASSETS_GIT_URL_CODE)
+          - name: devex-skit-assets-git-url-raw
+            value: $(params.DEVX_SKIT_ASSETS_GIT_URL_RAW)
+          - name: deploy-target
+            value: $(params.DEPLOY_TARGET)
+          - name: skit-reg-endpoint
+            value: $(params.SKIT_REG_ENDPOINT)
+          - name: skit-reg-auth-token
+            value: $(params.SKIT_REG_AUTH_TOKEN)
+          - name: devx-slack-channel-webhook
+            value: $(params.DEVX_SLACK_CHANNEL_WEBHOOK)
+          - name: owner-slack-channel-webhook
+            value: $(params.OWNER_SLACK_CHANNEL_WEBHOOK)
+          - name: enable-pd-alerts
+            value: $(params.ENABLE_PD_ALERTS)
+          - name: pagerduty-events-api-url
+            value: $(params.PAGERDUTY_EVENTS_API_URL)
+          - name: pagerduty-api-token
+            value: $(params.PAGERDUTY_API_TOKEN)
+          - name: enabled-cf
+            value: $(params.ENABLED_CF)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
           - name: ibmcloud-api
