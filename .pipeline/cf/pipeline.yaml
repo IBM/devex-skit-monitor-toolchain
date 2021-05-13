@@ -87,6 +87,8 @@ spec:
         - name: properties-file
           # no use of properties-file
           value: ""
+        - name: directory-name
+          value: ""
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -106,6 +108,8 @@ spec:
           value: $(params.devex-skit-assets-git-release)
         - name: revision
           value: $(params.revision)
+        - name: directory-name
+          value: ""
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
