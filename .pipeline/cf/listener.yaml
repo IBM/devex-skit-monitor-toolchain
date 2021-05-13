@@ -91,6 +91,8 @@ spec:
             value: $(params.cf-space)
           - name: cf-app
             value: $(params.cf-app)
+          - name: api-key
+            value: $(params.apikey)
           - name: git-url
             value: $(params.GIT_URL)
           - name: devex-skit-assets-git
