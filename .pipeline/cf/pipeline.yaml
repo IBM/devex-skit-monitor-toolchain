@@ -147,7 +147,7 @@ spec:
         - name: cf-app
           value: $(params.cf-app)
         - name: setup-script
-          script: |
+          value: |
             export SKIT_NAME=(${CF_APP#"-monitored-cf"})
         - name: cf-commands
           value: |
