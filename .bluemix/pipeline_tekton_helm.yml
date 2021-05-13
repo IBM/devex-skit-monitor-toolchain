@@ -82,7 +82,7 @@ properties:
     value: ${GIT_URL}
     type: text
   - name: DEVX_SKIT_ASSETS_GIT
-    value: IBM/devex-skit-assets
+    value: ${DEVX_SKIT_ASSETS_GIT}
     type: text
   - name: DEVX_SKIT_ASSETS_GIT_RELEASE
     value: ${DEVX_SKIT_ASSETS_GIT_RELEASE}

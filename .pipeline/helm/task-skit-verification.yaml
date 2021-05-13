@@ -108,9 +108,6 @@ spec:
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
 
-        # temporary fix
-        DEVX_SKIT_ASSETS_GIT_URL_RAW="https://github.com/${DEVX_SKIT_ASSETS_GIT}/raw/${DEVX_SKIT_ASSETS_GIT_RELEASE}"
-
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh
         # alternatively, you can source it from online script:
