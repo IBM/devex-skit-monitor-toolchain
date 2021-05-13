@@ -85,8 +85,7 @@ spec:
         - name: revision
           value: $(params.revision)
         - name: properties-file
-          # no use of properties-file
-          value: ""
+          value: "build.properties"
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -108,6 +107,8 @@ spec:
           value: $(params.devex-skit-assets-git-release)
         - name: revision
           value: $(params.revision)
+        - name: properties-file
+          value: ""
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -149,6 +150,10 @@ spec:
         - name: setup-script
           value: |
             export SKIT_NAME=${CF_APP%"-monitored-cf"}
+            export SKIT_DIR=/artifacts/${SKIT_NAME}
+            export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
+            export DEVX_SKIT_ASSETS_GIT_URL_RAW=$(params.devex-skit-assets-git-url-raw)
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/copy_assets.sh")
         - name: cf-commands
           value: |
             #!/bin/bash
@@ -162,10 +167,7 @@ spec:
                 cat $SHUTTLE_PROPERTIES_FILE
             fi
 
-            MANIFEST_FILE=/artifacts/devex-skit-assets/deployment-assets/${SKIT_NAME}/cf/manifest.yaml
-            mv $MANIFEST_FILE /artifacts/$SKIT_NAME
-
-            cd /artifacts/$SKIT_NAME
+            cd $SKIT_DIR
             # Push app
             if ! cf app "$CF_APP"; then  
               cf push "$CF_APP" -f ./manifest.yaml

@@ -353,6 +353,12 @@ spec:
             export IMAGE_TAG=$IMAGE_TAGS
             # Keep it in build.properties shuttle file
             echo "IMAGE_TAG=$IMAGE_TAGS" >> build.properties
+
+            export SKIT_NAME="$(params.app-name)"
+            export SKIT_DIR=/artifacts/${SKIT_NAME}
+            export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
+            export DEVX_SKIT_ASSETS_GIT_URL_RAW="$(params.devex-skit-assets-git-url-raw)"
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/copy_assets.sh")
         - name: script
           value: |
             # uncomment to debug the script
