@@ -201,7 +201,7 @@ spec:
     - name: skit-verification
       taskRef:
         name: skit-verification
-      runAfter: [deploy-to-kubernetes, check-health]
+      runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
           value: "build.properties"
