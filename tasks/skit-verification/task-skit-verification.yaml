@@ -109,12 +109,12 @@ spec:
             set -x
         fi
 
-        if [ "${DEPLOY_TARGET}" == "helm" && "${ENABLED_HELM}" == "false" ]; then
+        if [ "${DEPLOY_TARGET}" == "helm" ] && [ "${ENABLED_HELM}" == "false" ]; then
             echo "Helm pipeline is disabled for this toolchain"
             exit 0
         fi
 
-        if [ "${DEPLOY_TARGET}" == "cf" && "${ENABLED_CF}" == "false" ]; then
+        if [ "${DEPLOY_TARGET}" == "cf" ] && [ "${ENABLED_CF}" == "false" ]; then
             echo "CF pipeline is disabled for this toolchain"
             exit 0
         fi
