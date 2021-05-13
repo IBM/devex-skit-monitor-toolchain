@@ -164,6 +164,7 @@ spec:
             MANIFEST_FILE=/artifacts/devex-skit-assets/deployment-assets/${SKIT_NAME}/cf/manifest.yaml
             mv $MANIFEST_FILE /artifacts/$SKIT_NAME
 
+            cd /artifacts/$SKIT_NAME
             # Push app
             if ! cf app "$CF_APP"; then  
               cf push "$CF_APP" -f ./manifest.yaml
