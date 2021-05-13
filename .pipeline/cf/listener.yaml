@@ -15,11 +15,44 @@ spec:
       default: ""
     - name: region
       default: ""
+    - name: apikey
+      description: IBM Cloud API key
     - name: cf-org
     - name: cf-space
     - name: cf-app
+    - name: GIT_URL
+      description: the URL to the skit repo
+    - name: DEVX_SKIT_ASSETS_GIT
+      description: the org and repo containing skit assets
+      default: "IBM/devex-skit-assets"
     - name: DEVX_SKIT_ASSETS_GIT_RELEASE
       description: the release version of the devex-skit-assets repo to use
+    - name: DEVX_SKIT_ASSETS_GIT_URL
+      description: the repo URL to the skit assets repo
+    - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+      description: the repo URL used to download skit asset releases
+    - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+      description: the repo URL used to download skit asset raw code
+    - name: DEPLOY_TARGET
+      description: the deployment target
+      default: "cf"
+    - name: SKIT_REG_ENDPOINT
+      description: the skit registration endpoint URL
+    - name: SKIT_REG_AUTH_TOKEN
+      description: the skit registration authentication token
+    - name: DEVX_SLACK_CHANNEL_WEBHOOK
+      description: devx skit monitoring slack channel webhook
+    - name: OWNER_SLACK_CHANNEL_WEBHOOK
+      description: skit monitoring slack channel webhook for the skit owner (if different from devx)
+    - name: ENABLE_PD_ALERTS
+      description: whether or not to enable PagerDuty alerts
+    - name: PAGERDUTY_EVENTS_API_URL
+      description: PagerDuty Events API URL
+    - name: PAGERDUTY_API_TOKEN
+      description: PagerDuty API token
+    - name: ENABLED_CF
+      description: whether or not this pipeline is enabled
+      default: "true"
     - name: pipeline-debug
       default: "0"
     - name: ibmcloud-api

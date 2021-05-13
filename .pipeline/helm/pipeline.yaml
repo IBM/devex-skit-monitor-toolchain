@@ -78,6 +78,8 @@ spec:
     - name: pagerduty-events-api-url
     - name: pagerduty-api-token
     - name: enabled-helm
+    - name: enabled-cf
+      default: "false"
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -443,6 +445,10 @@ spec:
           value: $(params.git-url)
         - name: enabled-helm
           value: $(params.enabled-helm)
+        - name: enabled-cf
+          value: $(params.enabled-cf)
+        - name: deploy-target
+          value: $(params.deploy-target)
         - name: devex-skit-assets-git
           value: $(params.devex-skit-assets-git)
         - name: devex-skit-assets-git-release

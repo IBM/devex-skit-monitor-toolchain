@@ -18,8 +18,11 @@ spec:
     - name: git-url
       description: repo URL of the skit
     - name: enabled-helm
-      description: whether this task is enabled
-      default: "true"
+      description: whether helm pipeline is enabled
+    - name: enabled-cf
+      description: whether cf pipeline is enabled
+    - name: deploy-target
+      description: the deployment target
     - name: devex-skit-assets-git
       description: the org and repo name where skit assets are stored
       default: "IBM/devex-skit-assets"
@@ -63,6 +66,10 @@ spec:
           value: $(params.app-name)
         - name: ENABLED_HELM
           value: $(params.enabled-helm)
+        - name: ENABLED_CF
+          value: $(params.enabled-cf)
+        - name: DEPLOY_TARGET
+          value: $(params.deploy-target)
         - name: GIT_URL
           value: $(params.git-url)
         - name: SHUTTLE_PROPERTIES_FILE
@@ -102,8 +109,13 @@ spec:
             set -x
         fi
 
-        if [ "${ENABLED_HELM}" == "false" ]; then
+        if [ "${DEPLOY_TARGET}" == "helm" && "${ENABLED_HELM}" == "false" ]; then
             echo "Helm pipeline is disabled for this toolchain"
+            exit 0
+        fi
+
+        if [ "${DEPLOY_TARGET}" == "cf" && "${ENABLED_CF}" == "false" ]; then
+            echo "CF pipeline is disabled for this toolchain"
             exit 0
         fi
 

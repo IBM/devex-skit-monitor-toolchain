@@ -5,6 +5,10 @@ inputs:
     service: ${PIPELINE_REPO}
     path: .pipeline/helm
   - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/skit-verification
+  - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: git
@@ -95,9 +99,6 @@ properties:
     type: text
   - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
     value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_RELEASE}
-    type: text
-  - name: ENABLED_CF
-    value: ${ENABLED_CF}
     type: text
   - name: ENABLED_HELM
     value: ${ENABLED_HELM}

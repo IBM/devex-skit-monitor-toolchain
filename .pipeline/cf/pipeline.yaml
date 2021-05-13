@@ -16,6 +16,8 @@ spec:
     - name: region
       description: Name of the region to deploy the CF app to. Default to the toolchain region
       default: ""
+    - name: api-key
+      description: IBM Cloud API key
     - name: cf-org
       description: Name of organization to deploy the CF app to
     - name: cf-space
@@ -30,6 +32,30 @@ spec:
     - name: custom-script
       description: user-provided script
       default: ""
+    - name: git-url
+      description: the repo URL of the skit repo
+    - name: devex-skit-assets-git
+      description: the org and repo containing skit assets
+    - name: devex-skit-assets-git-release
+      description: the release version of the devex-skit-assets repo to use
+    - name: devex-skit-assets-git-url
+      description: the repo URL to the skit assets repo
+    - name: devex-skit-assets-git-url-code
+      description: the repo URL used to download skit asset releases
+    - name: devex-skit-assets-git-url-raw
+      description: the repo URL used to download skit asset raw code
+    - name: deploy-target
+      description: the deployment target
+    - name: skit-reg-endpoint
+    - name: skit-reg-auth-token
+    - name: devx-slack-channel-webhook
+    - name: owner-slack-channel-webhook
+    - name: enable-pd-alerts
+    - name: pagerduty-events-api-url
+    - name: pagerduty-api-token
+    - name: enabled-cf
+    - name: enabled-helm
+      default: "false"
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -172,3 +198,47 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
+    - name: skit-verification
+      taskRef:
+        name: skit-verification
+      runAfter: [deploy-to-kubernetes, check-health]
+      params:
+        - name: shuttle-properties-file
+          value: "build.properties"
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.app-name)
+        - name: git-url
+          value: $(params.git-url)
+        - name: enabled-cf
+          value: $(params.enabled-cf)
+        - name: enabled-helm
+          value: $(params.enabled-helm)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: skit-reg-endpoint
+          value: $(params.skit-reg-endpoint)
+        - name: skit-reg-auth-token
+          value: $(params.skit-reg-auth-token)
+        - name: devx-slack-channel-webhook
+          value: $(params.devx-slack-channel-webhook)
+        - name: owner-slack-channel-webhook
+          value: $(params.owner-slack-channel-webhook)
+        - name: enable-pd-alerts
+          value: $(params.enable-pd-alerts)
+        - name: pagerduty-events-api-url
+          value: $(params.pagerduty-events-api-url)
+        - name: pagerduty-api-token
+          value: $(params.pagerduty-api-token)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws

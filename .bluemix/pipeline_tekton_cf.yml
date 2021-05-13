@@ -5,6 +5,10 @@ inputs:
     branch: ${PIPELINE_REPO_BRANCH}
     path: .pipeline/cf
   - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/skit-verification
+  - type: git
     service: ${TEKTON_CATALOG_REPO}
     branch: ${TEKTON_CATALOG_REPO_BRANCH}
     path: git
@@ -78,9 +82,6 @@ properties:
     type: text
   - name: ENABLED_CF
     value: ${ENABLED_CF}
-    type: text
-  - name: ENABLED_HELM
-    value: ${ENABLED_HELM}
     type: text
   - name: DEVX_SLACK_CHANNEL_WEBHOOK
     value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
