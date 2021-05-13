@@ -132,6 +132,8 @@ spec:
       taskRef:
         name: cf-deploy-app
       params:
+        - name: shuttle-properties-file
+          value: "build.properties"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -146,9 +148,21 @@ spec:
           value: $(params.cf-app)
         - name: cf-commands
           value: |
+            #!/bin/bash
+            set -e -o pipefail
+
+            if [ $PIPELINE_DEBUG == 1 ]; then
+                pwd
+                env
+                trap env EXIT
+                set -x
+            fi
+
+            MANIFEST_FILE=/artifacts/devex-skit-assets/deployment-assets/${CF_APP}/cf/manifest.yaml
+
             # Push app
-            if ! cf app "$CF_APP"; then
-              cf push "$CF_APP"
+            if ! cf app "$CF_APP"; then  
+              cf push "$CF_APP" -f $MANIFEST_FILE
             else
               OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
               rollback() {
@@ -163,14 +177,18 @@ spec:
               set -e
               trap rollback ERR
               cf rename "$CF_APP" "$OLD_CF_APP"
-              cf push "$CF_APP"
+              cf push "$CF_APP" -f $MANIFEST_FILE
               cf delete "$OLD_CF_APP" -f
             fi
+
             # Export app name and URL for use in later Pipeline jobs
             export CF_APP_NAME="$CF_APP"
-            export APP_URL=http://$(cf app $CF_APP_NAME | grep -e urls: -e routes: | awk '{print $2}')
+            export APP_URL=https://$(cf app $CF_APP_NAME | grep -e urls: -e routes: | awk '{print $2}')
+            echo "APP_URL=${APP_URL}" >> $SHUTTLE_PROPERTIES_FILE
+
             # View logs
             cf logs "${CF_APP}" --recent
+
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
