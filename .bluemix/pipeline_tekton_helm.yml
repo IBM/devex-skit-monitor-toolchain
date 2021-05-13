@@ -135,5 +135,10 @@ properties:
   - name: DEPLOY_TARGET
     value: helm
     type: text
+  - name: pipeline-debug
+    type: single_select
+    value:
+      "0": false
+      "1": true
 settings:
   slackEnabled: true
