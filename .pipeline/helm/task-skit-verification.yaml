@@ -108,6 +108,8 @@ spec:
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
 
+        export SKIT_DIR=/artifacts/${APP_NAME}
+
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh
         # alternatively, you can source it from online script:
