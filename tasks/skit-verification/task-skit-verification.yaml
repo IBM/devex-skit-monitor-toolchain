@@ -131,7 +131,8 @@ spec:
           export SKIT_DIR=/artifacts/${APP_NAME}
         fi
 
-        ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance" 
+        ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
+        ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
 
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh
