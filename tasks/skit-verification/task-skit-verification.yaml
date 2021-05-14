@@ -98,6 +98,10 @@ spec:
           value: $(params.pagerduty-api-token)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
       script: |
         #!/bin/bash
         set -e -o pipefail
