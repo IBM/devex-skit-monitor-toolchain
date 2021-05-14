@@ -139,6 +139,7 @@ spec:
           export SKIT_DIR=/artifacts/${APP_NAME}
         fi
 
+        export SKIT_URL="https://github.com/IBM/${APP_NAME%"-monitored-cf"}"
 
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh
