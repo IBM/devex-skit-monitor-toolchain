@@ -103,8 +103,9 @@ spec:
         set -e -o pipefail
 
         if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
             env
+            pwd
+            ls -l
             trap env EXIT
             set -x
             cat $SHUTTLE_PROPERTIES_FILE
