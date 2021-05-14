@@ -163,6 +163,7 @@ spec:
             if [ $PIPELINE_DEBUG == 1 ]; then
                 pwd
                 env
+                ls -l
                 trap env EXIT
                 set -x
                 cat $SHUTTLE_PROPERTIES_FILE
@@ -206,6 +207,8 @@ spec:
             echo "CF_SPACE=$CF_SPACE" >> build.properties
 
             if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              ls -l
               cat $SHUTTLE_PROPERTIES_FILE
             fi
         - name: pipeline-debug
