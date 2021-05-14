@@ -134,7 +134,7 @@ spec:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/build.properties"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -201,10 +201,10 @@ spec:
 
         - name: post-execution-script
           value: |
-            # Keep APP_URL in build.properties shuttle file
-            echo "APP_URL=$APP_URL" >> build.properties
-            echo "CF_ORG=$CF_ORG" >> build.properties
-            echo "CF_SPACE=$CF_SPACE" >> build.properties
+            # Keep APP_URL in shuttle file
+            echo "APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_ORG=$CF_ORG" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_SPACE=$CF_SPACE" >> $SHUTTLE_PROPERTIES_FILE
 
             if [ $PIPELINE_DEBUG == 1 ]; then
               pwd
@@ -248,7 +248,7 @@ spec:
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/build.properties"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
