@@ -198,6 +198,10 @@ spec:
             # View logs
             cf logs "${CF_APP}" --recent
 
+        - name: post-execution-script
+          value: |
+            # Keep APP_URL in build.properties shuttle file
+            echo "APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
