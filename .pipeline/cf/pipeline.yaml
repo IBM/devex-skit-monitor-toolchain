@@ -127,7 +127,8 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: custom-script
-          value: $(params.custom-script)
+          value: |
+            echo "No additional build script to be run."
     - name: rolling-deploy-task
       runAfter: [build]
       taskRef:
