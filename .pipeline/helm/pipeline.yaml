@@ -186,7 +186,8 @@ spec:
         name: toolchain-build
       params:
         - name: custom-script
-          value: ""
+          value: |
+            echo "No additional build script to be run."
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
