@@ -277,7 +277,7 @@ spec:
             echo "$IMAGE_TAG"
 
             # avoid docker pull rate limit
-            docker login --usernae $(params.docker-username) --password $(params.docker-password)
+            docker login --username $(params.docker-username) --password $(params.docker-password)
 
             # Default docker build / inspect / push command
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
