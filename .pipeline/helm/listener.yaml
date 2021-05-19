@@ -88,6 +88,10 @@ spec:
     - name: ENABLED_HELM
       description: whether or not this pipeline is enabled
       default: "true"
+    - name: DOCKER_USERNAME
+      description: Docker login username
+    - name: DOCKER_PASSWORD
+      description: Docker login password
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -178,6 +182,10 @@ spec:
             value: $(params.PAGERDUTY_API_TOKEN)
           - name: enabled-helm
             value: $(params.ENABLED_HELM)
+          - name: docker-username
+            value: $(params.DOCKER_USERNAME)
+          - name: docker-password
+            value: $(params.DOCKER_PASSWORD)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:

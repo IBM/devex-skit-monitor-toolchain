@@ -53,6 +53,10 @@ spec:
     - name: ENABLED_CF
       description: whether or not this pipeline is enabled
       default: "true"
+    - name: DOCKER_USERNAME
+      description: Docker login username
+    - name: DOCKER_PASSWORD
+      description: Docker login password
     - name: pipeline-debug
       default: "0"
     - name: ibmcloud-api
@@ -123,6 +127,10 @@ spec:
             value: $(params.PAGERDUTY_API_TOKEN)
           - name: enabled-cf
             value: $(params.ENABLED_CF)
+          - name: docker-username
+            value: $(params.DOCKER_USERNAME)
+          - name: docker-password
+            value: $(params.DOCKER_PASSWORD)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
           - name: ibmcloud-api

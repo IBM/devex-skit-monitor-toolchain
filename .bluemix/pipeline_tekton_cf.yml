@@ -107,6 +107,12 @@ properties:
   - name: DEPLOY_TARGET
     value: cf
     type: text
+  - name: DOCKER_USERNAME
+    value: ${DOCKER_USERNAME}
+    type: text
+  - name: DOCKER_PASSWORD
+    value: ${DOCKER_PASSWORD}
+    type: text
   - name: pipeline-debug
     type: single_select
     value:

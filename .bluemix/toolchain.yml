@@ -125,6 +125,10 @@ services:
             } else {
               'grit-or-gitlab-commit';
             }
+          DOCKER_USERNAME: >
+            $env.dockerUsername ? '{{dockerUsername}}'
+          DOCKER_PASSWORD: >
+            $env.dockerPassword ? '{{dockerPassword}}'
       label: Pipeline for deploying a starter kit app via Helm
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-helm'
       services:
@@ -186,6 +190,10 @@ services:
             } else {
               'grit-or-gitlab-commit';
             }
+          DOCKER_USERNAME: >
+            $env.dockerUsername ? '{{dockerUsername}}'
+          DOCKER_PASSWORD: >
+            $env.dockerPassword ? '{{dockerPassword}}'
       label: Pipeline for deploying a starter kit app via Cloud Foundry
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-cf'
       services:

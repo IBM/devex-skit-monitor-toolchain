@@ -80,6 +80,8 @@ spec:
     - name: enabled-helm
     - name: enabled-cf
       default: "false"
+    - name: docker-username
+    - name: docker-password
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -273,6 +275,10 @@ spec:
             if [ ! -z "${GIT_BRANCH}" ]; then IMAGE_TAG=${GIT_BRANCH}-${IMAGE_TAG} ; fi
             IMAGE_TAG=${BUILD_NUMBER}-${IMAGE_TAG}
             echo "$IMAGE_TAG"
+
+            # avoid docker pull rate limit
+            docker login --usernae $(params.docker-username) --password $(params.docker-password)
+
             # Default docker build / inspect / push command
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
             docker inspect ${IMAGE_URL}:${IMAGE_TAG}
