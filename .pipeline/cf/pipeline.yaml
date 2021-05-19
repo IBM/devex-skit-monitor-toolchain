@@ -128,7 +128,13 @@ spec:
           value: $(params.pipeline-debug)
         - name: custom-script
           value: |
-            echo "No additional build script to be run."
+           if [[ -n $(find /artifacts -name pom.xml) ]]; then
+            echo "Additional build required. Running Maven build."
+            APP_NAME="$(params.cf-app)"
+            APP_NAME=APP_NAME%"-monitored-cf"
+            cd /artifacts/$APP_NAME
+            mvn -B package
+           fi
     - name: rolling-deploy-task
       runAfter: [build]
       taskRef:

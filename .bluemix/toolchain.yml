@@ -210,7 +210,7 @@ services:
       channel_name: 'devx-skit-monitoring'
       team_url: 'ibm-cloudplatform'
       pipeline_start: false
-      pipeline_success: true
+      pipeline_success: false
       pipeline_fail: true
 
   slack-owner-skit-monitoring:
