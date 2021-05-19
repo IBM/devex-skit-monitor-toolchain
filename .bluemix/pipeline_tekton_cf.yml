@@ -112,7 +112,7 @@ properties:
     type: text
   - name: DOCKER_PASSWORD
     value: ${DOCKER_PASSWORD}
-    type: text
+    type: secure
   - name: pipeline-debug
     type: single_select
     value:
