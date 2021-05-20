@@ -142,6 +142,9 @@ properties:
   - name: DOCKER_PASSWORD
     value: ${DOCKER_PASSWORD}
     type: secure
+  - name: branch
+    value: "master"
+    type: text
   - name: pipeline-debug
     type: single_select
     value:
