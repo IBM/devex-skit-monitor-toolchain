@@ -15,10 +15,12 @@ spec:
       description: IBM Cloud API key
     - name: app-name
       description: name of the skit
-    - name: git-url
+    - name: skit-git-url
       description: repo URL of the skit
-    - name: git-branch
+    - name: skit-git-branch
       description: repo branch of the skit
+    - name: skit-git-commit
+      description: repo commit of the skit
     - name: enabled-helm
       description: whether helm pipeline is enabled
     - name: enabled-cf
@@ -72,10 +74,12 @@ spec:
           value: $(params.enabled-cf)
         - name: DEPLOY_TARGET
           value: $(params.deploy-target)
-        - name: GIT_URL
-          value: $(params.git-url)
-        - name: GIT_BRANCH
-          value: $(params.git-branch)
+        - name: SKIT_GIT_URL
+          value: $(params.skit-git-url)
+        - name: SKIT_GIT_BRANCH
+          value: $(params.skit-git-branch)
+        - name: SKIT_GIT_COMMIT
+          value: $(params.skit-git-commit)
         - name: SHUTTLE_PROPERTIES_FILE
           value: $(params.shuttle-properties-file)
         - name: PIPELINE_DEBUG

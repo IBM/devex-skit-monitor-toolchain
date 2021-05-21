@@ -260,10 +260,12 @@ spec:
           value: $(params.api-key)
         - name: app-name
           value: $(params.cf-app)
-        - name: git-url
+        - name: skit-git-url
           value: $(tasks.skit-git-clone.results.git-repository)
-        - name: git-branch
+        - name: skit-git-branch
           value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
         - name: enabled-cf
           value: $(params.enabled-cf)
         - name: enabled-helm
