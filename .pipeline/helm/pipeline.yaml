@@ -456,7 +456,9 @@ spec:
         - name: app-name
           value: $(params.app-name)
         - name: git-url
-          value: $(params.git-url)
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
         - name: enabled-helm
           value: $(params.enabled-helm)
         - name: enabled-cf

@@ -17,6 +17,8 @@ spec:
       description: name of the skit
     - name: git-url
       description: repo URL of the skit
+    - name: git-branch
+      description: repo branch of the skit
     - name: enabled-helm
       description: whether helm pipeline is enabled
     - name: enabled-cf
@@ -72,6 +74,8 @@ spec:
           value: $(params.deploy-target)
         - name: GIT_URL
           value: $(params.git-url)
+        - name: GIT_BRANCH
+          value: $(params.git-branch)
         - name: SHUTTLE_PROPERTIES_FILE
           value: $(params.shuttle-properties-file)
         - name: PIPELINE_DEBUG
