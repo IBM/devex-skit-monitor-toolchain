@@ -23,7 +23,7 @@ services:
         dashboard_url: '{{services.skitgitrepo.parameters.source_repo_url}}/issues'
         display_name: Issues
         enabled: false
-        label: '{{services.repo.parameters.repo_name}} Issues'
+        label: '{{services.skitgitrepo.parameters.repo_name}} Issues'
         readme: false
         tags:
         - think
@@ -35,17 +35,58 @@ services:
         $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.com/IBM/nodejs-cloudant'
       source_repo_url: >
         $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.com/IBM/nodejs-cloudant'
+      repo_name: >
+        $env.skitRepoName ? '{{skitRepoName}}' : 'nodejs-cloudant'
       token_url: https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
       type: link
     service_id: githubconsolidated
+
+  pipeline-repo:
+    service_id: >
+      $env.pipeline_type === 'tekton' ? 'githubconsolidated' : ''
+    parameters:
+      repo_url: >
+        $env.repository
+      source_repo_url: "https://github.com/IBM/devex-skit-monitor-toolchain"
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
+  
+  tekton-catalog-repo:
+    service_id: >
+      $env.pipeline_type === 'tekton' ? 'githubconsolidated' : ''
+    parameters:
+      repo_url: "https://github.com/open-toolchain/tekton-catalog"
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
+  
+  skit-assets-repo:
+    service_id: >
+      $env.pipeline_type === 'tekton' ? 'githubconsolidated' : ''
+    parameters:
+      repo_url: "https://github.com/IBM/devex-skit-assets"
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
+
   pipeline_helm:
     parameters:
       configuration:
         content:
-          $text: pipeline_helm.yml
+          $text: >
+            if ( $env.pipeline_type === 'tekton') {
+              "pipeline_tekton_helm.yml"
+            } else {
+              "pipeline_helm.yml"
+            }
         env:
           GIT_REPO: skitgitrepo
-          GIT_URL: ${GIT_URLS}
+          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
+          DEVX_SKIT_ASSETS_GIT: 'IBM/devex-skit-assets'
           DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
@@ -57,6 +98,8 @@ services:
           PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
+          HELM_CHART_NAME: >
+            $env.helmChartName ? '{{helmChartName}}' : ''
           DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
           OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
@@ -66,27 +109,58 @@ services:
           ENABLE_PD_ALERTS: '{{form.pipeline.parameters.enable-pd-alerts}}'
           SKIT_REG_ENDPOINT: '{{form.pipeline.parameters.skit-reg-endpoint}}'
           SKIT_REG_AUTH_TOKEN: '{{form.pipeline.parameters.skit-reg-auth-token}}'
+          PIPELINE_REPO: pipeline-repo
+          PIPELINE_REPO_BRANCH: >
+            $env.branch ? $env.branch : "master"
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
+          GIT_COMMIT_EVENT_LISTENER_NAME: >
+            if ( $env.source_provider === 'githubconsolidated' ) {
+              'github-commit';
+            } else if ( $env.source_provider === 'gitlab' ) {
+              'grit-or-gitlab-commit';
+            } else if ( $env.source_provider === 'bitbucketgit' ) {
+              'bitbucket-commit';
+            } else if ( $env.source_provider === 'github_integrated' ) {
+              'github-ent-commit';
+            } else {
+              'grit-or-gitlab-commit';
+            }
+          DOCKER_USERNAME: >
+            $env.dockerUsername ? '{{dockerUsername}}' : ''
+          DOCKER_PASSWORD: >
+            $env.dockerPassword ? '{{dockerPassword}}' : ''
       label: Pipeline for deploying a starter kit app via Helm
-      name: Skit-Pipeline-Helm
+      name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-helm'
       services:
       - skitgitrepo
-      type: classic
+      type: >
+        $env.pipeline_type === 'tekton' ? 'tekton': 'classic'
       ui-pipeline: true
+      execute: >
+          $env.pipeline_type === 'tekton' ? 'manual-run' : true
     service_id: pipeline
+      
   pipeline_cf:
     parameters:
       configuration:
         content:
-          $text: pipeline_cf.yml
+          $text: >
+            if ( $env.pipeline_type === 'tekton') {
+              "pipeline_tekton_cf.yml"
+            } else {
+              "pipeline_cf.yml"
+            }
         env:
           GIT_REPO: skitgitrepo
-          GIT_URL: ${GIT_URLS}
+          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
+          DEVX_SKIT_ASSETS_GIT: 'IBM/devex-skit-assets'
           DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
           APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
+          PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
           PROD_SPACE_NAME: '{{form.pipeline.parameters.prod-space}}'
           PROD_ORG_NAME: '{{form.pipeline.parameters.prod-organization}}'
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
@@ -100,13 +174,57 @@ services:
           ENABLE_PD_ALERTS: '{{form.pipeline.parameters.enable-pd-alerts}}'
           SKIT_REG_ENDPOINT: '{{form.pipeline.parameters.skit-reg-endpoint}}'
           SKIT_REG_AUTH_TOKEN: '{{form.pipeline.parameters.skit-reg-auth-token}}'
+          PIPELINE_REPO: pipeline-repo
+          PIPELINE_REPO_BRANCH: >
+            $env.branch ? $env.branch : "master"
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
+          GIT_COMMIT_EVENT_LISTENER_NAME: >
+            if ( $env.source_provider === 'githubconsolidated' ) {
+              'github-commit';
+            } else if ( $env.source_provider === 'gitlab' ) {
+              'grit-or-gitlab-commit';
+            } else if ( $env.source_provider === 'bitbucketgit' ) {
+              'bitbucket-commit';
+            } else if ( $env.source_provider === 'github_integrated' ) {
+              'github-ent-commit';
+            } else {
+              'grit-or-gitlab-commit';
+            }
+          DOCKER_USERNAME: >
+            $env.dockerUsername ? '{{dockerUsername}}' : ''
+          DOCKER_PASSWORD: >
+            $env.dockerPassword ? '{{dockerPassword}}' : ''
       label: Pipeline for deploying a starter kit app via Cloud Foundry
-      name: Skit-Pipeline-CF
+      name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-cf'
       services:
       - skitgitrepo
-      type: classic
+      type: >
+        $env.pipeline_type === 'tekton' ? 'tekton': 'classic'
       ui_pipeline: true
     service_id: pipeline
+  
+  slack-devx-skit-monitoring:
+    service_id: slack
+    parameters:
+      api_token: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
+      channel_name: 'devx-skit-monitoring'
+      team_url: 'ibm-cloudplatform'
+      pipeline_start: false
+      pipeline_success: false
+      pipeline_fail: true
+
+  slack-owner-skit-monitoring:
+    service_id: >
+      $env.ownersSlackChannelWebhook != $env.devxSlackChannelWebhook ? 'slack' : ''
+    parameters:
+      api_token: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
+      channel_name: >
+        $env.ownerSlackChannel ? '{{ownerSlackChannel}}' : 'devx-skit-monitoring'
+      team_url: 'ibm-cloudplatform'
+      pipeline_start: false
+      pipeline_success: true
+      pipeline_fail: true
+
 form:
   pipeline:
     parameters:
