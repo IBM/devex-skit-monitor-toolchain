@@ -370,15 +370,15 @@ spec:
             # use custom release name to avoid long names for watson skits
             CHART_NAME=$(basename $CHART_PATH)
             case "$CHART_NAME" in
-                  naturallanguageunderstandingmonitoredhelm) export RELEASE_NAME="nlu-monitored-helm"
+                  naturallanguageunderstandingmonitoredhelm) export RELEASE_NAME="nlu-code-pattern-monitored-helm"
                   ;;
-                  texttospeechmonitoredhelm) export RELEASE_NAME="text-to-speech-monitored-helm"
+                  texttospeechmonitoredhelm) export RELEASE_NAME="t2s-code-pattern-monitored-helm"
                   ;;
-                  speechtotextmonitoredhelm) export RELEASE_NAME="speech-to-text-monitored-helm"
+                  speechtotextmonitoredhelm) export RELEASE_NAME="s2t-code-pattern-monitored-helm"
                   ;;
                   *) export RELEASE_NAME=""
             esac
-            
+
             source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/copy_assets.sh")
         - name: script
           value: |
