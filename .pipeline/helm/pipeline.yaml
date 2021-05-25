@@ -372,9 +372,9 @@ spec:
             case "$CHART_NAME" in
                   naturallanguageunderstandingmonitoredhelm) export RELEASE_NAME="nlu-code-pattern-monitored-helm"
                   ;;
-                  texttospeechmonitoredhelm) export RELEASE_NAME="t2s-code-pattern-monitored-helm"
+                  texttospeechmonitoredhelm) export RELEASE_NAME="text2speech-code-pattern-monitored-helm"
                   ;;
-                  speechtotextmonitoredhelm) export RELEASE_NAME="s2t-code-pattern-monitored-helm"
+                  speechtotextmonitoredhelm) export RELEASE_NAME="speech2text-code-pattern-monitored-helm"
                   ;;
                   *) export RELEASE_NAME=""
             esac
