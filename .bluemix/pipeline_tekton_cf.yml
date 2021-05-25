@@ -1,0 +1,125 @@
+---
+inputs:
+  - type: git
+    service: ${PIPELINE_REPO}
+    branch: ${PIPELINE_REPO_BRANCH}
+    path: .pipeline/cf
+  - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/skit-verification
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: git
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: cloudfoundry
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: toolchain
+triggers:
+  - type: git
+    name: commit-push
+    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
+    service: ${GIT_REPO}
+    branch: master
+    events: { "push": true }
+  - type: manual
+    name: manual-run
+    eventListener: manual-run
+    properties: []
+properties:
+  - type: text
+    name: cf-app
+    value: ${APP_NAME}-monitored-cf
+  - type: text
+    name: APP_NAME
+    value: ${APP_NAME}
+  - type: text
+    name: cf-org
+    value: ${PROD_ORG_NAME}
+  - type: text
+    name: cf-space
+    value: ${PROD_SPACE_NAME}
+  - type: text
+    name: region
+    value: ${PROD_REGION_ID}
+  - type: secure
+    name: toolchain-apikey
+    value: ${API_KEY}
+  - type: secure
+    name: apikey
+    value: ${API_KEY}
+  - name: GIT_URL
+    value: ${GIT_URL}
+    type: text
+  - name: RESOURCE_GROUP
+    value: ${PROD_RESOURCE_GROUP}
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT
+    value: ${DEVX_SKIT_ASSETS_GIT}
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_RELEASE
+    value: ${DEVX_SKIT_ASSETS_GIT_RELEASE}
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_URL
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}.git
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+    value: https://github.com/${DEVX_SKIT_ASSETS_GIT}/raw/${DEVX_SKIT_ASSETS_GIT_RELEASE}
+    type: text
+  - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
+    value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_RELEASE}
+    type: text
+  - name: ENABLED_CF
+    value: ${ENABLED_CF}
+    type: text
+  - name: DEVX_SLACK_CHANNEL_WEBHOOK
+    value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
+    type: secure
+  - name: OWNER_SLACK_CHANNEL_WEBHOOK
+    value: ${OWNER_SLACK_CHANNEL_WEBHOOK}
+    type: secure
+  - name: PAGERDUTY_API_URL
+    value: ${PAGERDUTY_API_URL}
+    type: text
+  - name: PAGERDUTY_EVENTS_API_URL
+    value: ${PAGERDUTY_EVENTS_API_URL}
+    type: text
+  - name: PAGERDUTY_API_TOKEN
+    value: ${PAGERDUTY_API_TOKEN}
+    type: secure
+  - name: PAGERDUTY_SVC_NAME
+    value: ${PAGERDUTY_SVC_NAME}
+    type: secure
+  - name: ENABLE_PD_ALERTS
+    value: ${ENABLE_PD_ALERTS}
+    type: text
+  - name: SKIT_REG_ENDPOINT
+    value: ${SKIT_REG_ENDPOINT}
+    type: text
+  - name: SKIT_REG_AUTH_TOKEN
+    value: ${SKIT_REG_AUTH_TOKEN}
+    type: secure
+  - name: DEPLOY_TARGET
+    value: cf
+    type: text
+  - name: DOCKER_USERNAME
+    value: ${DOCKER_USERNAME}
+    type: text
+  - name: DOCKER_PASSWORD
+    value: ${DOCKER_PASSWORD}
+    type: secure
+  - name: branch
+    value: "master"
+    type: text
+  - name: pipeline-debug
+    type: single_select
+    value:
+      "0": true
+      "1": false
+settings:
+  slackEnabled: true
