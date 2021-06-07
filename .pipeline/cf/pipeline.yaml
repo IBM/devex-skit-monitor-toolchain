@@ -38,7 +38,7 @@ spec:
       description: pr url
       default: ""
     - name: scm-type
-      value: "github"
+      default: "github"
     - name: project-id
       default: ""
     - name: devex-skit-assets-git
