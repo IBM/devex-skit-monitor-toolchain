@@ -34,6 +34,12 @@ spec:
       default: ""
     - name: git-url
       description: the repo URL of the skit repo
+    - name: pr-url
+      description: pr url
+    - name: commit-timestamp
+    - name: scm-type
+    - name: project-id
+      default: ""
     - name: devex-skit-assets-git
       description: the org and repo containing skit assets
     - name: devex-skit-assets-git-release
@@ -129,7 +135,7 @@ spec:
         - name: revision
           value: $(params.branch)
         - name: commit-id
-          value: $(tasks.clone-task.results.git-commit)
+          value: $(tasks.skit-git-clone.results.git-commit)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
@@ -154,7 +160,7 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.clone-task.results.git-commit)
+          value: $(tasks.skit-git-clone.results.git-commit)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -177,7 +183,7 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.clone-task.results.git-commit)
+          value: $(tasks.skit-git-clone.results.git-commit)
         - name: directory-name
           value: ""
         - name: scm-type
@@ -202,11 +208,11 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.clone-task.results.git-commit)
+          value: $(tasks.skit-git-clone.results.git-commit)
         - name: target-branch
           value: $(params.branch)
         - name: target-commit-id
-          value: $(tasks.clone-task.results.git-commit)      
+          value: $(tasks.skit-git-clone.results.git-commit)      
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
