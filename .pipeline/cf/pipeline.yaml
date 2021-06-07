@@ -36,8 +36,9 @@ spec:
       description: the repo URL of the skit repo
     - name: pr-url
       description: pr url
-    - name: commit-timestamp
+      default: ""
     - name: scm-type
+      value: "github"
     - name: project-id
       default: ""
     - name: devex-skit-assets-git
@@ -140,8 +141,6 @@ spec:
           value: $(params.pipeline-debug)
         - name: directory-name
           value: ""
-        - name: commit-timestamp
-          value: $(params.commit-timestamp)
     - name: code-vulnerability-scan
       runAfter:
         - cra-discovery-scan
