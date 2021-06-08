@@ -186,7 +186,7 @@ spec:
         - name: commit-id
           value: $(tasks.skit-git-clone.results.git-commit)
         - name: directory-name
-          value: $(SKIT_NAME)
+          value: $(params.cf-app)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
