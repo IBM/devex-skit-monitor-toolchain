@@ -141,6 +141,8 @@ spec:
           value: $(params.pipeline-debug)
         - name: directory-name
           value: ""
+        - name: commit-timestamp
+          value: ""
     - name: code-vulnerability-scan
       runAfter:
         - cra-discovery-scan
