@@ -118,7 +118,7 @@ spec:
         - name: properties-file
           value: ""
         - name: directory-name
-          value: $(params.skit-name)
+          value: ""
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
