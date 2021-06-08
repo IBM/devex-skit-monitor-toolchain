@@ -225,6 +225,9 @@ services:
       pipeline_success: true
       pipeline_fail: true
 
+  devops-insights:
+      service_id: draservicebroker
+
 form:
   pipeline:
     parameters:
