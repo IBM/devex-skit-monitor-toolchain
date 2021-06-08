@@ -53,6 +53,7 @@ spec:
       description: the repo URL used to download skit asset raw code
     - name: deploy-target
       description: the deployment target
+    - name: skit-name
     - name: skit-reg-endpoint
     - name: skit-reg-auth-token
     - name: devx-slack-channel-webhook
@@ -94,7 +95,7 @@ spec:
         - name: properties-file
           value: "build.properties"
         - name: directory-name
-          value: "."
+          value: $(params.skit-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -117,7 +118,7 @@ spec:
         - name: properties-file
           value: ""
         - name: directory-name
-          value: "."
+          value: $(params.skit-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -140,7 +141,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
-          value: "."
+          value: $(params.skit-name)
         - name: commit-timestamp
           value: ""
     - name: code-vulnerability-scan
@@ -186,7 +187,7 @@ spec:
         - name: commit-id
           value: $(tasks.skit-git-clone.results.git-commit)
         - name: directory-name
-          value: $(params.cf-app)
+          value: $(params.skit-name)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
