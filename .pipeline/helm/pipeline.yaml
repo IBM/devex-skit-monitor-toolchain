@@ -58,6 +58,13 @@ spec:
       default: ""
     - name: git-url
       description: the repo URL of the skit repo
+    - name: pr-url
+      description: pr url
+      default: ""
+    - name: scm-type
+      default: "github"
+    - name: project-id
+      default: ""
     - name: devex-skit-assets-git
       description: the org and repo containing skit assets
     - name: devex-skit-assets-git-release
@@ -70,6 +77,7 @@ spec:
       description: the repo URL used to download skit asset raw code
     - name: deploy-target
       description: the deployment target
+    - name: skit-name
     - name: skit-reg-endpoint
     - name: skit-reg-auth-token
     - name: devx-slack-channel-webhook
