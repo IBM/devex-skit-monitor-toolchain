@@ -286,7 +286,7 @@ spec:
         - name: workspace
           workspace: pipeline-ws
     - name: build
-      runAfter: [skit-git-clone, assets-git-clone]
+      runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
       taskRef:
         name: toolchain-build
       params:

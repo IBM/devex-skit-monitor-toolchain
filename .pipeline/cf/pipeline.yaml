@@ -220,8 +220,7 @@ spec:
         - name: project-id
           value: $(params.project-id)
     - name: build
-      runAfter:
-        - cra-discovery-scan
+      runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
       workspaces:
         - name: output
           workspace: pipeline-ws
