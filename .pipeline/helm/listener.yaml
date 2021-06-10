@@ -71,6 +71,8 @@ spec:
       description: the name of the directory containing the helm chart
     - name: DEPLOY_TARGET
       description: the deployment target
+    - name: app-name
+      description: the name of the skit being monitored
     - name: SKIT_REG_ENDPOINT
       description: the skit registration endpoint URL
     - name: SKIT_REG_AUTH_TOKEN
@@ -166,6 +168,8 @@ spec:
             value: $(params.DEVX_SKIT_ASSETS_GIT_URL_RAW)
           - name: deploy-target
             value: $(params.DEPLOY_TARGET)
+          - name: skit-name
+            value: $(params.app-name)
           - name: skit-reg-endpoint
             value: $(params.SKIT_REG_ENDPOINT)
           - name: skit-reg-auth-token
