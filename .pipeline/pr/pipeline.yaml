@@ -124,103 +124,103 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: cra-discovery-scan
-      runAfter: [skit-git-clone, assets-git-clone]
-      taskRef:
-        name: cra-discovery
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
-        - name: revision
-          value: $(params.branch)
-        - name: commit-id
-          value: $(tasks.skit-git-clone.results.git-commit)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: directory-name
-          value: $(params.skit-name)
-        - name: commit-timestamp
-          value: ""
-    - name: code-vulnerability-scan
-      runAfter:
-        - cra-discovery-scan
-      taskRef:
-        name: cra-vulnerability-remediation
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-        - name: secrets
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
-        - name: revision
-          value: $(params.branch)
-        - name: pr-url
-          value: $(params.pr-url)
-        - name: commit-id
-          value: $(tasks.skit-git-clone.results.git-commit)
-        - name: scm-type
-          value: $(params.scm-type)
-        - name: project-id
-          value: $(params.project-id) 
-    - name: cra-cis-check
-      taskRef:
-        name: cra-cis-check
-      runAfter:
-        - cra-discovery-scan
-      workspaces:
-        - name: secrets
-          workspace: pipeline-ws
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
-        - name: revision
-          value: $(params.branch)
-        - name: pr-url
-          value: $(params.pr-url)
-        - name: commit-id
-          value: $(tasks.skit-git-clone.results.git-commit)
-        - name: directory-name
-          value: $(params.skit-name)
-        - name: scm-type
-          value: $(params.scm-type)
-        - name: project-id
-          value: $(params.project-id)
-    - name: cra-bom
-      taskRef:
-        name: cra-bom
-      runAfter:
-        - cra-discovery-scan
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-        - name: secrets
-          workspace: pipeline-ws          
-      params:
-        - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
-        - name: revision
-          value: $(params.branch)
-        - name: pr-url
-          value: $(params.pr-url)
-        - name: commit-id
-          value: $(tasks.skit-git-clone.results.git-commit)
-        - name: target-branch
-          value: $(params.branch)
-        - name: target-commit-id
-          value: $(tasks.skit-git-clone.results.git-commit)      
-        - name: scm-type
-          value: $(params.scm-type)
-        - name: project-id
-          value: $(params.project-id)
+    # - name: cra-discovery-scan
+    #   runAfter: [skit-git-clone, assets-git-clone]
+    #   taskRef:
+    #     name: cra-discovery
+    #   workspaces:
+    #     - name: artifacts
+    #       workspace: pipeline-ws
+    #   params:
+    #     - name: repository
+    #       value: $(tasks.extract-repository-url.results.extracted-value)
+    #     - name: revision
+    #       value: $(params.branch)
+    #     - name: commit-id
+    #       value: $(tasks.skit-git-clone.results.git-commit)
+    #     - name: pipeline-debug
+    #       value: $(params.pipeline-debug)
+    #     - name: directory-name
+    #       value: $(params.skit-name)
+    #     - name: commit-timestamp
+    #       value: ""
+    # - name: code-vulnerability-scan
+    #   runAfter:
+    #     - cra-discovery-scan
+    #   taskRef:
+    #     name: cra-vulnerability-remediation
+    #   workspaces:
+    #     - name: artifacts
+    #       workspace: pipeline-ws
+    #     - name: secrets
+    #       workspace: pipeline-ws
+    #   params:
+    #     - name: repository
+    #       value: $(tasks.extract-repository-url.results.extracted-value)
+    #     - name: revision
+    #       value: $(params.branch)
+    #     - name: pr-url
+    #       value: $(params.pr-url)
+    #     - name: commit-id
+    #       value: $(tasks.skit-git-clone.results.git-commit)
+    #     - name: scm-type
+    #       value: $(params.scm-type)
+    #     - name: project-id
+    #       value: $(params.project-id) 
+    # - name: cra-cis-check
+    #   taskRef:
+    #     name: cra-cis-check
+    #   runAfter:
+    #     - cra-discovery-scan
+    #   workspaces:
+    #     - name: secrets
+    #       workspace: pipeline-ws
+    #     - name: artifacts
+    #       workspace: pipeline-ws
+    #   params:
+    #     - name: repository
+    #       value: $(tasks.extract-repository-url.results.extracted-value)
+    #     - name: revision
+    #       value: $(params.branch)
+    #     - name: pr-url
+    #       value: $(params.pr-url)
+    #     - name: commit-id
+    #       value: $(tasks.skit-git-clone.results.git-commit)
+    #     - name: directory-name
+    #       value: $(params.skit-name)
+    #     - name: scm-type
+    #       value: $(params.scm-type)
+    #     - name: project-id
+    #       value: $(params.project-id)
+    # - name: cra-bom
+    #   taskRef:
+    #     name: cra-bom
+    #   runAfter:
+    #     - cra-discovery-scan
+    #   workspaces:
+    #     - name: artifacts
+    #       workspace: pipeline-ws
+    #     - name: secrets
+    #       workspace: pipeline-ws          
+    #   params:
+    #     - name: repository
+    #       value: $(tasks.extract-repository-url.results.extracted-value)
+    #     - name: revision
+    #       value: $(params.branch)
+    #     - name: pr-url
+    #       value: $(params.pr-url)
+    #     - name: commit-id
+    #       value: $(tasks.skit-git-clone.results.git-commit)
+    #     - name: target-branch
+    #       value: $(params.branch)
+    #     - name: target-commit-id
+    #       value: $(tasks.skit-git-clone.results.git-commit)      
+    #     - name: scm-type
+    #       value: $(params.scm-type)
+    #     - name: project-id
+    #       value: $(params.project-id)
     - name: build
-      runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
+      runAfter: [assets-git-clone, skit-git-clone] #[code-vulnerability-scan, cra-cis-check, cra-bom]
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -259,7 +259,7 @@ spec:
           value: $(params.cf-app)
         - name: setup-script
           value: |
-            export SKIT_NAME=${CF_APP%"-monitored-cf"}
+            export SKIT_NAME=${CF_APP%"-monitored-cf-pr"}
             export SKIT_DIR=/artifacts/${SKIT_NAME}
             export DEPLOY_TARGET="$(params.deploy-target)"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
