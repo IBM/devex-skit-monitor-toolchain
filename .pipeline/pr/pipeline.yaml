@@ -259,12 +259,12 @@ spec:
           value: $(params.cf-app)
         - name: setup-script
           value: |
-            export SKIT_NAME="$CF_APP"
+            export SKIT_NAME="$(params.skit-name)"
             export SKIT_DIR=/artifacts/${SKIT_NAME}
             export DEPLOY_TARGET="$(params.deploy-target)"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW=$(params.devex-skit-assets-git-url-raw)
-            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/copy_assets.sh")
+            source /artifacts/devex-skit-assets/scripts/copy_assets.sh
         - name: cf-commands
           value: |
             #!/bin/bash
