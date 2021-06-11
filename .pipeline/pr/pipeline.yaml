@@ -259,6 +259,7 @@ spec:
           value: $(params.cf-app)
         - name: setup-script
           value: |
+            export SKIT_NAME="$CF_APP"
             export SKIT_DIR=/artifacts/${SKIT_NAME}
             export DEPLOY_TARGET="$(params.deploy-target)"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
