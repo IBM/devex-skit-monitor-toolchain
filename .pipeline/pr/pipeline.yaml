@@ -1,0 +1,402 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cf-pipeline
+spec:
+  params:
+    - name: repository
+      description: the git repo containing source code. If empty, the repository url will be found from toolchain
+      default: ""
+    - name: branch
+      description: the branch for the git repo
+      default: "master"
+    - name: revision
+      description: the git revision/commit for the git repo
+    - name: region
+      description: Name of the region to deploy the CF app to. Default to the toolchain region
+      default: ""
+    - name: api-key
+      description: IBM Cloud API key
+    - name: cf-org
+      description: Name of organization to deploy the CF app to
+    - name: cf-space
+      description: Name of space to deploy the CF app to
+    - name: cf-app
+      description: Name of the CF application to be deployed
+    - name: pipeline-debug
+      default: "0"
+    - name: ibmcloud-api
+      description: IBM Cloud instance to target
+      default: "https://cloud.ibm.com"
+    - name: custom-script
+      description: user-provided script
+      default: ""
+    - name: git-url
+      description: the repo URL of the skit repo
+    - name: pr-url
+      description: pr url
+      default: ""
+    - name: scm-type
+      default: "github"
+    - name: project-id
+      default: ""
+    - name: devex-skit-assets-git
+      description: the org and repo containing skit assets
+    - name: devex-skit-assets-git-release
+      description: the release version of the devex-skit-assets repo to use
+    - name: devex-skit-assets-git-url
+      description: the repo URL to the skit assets repo
+    - name: devex-skit-assets-git-url-code
+      description: the repo URL used to download skit asset releases
+    - name: devex-skit-assets-git-url-raw
+      description: the repo URL used to download skit asset raw code
+    - name: deploy-target
+      description: the deployment target
+    - name: skit-name
+    - name: skit-reg-endpoint
+    - name: skit-reg-auth-token
+    - name: devx-slack-channel-webhook
+    - name: owner-slack-channel-webhook
+    - name: enable-pd-alerts
+    - name: pagerduty-events-api-url
+    - name: pagerduty-api-token
+    - name: enabled-cf
+    - name: enabled-helm
+      default: "false"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: extract-repository-url
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        - name: expression
+          # if a params.repository is given, it takes precedence
+          value: '. as $toolchain | ["$(params.repository)"] | if .[0]=="" then $toolchain | .services[] | select(.toolchain_binding.name=="skitgitrepo") | .dashboard_url else .[0] end'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)  
+    - name: skit-git-clone
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: properties-file
+          value: "build.properties"
+        - name: directory-name
+          value: ""
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: assets-git-clone
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: repository
+          value: https://github.com/IBM/devex-skit-assets
+        - name: branch
+          value: $(params.devex-skit-assets-git-release)
+        - name: revision
+          value: $(params.revision)
+        - name: properties-file
+          value: ""
+        - name: directory-name
+          value: ""
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: cra-discovery-scan
+      runAfter: [skit-git-clone, assets-git-clone]
+      taskRef:
+        name: cra-discovery
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.branch)
+        - name: commit-id
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: directory-name
+          value: $(params.skit-name)
+        - name: commit-timestamp
+          value: ""
+    - name: code-vulnerability-scan
+      runAfter:
+        - cra-discovery-scan
+      taskRef:
+        name: cra-vulnerability-remediation
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+        - name: secrets
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id) 
+    - name: cra-cis-check
+      taskRef:
+        name: cra-cis-check
+      runAfter:
+        - cra-discovery-scan
+      workspaces:
+        - name: secrets
+          workspace: pipeline-ws
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: directory-name
+          value: $(params.skit-name)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)
+    - name: cra-bom
+      taskRef:
+        name: cra-bom
+      runAfter:
+        - cra-discovery-scan
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+        - name: secrets
+          workspace: pipeline-ws          
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: target-branch
+          value: $(params.branch)
+        - name: target-commit-id
+          value: $(tasks.skit-git-clone.results.git-commit)      
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)
+    - name: build
+      runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+      taskRef:
+        name: toolchain-build
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: custom-script
+          value: |
+           if [[ -n $(find /artifacts -name pom.xml) ]]; then
+            echo "Additional build required. Running Maven build."
+            APP_NAME="$(params.cf-app)"
+            APP_NAME=${APP_NAME%"-monitored-cf"}
+            cd /artifacts/$APP_NAME
+            mvn -B package
+           fi
+    - name: rolling-deploy-task
+      runAfter: [build]
+      taskRef:
+        name: cf-deploy-app
+      params:
+        - name: shuttle-properties-file
+          value: "/artifacts/build.properties"
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: cloud-foundry-apikey-secret-key
+          value: "apikey"
+        - name: region
+          value: $(params.region)
+        - name: cf-org
+          value: $(params.cf-org)
+        - name: cf-space
+          value: $(params.cf-space)
+        - name: cf-app
+          value: $(params.cf-app)
+        - name: setup-script
+          value: |
+            export SKIT_NAME=${CF_APP%"-monitored-cf"}
+            export SKIT_DIR=/artifacts/${SKIT_NAME}
+            export DEPLOY_TARGET="$(params.deploy-target)"
+            export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
+            export DEVX_SKIT_ASSETS_GIT_URL_RAW=$(params.devex-skit-assets-git-url-raw)
+            source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/copy_assets.sh")
+        - name: cf-commands
+          value: |
+            #!/bin/bash
+            set -e -o pipefail
+
+            if [ $PIPELINE_DEBUG == 1 ]; then
+                pwd
+                env
+                ls -l
+                trap env EXIT
+                set -x
+                cat $SHUTTLE_PROPERTIES_FILE
+            fi
+
+            cd $SKIT_DIR
+            # Push app
+            if ! cf app "$CF_APP"; then  
+              cf push "$CF_APP" -f ./manifest.yaml
+            else
+              OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
+              rollback() {
+                set +e
+                if cf app "$OLD_CF_APP"; then
+                  cf logs "$CF_APP" --recent
+                  cf delete "$CF_APP" -f
+                  cf rename "$OLD_CF_APP" "$CF_APP"
+                fi
+                exit 1
+              }
+              set -e
+              trap rollback ERR
+              cf rename "$CF_APP" "$OLD_CF_APP"
+              cf push "$CF_APP" -f ./manifest.yaml
+              cf delete "$OLD_CF_APP" -f
+            fi
+
+            # Export app name and URL for use in later Pipeline jobs
+            export CF_APP_NAME="$CF_APP"
+            export APP_URL=https://$(cf app $CF_APP_NAME | grep -e urls: -e routes: | awk '{print $2}')
+            echo "APP_URL=${APP_URL}" >> $SHUTTLE_PROPERTIES_FILE
+
+            # View logs
+            cf logs "${CF_APP}" --recent
+
+        - name: post-execution-script
+          value: |
+            # Keep APP_URL in shuttle file
+            echo "APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_ORG=$CF_ORG" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_SPACE=$CF_SPACE" >> $SHUTTLE_PROPERTIES_FILE
+
+            if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              ls -l
+              cat $SHUTTLE_PROPERTIES_FILE
+            fi
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: source
+          workspace: pipeline-ws
+    - name: publish-deployable-task
+      taskRef:
+        name: toolchain-publish-deployable-mapping
+      params:
+        - name: deployable-type
+          value: "app"
+        - name: deployable-region-id
+          value: $(tasks.rolling-deploy-task.results.region)
+        - name: deployable-guid
+          value: $(tasks.rolling-deploy-task.results.cf-app-guid)
+        - name: deployable-cf-org-id
+          value: $(tasks.rolling-deploy-task.results.cf-org-id)
+        - name: deployable-cf-org-name
+          value: $(params.cf-org)
+        - name: deployable-cf-space-id
+          value: $(tasks.rolling-deploy-task.results.cf-space-id)
+        - name: deployable-cf-space-name
+          value: $(params.cf-space)
+        - name: environment-label
+          value: "$(params.cf-org):$(params.cf-space)"
+        - name: git-inputs
+          value: "$(tasks.skit-git-clone.results.git-repository),$(tasks.skit-git-clone.results.git-commit),$(tasks.skit-git-clone.results.git-branch)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+    - name: skit-verification
+      taskRef:
+        name: skit-verification
+      runAfter: [rolling-deploy-task]
+      params:
+        - name: shuttle-properties-file
+          value: "/artifacts/build.properties"
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.cf-app)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: enabled-cf
+          value: $(params.enabled-cf)
+        - name: enabled-helm
+          value: $(params.enabled-helm)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: skit-reg-endpoint
+          value: $(params.skit-reg-endpoint)
+        - name: skit-reg-auth-token
+          value: $(params.skit-reg-auth-token)
+        - name: devx-slack-channel-webhook
+          value: $(params.devx-slack-channel-webhook)
+        - name: owner-slack-channel-webhook
+          value: $(params.owner-slack-channel-webhook)
+        - name: enable-pd-alerts
+          value: $(params.enable-pd-alerts)
+        - name: pagerduty-events-api-url
+          value: $(params.pagerduty-events-api-url)
+        - name: pagerduty-api-token
+          value: $(params.pagerduty-api-token)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
