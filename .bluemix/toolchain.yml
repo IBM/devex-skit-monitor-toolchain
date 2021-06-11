@@ -213,7 +213,6 @@ services:
       pipeline_success: false
       pipeline_fail: true
 
-
   slack-owner-skit-monitoring:
     service_id: >
       $env.ownersSlackChannelWebhook != $env.devxSlackChannelWebhook ? 'slack' : ''
