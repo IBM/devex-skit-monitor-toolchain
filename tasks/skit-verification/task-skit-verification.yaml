@@ -14,6 +14,8 @@ spec:
     - name: api-key
       description: IBM Cloud API key
     - name: app-name
+      description: name of the cf or helm app
+    - name: skit-name
       description: name of the skit
     - name: skit-git-url
       description: repo URL of the skit
@@ -74,6 +76,8 @@ spec:
           value: $(params.enabled-cf)
         - name: DEPLOY_TARGET
           value: $(params.deploy-target)
+        - name: SKIT_NAME
+          value: $(params.skit-name)
         - name: SKIT_GIT_URL
           value: $(params.skit-git-url)
         - name: SKIT_GIT_BRANCH
@@ -141,13 +145,13 @@ spec:
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
 
         if [ "${DEPLOY_TARGET}" == "cf" ]; then
-          export SKIT_DIR=/artifacts/${APP_NAME%"-monitored-cf"}
+          export SKIT_DIR=/artifacts/${SKIT_NAME}
           ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
         else
-          export SKIT_DIR=/artifacts/${APP_NAME}
+          export SKIT_DIR=/artifacts/${SKIT_NAME}
         fi
 
-        export SKIT_URL="https://github.com/IBM/${APP_NAME%"-monitored-cf"}"
+        export SKIT_URL="$SKIT_GIT_URL"
 
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh

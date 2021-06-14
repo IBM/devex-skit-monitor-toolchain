@@ -362,6 +362,8 @@ spec:
           value: $(params.api-key)
         - name: app-name
           value: $(params.cf-app)
+        - name: skit-name
+          value: $(params.skit-name)
         - name: skit-git-url
           value: $(tasks.skit-git-clone.results.git-repository)
         - name: skit-git-branch
