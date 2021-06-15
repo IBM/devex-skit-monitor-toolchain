@@ -195,7 +195,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: event-listener-github-pr-or-push
+  name: github-commit
 spec:
   triggers:
     - binding:
