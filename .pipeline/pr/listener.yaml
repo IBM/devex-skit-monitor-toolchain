@@ -6,13 +6,18 @@ metadata:
 spec:
   params:
     - name: repository
-      description: The git repo
+      description: The target git repo
     - name: branch
-      description: the branch for the git repo
+      description: the branch for the target git repo
       default: "master"
     - name: revision
-      description: the git revision/commit for the git repo (default to '' means branch)
-      default: ""
+      description: the git revision/commit for the target repo
+    - name: pr-repository
+      description: The git repo of the incoming changes
+    - name: pr-branch
+      description: the branch of the incoming changes
+    - name: pr-revision
+      description: the git revision/commit for the incoming changes
     - name: region
       default: ""
     - name: apikey
@@ -89,6 +94,12 @@ spec:
             value: $(params.branch)
           - name: revision
             value: $(params.revision)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: pr-branch
+            value: $(params.pr-branch)
+          - name: pr-revision
+            value: $(params.pr-revision)
           - name: region
             value: $(params.region)
           - name: cf-org
@@ -165,71 +176,29 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-commit
+  name: trigger-binding-github-pr-or-push
 spec:
   params:
     - name: repository
-      value: "$(event.repository.html_url)"
+      value: "$(event.pull_request.base.repo.clone_url)"
     - name: branch
-      value: "$(event.ref)"
-    - name: revision
-      value: "$(event.head_commit.id)"
+      value: "$(event.pull_request.base.ref)"
+    - name: pr-revision
+      value: "$(event.pull_request.base.sha)"
+    - name: pr-repository
+      value: "$(event.pull_request.head.repo.clone_url)"
+    - name: pr-branch
+      value: "$(event.pull_request.head.ref)"
+    - name: pr-revision
+      value: "$(event.pull_request.head.sha)"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-commit
+  name: event-listener-github-pr-or-push
 spec:
   triggers:
     - binding:
-        name: github-commit
-      template:
-        name: trigger-template-cf
----
-apiVersion: tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: grit-or-gitlab-commit
-spec:
-  params:
-    - name: repository
-      value: "$(event.repository.git_http_url)"
-    - name: branch
-      value: "$(event.ref)"
-    - name: revision
-      value: "$(event.checkout_sha)"
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: grit-or-gitlab-commit
-spec:
-  triggers:
-    - binding:
-        name: grit-or-gitlab-commit
-      template:
-        name: trigger-template-cf
----
-apiVersion: tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: bitbucket-commit
-spec:
-  params:
-    - name: repository
-      value: "$(event.repository.links.html.href)"
-    - name: revision
-      value: "$(event.push.changes[0].new.target.hash)"
-    - name: branch
-      value: "$(event.push.changes[0].new.name)"
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: bitbucket-commit
-spec:
-  triggers:
-    - binding:
-        name: bitbucket-commit
+        name: trigger-binding-github-pr-or-push
       template:
         name: trigger-template-cf
