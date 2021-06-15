@@ -142,7 +142,7 @@ spec:
         - name: branch
           value: $(params.devex-skit-assets-git-release)
         - name: revision
-          value: $(params.revision)
+          value: ""
         - name: properties-file
           value: ""
         - name: directory-name
