@@ -449,23 +449,23 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-  # finally:
-  #   - name: set-git-commit-status
-  #     taskRef:
-  #       name: git-set-commit-status
-  #     workspaces:
-  #       - name: artifacts
-  #         workspace: pipeline-ws
-  #     params:
-  #       - name: repository
-  #         value: $(params.repository)
-  #       - name: revision
-  #         value: $(params.pr-revision)
-  #       - name: context
-  #         value: $(params.context)
-  #       - name: description
-  #         value: $(params.description)
-  #       - name: state
-  #         value: "$(tasks.status)"
-  #       - name: pipeline-debug
-  #         value: $(params.pipeline-debug)
+  finally:
+    - name: set-git-commit-status
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "$(tasks.status)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
