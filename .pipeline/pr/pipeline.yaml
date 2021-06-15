@@ -466,6 +466,6 @@ spec:
         - name: description
           value: $(params.description)
         - name: state
-          value: $(tasks.status)
+          value: $(tasks.skit-verification.status)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
