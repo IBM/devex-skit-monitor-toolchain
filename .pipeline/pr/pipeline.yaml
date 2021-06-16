@@ -568,10 +568,10 @@ spec:
           value: $(params.pipeline-debug)
   finally:
     - name: set-pr-status-build-failed
-      when: 
-        - input: tasks.build.status
-          operator: in
-          values: ["Failed", "None"]
+      # when: 
+      #   - input: tasks.build.status
+      #     operator: in
+      #     values: ["Failed", "None"]
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -591,10 +591,10 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-pr-status-deploy-failed
-      when: 
-        - input: tasks.publish-deployable-task.status
-          operator: in
-          values: ["Failed", "None"]
+      # when: 
+      #   - input: tasks.publish-deployable-task.status
+      #     operator: in
+      #     values: ["Failed", "None"]
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -614,10 +614,10 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-pr-status-verification-failed
-      when: 
-        - input: tasks.skit-verification.status
-          operator: in
-          values: ["Failed", "None"]
+      # when: 
+      #   - input: tasks.skit-verification.status
+      #     operator: in
+      #     values: ["Failed", "None"]
       taskRef:
         name: git-set-commit-status
       workspaces:
