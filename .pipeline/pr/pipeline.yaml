@@ -68,14 +68,20 @@ spec:
     - name: enabled-cf
     - name: enabled-helm
       default: "false"
-    - name: context
-      default: "commit message check"
+    - name: context-build
+      default: "cloud-build"
+    - name: context-cra
+      default: "cloud-cra"
+    - name: context-deploy
+      default: "cloud-deploy"
+    - name: context-verification
+      default: "cloud-verification"
     - name: description
       default: "verify the commit message"
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: set-git-commit-pending
+    - name: set-pr-status-build-pending
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -87,24 +93,15 @@ spec:
         - name: revision
           value: $(params.pr-revision)
         - name: context
-          value: $(params.context)
+          value: $(params.context-build)
         - name: description
           value: $(params.description)
         - name: state
           value: "pending"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: extract-repository-url
-      taskRef:
-        name: toolchain-extract-value
-      runAfter: [set-git-commit-pending]
-      params:
-        - name: expression
-          # if a params.repository is given, it takes precedence
-          value: '. as $toolchain | ["$(params.repository)"] | if .[0]=="" then $toolchain | .services[] | select(.toolchain_binding.name=="skitgitrepo") | .dashboard_url else .[0] end'
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)  
     - name: skit-git-clone
+      runAfter: [set-pr-status-build-pending]
       taskRef:
         name: git-clone-repo
       params:
@@ -130,6 +127,7 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: assets-git-clone
+      runAfter: [set-pr-status-build-pending]
       taskRef:
         name: git-clone-repo
       params:
@@ -152,6 +150,25 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+    # - name: set-pr-status-cra-pending
+    #   taskRef:
+    #     name: git-set-commit-status
+    #   workspaces:
+    #     - name: artifacts
+    #       workspace: pipeline-ws
+    #   params:
+    #     - name: repository
+    #       value: $(params.repository)
+    #     - name: revision
+    #       value: $(params.pr-revision)
+    #     - name: context
+    #       value: $(params.context-cra)
+    #     - name: description
+    #       value: $(params.description)
+    #     - name: state
+    #       value: "pending"
+    #     - name: pipeline-debug
+    #       value: $(params.pipeline-debug)
     # - name: cra-discovery-scan
     #   runAfter: [skit-git-clone, assets-git-clone]
     #   taskRef:
@@ -161,9 +178,9 @@ spec:
     #       workspace: pipeline-ws
     #   params:
     #     - name: repository
-    #       value: $(tasks.extract-repository-url.results.extracted-value)
+    #       value: $(params.repository)
     #     - name: revision
-    #       value: $(params.branch)
+    #       value: $(params.pr-branch)
     #     - name: commit-id
     #       value: $(tasks.skit-git-clone.results.git-commit)
     #     - name: pipeline-debug
@@ -184,9 +201,9 @@ spec:
     #       workspace: pipeline-ws
     #   params:
     #     - name: repository
-    #       value: $(tasks.extract-repository-url.results.extracted-value)
+    #       value: $(params.repository)
     #     - name: revision
-    #       value: $(params.branch)
+    #       value: $(params.pr-branch)
     #     - name: pr-url
     #       value: $(params.pr-url)
     #     - name: commit-id
@@ -207,9 +224,9 @@ spec:
     #       workspace: pipeline-ws
     #   params:
     #     - name: repository
-    #       value: $(tasks.extract-repository-url.results.extracted-value)
+    #       value: $(params.repository)
     #     - name: revision
-    #       value: $(params.branch)
+    #       value: $(params.pr-branch)
     #     - name: pr-url
     #       value: $(params.pr-url)
     #     - name: commit-id
@@ -247,6 +264,26 @@ spec:
     #       value: $(params.scm-type)
     #     - name: project-id
     #       value: $(params.project-id)
+    # - name: set-pr-status-cra-success
+    #   runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
+    #   taskRef:
+    #     name: git-set-commit-status
+    #   workspaces:
+    #     - name: artifacts
+    #       workspace: pipeline-ws
+    #   params:
+    #     - name: repository
+    #       value: $(params.repository)
+    #     - name: revision
+    #       value: $(params.pr-revision)
+    #     - name: context
+    #       value: $(params.context-cra)
+    #     - name: description
+    #       value: $(params.description)
+    #     - name: state
+    #       value: "success"
+    #     - name: pipeline-debug
+    #       value: $(params.pipeline-debug)
     - name: build
       runAfter: [assets-git-clone, skit-git-clone] #[code-vulnerability-scan, cra-cis-check, cra-bom]
       workspaces:
@@ -265,8 +302,48 @@ spec:
             cd /artifacts/$APP_NAME
             mvn -B package
            fi
-    - name: rolling-deploy-task
+    - name: set-pr-status-build-success
       runAfter: [build]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-build)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-pr-status-deploy-pending
+      runAfter: [build]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-build)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: rolling-deploy-task
+      runAfter: [set-pr-status-deploy-pending]
       taskRef:
         name: cf-deploy-app
       params:
@@ -379,6 +456,46 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
+    - name: set-pr-status-deploy-success
+      runAfter: [publish-deployable-task]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-build)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-pr-status-verification-pending
+      runAfter: [publish-deployable-task]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-verification)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: skit-verification
       taskRef:
         name: skit-verification
@@ -429,6 +546,26 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+    - name: set-pr-status-verification-success
+      runAfter: [publish-deployable-task]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-verification)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
   finally:
     - name: set-git-commit-status
       taskRef:
