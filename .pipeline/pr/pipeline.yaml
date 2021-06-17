@@ -103,7 +103,6 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: skit-git-clone
-      runAfter: [set-pr-status-build-pending]
       taskRef:
         name: git-clone-repo
       params:
@@ -129,7 +128,6 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: assets-git-clone
-      runAfter: [set-pr-status-build-pending]
       taskRef:
         name: git-clone-repo
       params:
@@ -343,7 +341,7 @@ spec:
     #     - name: pipeline-debug
     #       value: $(params.pipeline-debug)
     - name: rolling-deploy-task
-      runAfter: [set-pr-status-deploy-pending]
+      runAfter: [build]
       taskRef:
         name: cf-deploy-app
       params:
