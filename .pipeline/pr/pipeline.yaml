@@ -265,7 +265,6 @@ spec:
     #     - name: project-id
     #       value: $(params.project-id)
     # - name: set-pr-status-cra-success
-    #   runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
     #   taskRef:
     #     name: git-set-commit-status
     #   workspaces:
@@ -281,7 +280,7 @@ spec:
     #     - name: description
     #       value: $(params.description)
     #     - name: state
-    #       value: "success"
+    #       value: $(tasks.cra-bom.results.status)
     #     - name: pipeline-debug
     #       value: $(params.pipeline-debug)
     - name: build
@@ -302,8 +301,7 @@ spec:
             cd /artifacts/$APP_NAME
             mvn -B package
            fi
-    - name: set-pr-status-build-success
-      runAfter: [build]
+    - name: set-pr-status-build-results
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -319,7 +317,7 @@ spec:
         - name: description
           value: $(params.description)
         - name: state
-          value: "success"
+          value: $(tasks.build.results.status)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-pr-status-deploy-pending
@@ -456,8 +454,7 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    - name: set-pr-status-deploy-success
-      runAfter: [publish-deployable-task]
+    - name: set-pr-status-deploy-results
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -473,7 +470,7 @@ spec:
         - name: description
           value: $(params.description)
         - name: state
-          value: "success"
+          value: $(tasks.publish-deployable-task.results.status)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-pr-status-verification-pending
@@ -546,8 +543,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: set-pr-status-verification-success
-      runAfter: [skit-verification]
+    - name: set-pr-status-verification-results
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -563,76 +559,6 @@ spec:
         - name: description
           value: $(params.description)
         - name: state
-          value: "success"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-  finally:
-    - name: set-pr-status-build-failed
-      # when: 
-      #   - input: tasks.build.status
-      #     operator: in
-      #     values: ["Failed", "None"]
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.context-build)
-        - name: description
-          value: $(params.description)
-        - name: state
-          value: "failed"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: set-pr-status-deploy-failed
-      # when: 
-      #   - input: tasks.publish-deployable-task.status
-      #     operator: in
-      #     values: ["Failed", "None"]
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.context-deploy)
-        - name: description
-          value: $(params.description)
-        - name: state
-          value: "failed"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: set-pr-status-verification-failed
-      # when: 
-      #   - input: tasks.skit-verification.status
-      #     operator: in
-      #     values: ["Failed", "None"]
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.context-verification)
-        - name: description
-          value: $(params.description)
-        - name: state
-          value: "failed"
+          value: $(tasks.skit-verification.results.status)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
