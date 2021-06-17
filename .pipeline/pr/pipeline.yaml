@@ -558,7 +558,7 @@ spec:
         - name: context
           value: $(params.context)
         - name: description
-          value: "View app at: https://$(params.app-name).bluemix.net"
+          value: "View app at: https://$(params.cf-app).bluemix.net"
         - name: state
           value: $(tasks.skit-verification.status)
         - name: pipeline-debug
