@@ -187,7 +187,7 @@ spec:
       value: "$(event.pull_request.base.repo.clone_url)"
     - name: branch
       value: "$(event.pull_request.base.ref)"
-    - name: pr-revision
+    - name: revision
       value: "$(event.pull_request.base.sha)"
     - name: pr-repository
       value: "$(event.pull_request.head.repo.clone_url)"
