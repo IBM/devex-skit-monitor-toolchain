@@ -545,9 +545,9 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
   finally:
-    - name: evaluate-success
-      taskRef:
-        name: 
+    # - name: evaluate-success
+    #   taskRef:
+    #     name: 
     - name: set-pr-status-verification-results
       taskRef:
         name: git-set-commit-status
