@@ -18,6 +18,8 @@ spec:
       description: the branch of the incoming changes
     - name: pr-revision
       description: the git revision/commit for the incoming changes
+    - name: pr-url
+      description: the URL for the PR for CRA tasks.
     - name: region
       default: ""
     - name: apikey
@@ -100,6 +102,8 @@ spec:
             value: $(params.pr-branch)
           - name: pr-revision
             value: $(params.pr-revision)
+          - name: pr-url
+            value: $(params.pr-url)
           - name: region
             value: $(params.region)
           - name: cf-org
@@ -191,6 +195,8 @@ spec:
       value: "$(event.pull_request.head.ref)"
     - name: pr-revision
       value: "$(event.pull_request.head.sha)"
+    - name: pr-url
+      value: "$(event.pull_request.url)"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
