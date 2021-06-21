@@ -196,7 +196,7 @@ spec:
     - name: pr-revision
       value: "$(event.pull_request.head.sha)"
     - name: pr-url
-      value: "$(event.pull_request.url)"
+      value: "$(event.pull_request.html_url)"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
