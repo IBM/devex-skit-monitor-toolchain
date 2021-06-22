@@ -41,7 +41,40 @@ spec:
       description: user-provided script
       default: ""
       # Parameters for helm
-
+    - name: path-to-context
+      default: "."
+    - name: path-to-dockerfile
+      default: "."
+    - name: dockerfile
+      default: "Dockerfile"
+    - name: build-args
+      description: ibmcloud cr build argument list in the format 'KEY=VALUE' with a key-value pair per line.
+      default: ""
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: registry-namespace
+      description: container registry namespace
+    - name: registry-create-namespace
+      description: create container registry namespace if it doesn't already exists
+      default: "true"
+    - name: app-name
+      description: application name
+    - name: image-name
+      description: image name
+    - name: helm-chart-path
+      description: |
+        path to the folder containing the helm chart content (at least Chart.yaml).
+        If not specified, it will default to first folder in /chart
+      default: ""
+    - name: dev-region
+    - name: dev-resource-group
+    - name: cluster-name
+      description: the name of the cluster to target
+    - name: dev-cluster-namespace
+      description: the namespace
+    - name: helm-upgrade-extra-args
+      description: complementary argument for the helm upgrade command
+      default: ""
       # Misc parameters
     - name: pr-url
       description: pr url
@@ -71,7 +104,8 @@ spec:
     - name: pagerduty-api-token
     - name: enabled-cf
     - name: enabled-helm
-      default: "false"
+    - name: docker-username
+    - name: docker-password
     - name: context
       default: "skit-monitoring"
     # - name: context-build
@@ -601,9 +635,9 @@ spec:
         - name: image-name
           value: $(params.image-name)
         - name: path-to-context
-          value: /artifacts/$(params.app-name)
+          value: /artifacts/$(params.skit-name)
         - name: path-to-dockerfile
-          value: /artifacts/$(params.app-name)
+          value: /artifacts/$(params.skit-name)
         - name: dockerfile
           value: $(params.dockerfile)
         - name: docker-commands
@@ -705,7 +739,7 @@ spec:
             export IMAGE_TAG=$IMAGE_TAGS
             # Keep it in build.properties shuttle file
             echo "IMAGE_TAG=$IMAGE_TAGS" >> build.properties
-            export SKIT_NAME="$(params.app-name)"
+            export SKIT_NAME="$(params.skit-name)"
             export SKIT_DIR=/artifacts/${SKIT_NAME}
             export DEPLOY_TARGET="$(params.deploy-target)"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
