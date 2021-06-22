@@ -75,6 +75,12 @@ spec:
     - name: helm-upgrade-extra-args
       description: complementary argument for the helm upgrade command
       default: ""
+    - name: fail-on-lint-errors
+      description: force failure of task when docker lint errors are found
+      default: "true"
+    - name: fail-on-scanned-issues
+      description: force failure of task when vulnerability advisor scan issues are found
+      default: "true"
       # Misc parameters
     - name: pr-url
       description: pr url
