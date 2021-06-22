@@ -432,7 +432,7 @@ spec:
       workspaces:
         - name: source
           workspace: pipeline-ws
-    - name: publish-deployable-task
+    - name: publish-deployable-task-cf
       taskRef:
         name: toolchain-publish-deployable-mapping
       params:
@@ -744,7 +744,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: publish-deployable-task
+    - name: publish-deployable-task-helm
       runAfter: [deploy-to-kubernetes]
       taskRef:
         name: toolchain-publish-deployable-mapping
