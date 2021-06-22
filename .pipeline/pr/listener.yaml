@@ -98,6 +98,9 @@ spec:
     - name: ENABLED_CF
       description: whether or not this pipeline is enabled
       default: "true"
+    - name: ENABLED_HELM
+      description: whether or not helm is enabled
+      default: "true"
     - name: DOCKER_USERNAME
       description: Docker login username
     - name: DOCKER_PASSWORD
@@ -171,7 +174,7 @@ spec:
           - name: fail-on-scanned-issues
             value: $(params.fail-on-scanned-issues)
           - name: helm-chart-path
-            value: /artifacts/$(params.app-name)/chart/$(params.HELM_CHART_NAME)
+            value: /artifacts/$(params.APP_NAME)/chart/$(params.HELM_CHART_NAME)
           - name: dev-region
             value: $(params.dev-region)
           - name: dev-resource-group
@@ -215,6 +218,8 @@ spec:
             value: $(params.PAGERDUTY_API_TOKEN)
           - name: enabled-cf
             value: $(params.ENABLED_CF)
+          - name: enabled-helm
+            value: $(params.ENABLED_HELM)
           - name: docker-username
             value: $(params.DOCKER_USERNAME)
           - name: docker-password
