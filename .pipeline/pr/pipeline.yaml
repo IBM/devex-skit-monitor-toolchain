@@ -57,8 +57,6 @@ spec:
     - name: registry-create-namespace
       description: create container registry namespace if it doesn't already exists
       default: "true"
-    - name: app-name
-      description: application name
     - name: image-name
       description: image name
     - name: helm-chart-path
@@ -613,7 +611,7 @@ spec:
         - name: build-number
           value: "$(tasks.publish-doi-buildrecord.results.build-number)"
         - name: app-name
-          value: $(params.app-name)
+          value: $(params.skit-name)
         - name: file-locations
           value: "$(tasks.unit-tests.results.test-result-file-paths)"
         - name: test-types
@@ -708,7 +706,7 @@ spec:
         - name: build-number
           value: "$(tasks.publish-doi-buildrecord.results.build-number)"
         - name: app-name
-          value: $(params.app-name)
+          value: $(params.skit-name)
         - name: file-locations
           value: $(tasks.vulnerability-advisor.results.scan-report-file)
         - name: test-types
