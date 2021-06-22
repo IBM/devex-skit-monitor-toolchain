@@ -519,7 +519,7 @@ spec:
         - name: toolchain-apikey-secret-key
           value: "toolchain-apikey"
         - name: app-name
-          value: $(params.app-name)
+          value: $(params.skit-name)
         - name: git-repository
           value: $(tasks.skit-git-clone.results.git-repository)
         - name: git-branch
@@ -532,7 +532,7 @@ spec:
         name: linter-docker-lint
       params:
         - name: path-to-dockerfile
-          value: /artifacts/$(params.app-name)
+          value: /artifacts/$(params.skit-name)
         - name: dockerfile
           value: $(params.dockerfile)
         - name: fail-on-lint-errors
