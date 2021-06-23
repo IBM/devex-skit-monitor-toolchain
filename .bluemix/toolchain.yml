@@ -263,7 +263,7 @@ services:
           DOCKER_PASSWORD: >
             $env.dockerPassword ? '{{dockerPassword}}' : ''
       label: Pipeline for deploying a starter kit app via Cloud Foundry
-      name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-cf'
+      name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-pr'
       services:
       - skitgitrepo
       type: >
