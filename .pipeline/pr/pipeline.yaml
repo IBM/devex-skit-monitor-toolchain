@@ -151,7 +151,7 @@ spec:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
-          value: "toolchain-apikey"
+          value: "apikey"
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
         - name: repository
@@ -176,7 +176,7 @@ spec:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
-          value: "toolchain-apikey"
+          value: "apikey"
         - name: repository
           value: https://github.com/IBM/devex-skit-assets
         - name: branch
@@ -555,7 +555,7 @@ spec:
         name: doi-publish-buildrecord
       params:
         - name: toolchain-apikey-secret-key
-          value: "toolchain-apikey"
+          value: "apikey"
         - name: app-name
           value: $(params.skit-name)
         - name: git-repository

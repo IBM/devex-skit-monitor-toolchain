@@ -51,7 +51,7 @@ inputs:
 triggers:
   - type: git
     name: pr
-    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
+    eventListener: github-commit
     service: ${GIT_REPO}
     pattern: (master|development)
     events: { "pull_request": true }
