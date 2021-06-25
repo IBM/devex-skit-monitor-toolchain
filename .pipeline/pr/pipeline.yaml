@@ -405,7 +405,7 @@ spec:
           value: |
             export SKIT_NAME="$(params.skit-name)"
             export SKIT_DIR=/artifacts/${SKIT_NAME}
-            export DEPLOY_TARGET="$(params.deploy-target)"
+            export DEPLOY_TARGET="cf"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW=$(params.devex-skit-assets-git-url-raw)
             source /artifacts/devex-skit-assets/scripts/copy_assets.sh
@@ -607,7 +607,7 @@ spec:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
-          value: "toolchain-apikey"
+          value: "apikey"
         - name: build-number
           value: "$(tasks.publish-doi-buildrecord.results.build-number)"
         - name: app-name
@@ -702,7 +702,7 @@ spec:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
-          value: "toolchain-apikey"
+          value: "apikey"
         - name: build-number
           value: "$(tasks.publish-doi-buildrecord.results.build-number)"
         - name: app-name
@@ -745,7 +745,7 @@ spec:
             echo "IMAGE_TAG=$IMAGE_TAGS" >> build.properties
             export SKIT_NAME="$(params.skit-name)"
             export SKIT_DIR=/artifacts/${SKIT_NAME}
-            export DEPLOY_TARGET="$(params.deploy-target)"
+            export DEPLOY_TARGET="helm"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW="$(params.devex-skit-assets-git-url-raw)"
             # use custom release name to avoid long names for watson skits
