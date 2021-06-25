@@ -388,7 +388,7 @@ spec:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/cf/build.properties"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -404,7 +404,9 @@ spec:
         - name: setup-script
           value: |
             export SKIT_NAME="$(params.skit-name)"
-            export SKIT_DIR=/artifacts/${SKIT_NAME}
+            export SKIT_DIR=/artifacts/cf/${SKIT_NAME}
+            cp -a /artifacts/${SKIT_NAME} $SKIT_DIR
+            cp -a /artifacts/build.properties $SHUTTLE_PROPERTIES_FILE
             export DEPLOY_TARGET="cf"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW=$(params.devex-skit-assets-git-url-raw)
@@ -722,7 +724,7 @@ spec:
       runAfter: [vulnerability-advisor]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/helm/build.properties"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -736,15 +738,17 @@ spec:
             export HELM_UPGRADE_EXTRA_ARGS="$(params.helm-upgrade-extra-args)"
             # pipeline build number is the doi build record id (if any)
             export SOURCE_BUILD_NUMBER=$BUILD_NUMBER
-            echo "SOURCE_BUILD_NUMBER=$BUILD_NUMBER" >> build.properties
+            echo "SOURCE_BUILD_NUMBER=$BUILD_NUMBER" >> $SHUTTLE_PROPERTIES_FILE
             # For doi plugin invocation if needed
             export TOOLCHAIN_ID=$PIPELINE_TOOLCHAIN_ID
             # Single tag for the image built
             export IMAGE_TAG=$IMAGE_TAGS
-            # Keep it in build.properties shuttle file
-            echo "IMAGE_TAG=$IMAGE_TAGS" >> build.properties
+            # Keep it in $SHUTTLE_PROPERTIES_FILE
+            echo "IMAGE_TAG=$IMAGE_TAGS" >> $SHUTTLE_PROPERTIES_FILE
             export SKIT_NAME="$(params.skit-name)"
-            export SKIT_DIR=/artifacts/${SKIT_NAME}
+            export SKIT_DIR=/artifacts/helm/${SKIT_NAME}
+            cp -a /artifacts/${SKIT_NAME} $SKIT_DIR
+            cp -a /artifacts/build.properties $SHUTTLE_PROPERTIES_FILE
             export DEPLOY_TARGET="helm"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW="$(params.devex-skit-assets-git-url-raw)"
@@ -776,7 +780,7 @@ spec:
         - name: post-execution-script
           value: |
             # Keep APP_URL in build.properties shuttle file
-            echo "APP_URL=$APP_URL" >> build.properties
+            echo "APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -809,7 +813,7 @@ spec:
       runAfter: [deploy-to-kubernetes]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/helm/build.properties"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
