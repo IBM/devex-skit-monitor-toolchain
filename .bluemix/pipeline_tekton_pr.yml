@@ -129,6 +129,9 @@ properties:
   - name: ENABLED_HELM
     value: ${ENABLED_HELM}
     type: text
+  - name: HELM_CHART_NAME
+    value: ${HELM_CHART_NAME}
+    type: text
   - name: DEVX_SLACK_CHANNEL_WEBHOOK
     value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
     type: secure

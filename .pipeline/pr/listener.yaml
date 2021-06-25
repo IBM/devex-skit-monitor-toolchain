@@ -76,6 +76,8 @@ spec:
       description: the repo URL used to download skit asset releases
     - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
       description: the repo URL used to download skit asset raw code
+    - name: HELM_CHART_NAME
+      description: the name of the directory containing the helm chart
     - name: DEPLOY_TARGET
       description: the deployment target
       default: "cf"
