@@ -448,7 +448,6 @@ spec:
             # Export app name and URL for use in later Pipeline jobs
             export CF_APP_NAME="$CF_APP"
             export APP_URL=https://$(cf app $CF_APP_NAME | grep -e urls: -e routes: | awk '{print $2}')
-            echo "APP_URL=${APP_URL}" >> $SHUTTLE_PROPERTIES_FILE
 
             # View logs
             cf logs "${CF_APP}" --recent
@@ -456,7 +455,7 @@ spec:
         - name: post-execution-script
           value: |
             # Keep APP_URL in shuttle file
-            echo "APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
             echo "CF_ORG=$CF_ORG" >> $SHUTTLE_PROPERTIES_FILE
             echo "CF_SPACE=$CF_SPACE" >> $SHUTTLE_PROPERTIES_FILE
 
