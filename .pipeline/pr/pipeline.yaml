@@ -388,7 +388,7 @@ spec:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/build-cf.properties"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -722,7 +722,7 @@ spec:
       runAfter: [vulnerability-advisor]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "build-helm.properties"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -809,7 +809,7 @@ spec:
       runAfter: [deploy-to-kubernetes]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "build-helm.properties"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
