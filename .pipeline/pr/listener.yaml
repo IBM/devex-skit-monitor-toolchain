@@ -176,7 +176,7 @@ spec:
           - name: fail-on-scanned-issues
             value: $(params.fail-on-scanned-issues)
           - name: helm-chart-path
-            value: /artifacts/helm/$(params.APP_NAME)/chart/$(params.HELM_CHART_NAME)
+            value: /artifacts/$(params.APP_NAME)/chart/$(params.HELM_CHART_NAME)
           - name: dev-region
             value: $(params.dev-region)
           - name: dev-resource-group
