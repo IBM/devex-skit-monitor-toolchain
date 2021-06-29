@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-pr
+  name: trigger-template-cf
 spec:
   params:
     - name: repository
@@ -184,7 +184,7 @@ spec:
     - binding:
         name: github-commit
       template:
-        name: trigger-template-pr
+        name: trigger-template-cf
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -208,7 +208,7 @@ spec:
     - binding:
         name: grit-or-gitlab-commit
       template:
-        name: trigger-template-pr
+        name: trigger-template-cf
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -232,4 +232,4 @@ spec:
     - binding:
         name: bitbucket-commit
       template:
-        name: trigger-template-pr
+        name: trigger-template-cf
