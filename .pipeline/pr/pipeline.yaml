@@ -680,9 +680,15 @@ spec:
             case "$CHART_NAME" in
                   naturallanguageunderstandingmonitoredhelm) export RELEASE_NAME="nlu-code-pattern-monitored-helm"
                   ;;
+                  naturallanguageunderstandingmonitoredhelmpr) export RELEASE_NAME="nlu-code-pattern-monitored-helm-pr"
+                  ;;
                   texttospeechmonitoredhelm) export RELEASE_NAME="text2speech-code-pattern-monitored-helm"
                   ;;
+                  texttospeechmonitoredhelmpr) export RELEASE_NAME="text2speech-code-pattern-monitored-helm-pr"
+                  ;;
                   speechtotextmonitoredhelm) export RELEASE_NAME="speech2text-code-pattern-monitored-helm"
+                  ;;
+                  speechtotextmonitoredhelmpr) export RELEASE_NAME="speech2text-code-pattern-monitored-helm-pr"
                   ;;
                   *) export RELEASE_NAME=""
             esac
@@ -741,7 +747,7 @@ spec:
           value: $(params.dev-region)
         - name: resource-group
           value: $(params.dev-resource-group)
-        - name: cluster-name
+        - name: cluster-
           value: $(params.cluster-name)
         - name: setup-script
           value: |
