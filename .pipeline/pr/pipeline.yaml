@@ -383,6 +383,10 @@ spec:
     #     - name: pipeline-debug
     #       value: $(params.pipeline-debug)
     - name: rolling-deploy-task
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
       runAfter: [build]
       taskRef:
         name: cf-deploy-app
@@ -621,6 +625,10 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: containerize
+      when:
+        - input: $(params.enabled-helm)
+          operator: in
+          values: ["true"]
       runAfter: [build]
       taskRef:
         name: icr-execute-in-dind
