@@ -352,9 +352,9 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    - name: skit-verification
+    - name: skit-alert-and-verification
       taskRef:
-        name: skit-verification
+        name: skit-alert-and-verification
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
@@ -397,6 +397,10 @@ spec:
           value: $(params.pagerduty-api-token)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: enable-pd-alerts
+          value: "true"
+        - name: enable-slack-alerts
+          value: "true"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws

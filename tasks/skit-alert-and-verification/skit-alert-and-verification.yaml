@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: skit-verification
+  name: skit-alert-and-verification
 spec:
   params:
     - name: ibmcloud-api
@@ -46,7 +46,11 @@ spec:
     - name: owner-slack-channel-webhook
       description: webhook for the slack skit owner's monitoring channel (if different)
     - name: enable-pd-alerts
-      description: whether to enable PagerDuty alerts
+      description: if 'true', enable PagerDuty alerts
+      default: ""
+    - name: enable-slack-alerts
+      description: if 'true', enable PagerDuty alerts
+      default: "false"
     - name: pagerduty-events-api-url
       description: the PagerDuty Events API endpoint URL
     - name: pagerduty-api-token
@@ -54,9 +58,13 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
+    - name: register-skit
+      description: if 'true', kick of registration pipeline
+      default: "false"
   results:
     - name: app-url
       description: The running application's URL (obtained from APP_URL variable set by the executed script)
+
   workspaces:
     - name: artifacts
       description: A workspace
@@ -114,6 +122,13 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: REGISTER_SKIT
+          value: $(params.register-skit)
+        - name: ENABLE_PD_ALERTS
+          value: $(params.enable-pd-alerts)
+        - name: ENABLE_SLACK_ALERTS
+          value: $(params.enable-slack-alerts)
+
       script: |
         #!/bin/bash
         set -e -o pipefail

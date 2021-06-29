@@ -769,9 +769,9 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    # - name: skit-verification
+    # - name: skit-alert-and-verification
     #   taskRef:
-    #     name: skit-verification
+    #     name: skit-alert-and-verification
     #   runAfter: [rolling-deploy-task]
     #   params:
     #     - name: shuttle-properties-file
@@ -810,15 +810,19 @@ spec:
     #       value: $(params.owner-slack-channel-webhook)
     #     - name: enable-pd-alerts
     #       value: $(params.enable-pd-alerts)
-    #     - name: pagerduty-events-api-url
-    #       value: $(params.pagerduty-events-api-url)
-    #     - name: pagerduty-api-token
-    #       value: $(params.pagerduty-api-token)
-    #     - name: pipeline-debug
-    #       value: $(params.pipeline-debug)
-    #   workspaces:
-    #     - name: artifacts
-    #       workspace: pipeline-ws
+      #   - name: pagerduty-events-api-url
+      #     value: $(params.pagerduty-events-api-url)
+      #   - name: pagerduty-api-token
+      #     value: $(params.pagerduty-api-token)
+      #   - name: pipeline-debug
+      #     value: $(params.pipeline-debug)
+      #   - name: enable-pd-alerts
+      #     value: "false"
+      #   - name: enable-slack-alerts
+      #     value: "false"
+      # workspaces:
+      #   - name: artifacts
+      #     workspace: pipeline-ws
   # finally:
     # - name: evaluate-success
     #   taskRef:
@@ -839,6 +843,6 @@ spec:
     #     - name: description
     #       value: "View app at: https://$(params.skit-name)-devx-monitored-cf-pr.mybluemix.net"
     #     - name: state
-    #       value: $(tasks.skit-verification.status)
+    #       value: $(tasks.skit-alert-and-verification.status)
     #     - name: pipeline-debug
     #       value: $(params.pipeline-debug)
