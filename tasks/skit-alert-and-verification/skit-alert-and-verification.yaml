@@ -110,8 +110,6 @@ spec:
           value: $(params.devx-slack-channel-webhook)
         - name: OWNER_SLACK_CHANNEL_WEBHOOK
           value: $(params.owner-slack-channel-webhook)
-        - name: ENABLE_PD_ALERTS
-          value: $(params.enable-pd-alerts)
         - name: PAGERDUTY_EVENTS_API_URL
           value: $(params.pagerduty-events-api-url)
         - name: PAGERDUTY_API_TOKEN
