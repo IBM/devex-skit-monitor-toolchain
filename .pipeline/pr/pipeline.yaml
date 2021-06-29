@@ -112,38 +112,15 @@ spec:
     - name: docker-password
     - name: context
       default: "skit-monitoring"
-    # - name: context-build
-    #   default: "cloud-build"
-    # - name: context-cra
-    #   default: "cloud-cra"
-    # - name: context-deploy
-    #   default: "cloud-deploy"
-    # - name: context-verification
-    #   default: "cloud-verification"
+    - name: context-helm
+      default: "helm-verification"
+    - name: context-cf
+      default: "cf-verification"
     - name: description
       default: "Testing the skit pipeline deploy automatically..."
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: set-pr-status-pending
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.context)
-        - name: description
-          value: $(params.description)
-        - name: state
-          value: "pending"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: skit-git-clone
       taskRef:
         name: git-clone-repo
@@ -192,25 +169,6 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    # - name: set-pr-status-cra-pending
-    #   taskRef:
-    #     name: git-set-commit-status
-    #   workspaces:
-    #     - name: artifacts
-    #       workspace: pipeline-ws
-    #   params:
-    #     - name: repository
-    #       value: $(params.repository)
-    #     - name: revision
-    #       value: $(params.pr-revision)
-    #     - name: context
-    #       value: $(params.context-cra)
-    #     - name: description
-    #       value: $(params.description)
-    #     - name: state
-    #       value: "pending"
-    #     - name: pipeline-debug
-    #       value: $(params.pipeline-debug)
     - name: cra-discovery-scan
       runAfter: [skit-git-clone, assets-git-clone]
       taskRef:
@@ -343,51 +301,32 @@ spec:
             cd /artifacts/$APP_NAME
             mvn -B package
            fi
-    # - name: set-pr-status-build-results
-    #   taskRef:
-    #     name: git-set-commit-status
-    #   workspaces:
-    #     - name: artifacts
-    #       workspace: pipeline-ws
-    #   params:
-    #     - name: repository
-    #       value: $(params.repository)
-    #     - name: revision
-    #       value: $(params.pr-revision)
-    #     - name: context
-    #       value: $(params.context-build)
-    #     - name: description
-    #       value: $(params.description)
-    #     - name: state
-    #       value: $(tasks.build.results.status)
-    #     - name: pipeline-debug
-    #       value: $(params.pipeline-debug)
-    # - name: set-pr-status-deploy-pending
-    #   runAfter: [build]
-    #   taskRef:
-    #     name: git-set-commit-status
-    #   workspaces:
-    #     - name: artifacts
-    #       workspace: pipeline-ws
-    #   params:
-    #     - name: repository
-    #       value: $(params.repository)
-    #     - name: revision
-    #       value: $(params.pr-revision)
-    #     - name: context
-    #       value: $(params.context-deploy)
-    #     - name: description
-    #       value: $(params.description)
-    #     - name: state
-    #       value: "pending"
-    #     - name: pipeline-debug
-    #       value: $(params.pipeline-debug)
-    - name: rolling-deploy-task
+    - name: set-pr-status-cf-pending
       when:
         - input: $(params.enabled-cf)
           operator: in
           values: ["true"]
       runAfter: [build]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-cf)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: rolling-deploy-task
+      runAfter: [set-pr-status-cf-pending]
       taskRef:
         name: cf-deploy-app
       params:
@@ -499,45 +438,6 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    # - name: set-pr-status-deploy-results
-    #   taskRef:
-    #     name: git-set-commit-status
-    #   workspaces:
-    #     - name: artifacts
-    #       workspace: pipeline-ws
-    #   params:
-    #     - name: repository
-    #       value: $(params.repository)
-    #     - name: revision
-    #       value: $(params.pr-revision)
-    #     - name: context
-    #       value: $(params.context-deploy)
-    #     - name: description
-    #       value: $(params.description)
-    #     - name: state
-    #       value: $(tasks.publish-deployable-task.results.status)
-    #     - name: pipeline-debug
-    #       value: $(params.pipeline-debug)
-    # - name: set-pr-status-verification-pending
-    #   runAfter: [publish-deployable-task]
-    #   taskRef:
-    #     name: git-set-commit-status
-    #   workspaces:
-    #     - name: artifacts
-    #       workspace: pipeline-ws
-    #   params:
-    #     - name: repository
-    #       value: $(params.repository)
-    #     - name: revision
-    #       value: $(params.pr-revision)
-    #     - name: context
-    #       value: $(params.context-verification)
-    #     - name: description
-    #       value: $(params.description)
-    #     - name: state
-    #       value: "pending"
-    #     - name: pipeline-debug
-    #       value: $(params.pipeline-debug)
     ### HELM DEPLOY
     - name: extract-doi-enablement
       taskRef:
@@ -624,12 +524,32 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: containerize
+    - name: set-pr-status-helm-pending
       when:
         - input: $(params.enabled-helm)
           operator: in
           values: ["true"]
       runAfter: [build]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-helm)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: containerize
+      runAfter: [set-pr-status-helm-pending]
       taskRef:
         name: icr-execute-in-dind
       params:
