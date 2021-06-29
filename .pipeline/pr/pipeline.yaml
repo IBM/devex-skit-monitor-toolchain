@@ -709,7 +709,7 @@ spec:
         - name: post-execution-script
           value: |
             # Keep APP_URL in $SHUTTLE_PROPERTIES_FILE shuttle file
-            echo "APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
+            echo "HELM_APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -747,7 +747,7 @@ spec:
           value: $(params.dev-region)
         - name: resource-group
           value: $(params.dev-resource-group)
-        - name: cluster-
+        - name: cluster-name
           value: $(params.cluster-name)
         - name: setup-script
           value: |

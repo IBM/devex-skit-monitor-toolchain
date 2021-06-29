@@ -142,12 +142,12 @@ spec:
             cat $SHUTTLE_PROPERTIES_FILE
         fi
 
-        if [ "${DEPLOY_TARGET}" == "helm" ] && [ "${ENABLED_HELM}" == "false" ]; then
+        if [ "${DEPLOY_TARGET}" == "helm" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_HELM}" == "false" ]; then
             echo "Helm pipeline is disabled for this toolchain"
             exit 0
         fi
 
-        if [ "${DEPLOY_TARGET}" == "cf" ] && [ "${ENABLED_CF}" == "false" ]; then
+        if [ "${DEPLOY_TARGET}" == "cf" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_CF}" == "false" ]; then
             echo "CF pipeline is disabled for this toolchain"
             exit 0
         fi
@@ -159,11 +159,15 @@ spec:
 
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
 
+        export SKIT_DIR=/artifacts/${SKIT_NAME}
+
         if [ "${DEPLOY_TARGET}" == "cf" ]; then
-          export SKIT_DIR=/artifacts/${SKIT_NAME}
+          export APP_URL=$CF_APP_URL
           ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
-        else
-          export SKIT_DIR=/artifacts/${SKIT_NAME}
+        fi
+
+        if [ "${DEPLOY_TARGET}" == "helm" ]; then
+          export APP_URL=$HELM_APP_URL
         fi
 
         export SKIT_URL="$SKIT_GIT_URL"
