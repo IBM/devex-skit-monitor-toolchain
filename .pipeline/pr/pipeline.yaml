@@ -490,6 +490,26 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+    - name: set-pr-status-cf-success
+      runAfter: [cf-skit-alert-and-verification]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-cf)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     ### HELM DEPLOY
     - name: extract-doi-enablement
       taskRef:
@@ -873,6 +893,26 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+    - name: set-pr-status-helm-success
+      runAfter: [helm-skit-alert-and-verification]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-helm)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
   # finally:
     # - name: evaluate-success
     #   taskRef:
