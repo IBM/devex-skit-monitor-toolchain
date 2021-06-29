@@ -403,6 +403,8 @@ spec:
           value: "true"
         - name: enable-slack-alerts
           value: "true"
+        - name: register-skit
+          value: "true"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
