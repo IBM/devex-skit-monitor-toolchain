@@ -505,7 +505,7 @@ spec:
         - name: context
           value: $(params.context-cf)
         - name: description
-          value: $(params.description)
+          value: "Passed experience test! View site at: $(tasks.cf-skit-alert-and-verification.results.app_url)"
         - name: state
           value: "success"
         - name: pipeline-debug
@@ -908,7 +908,7 @@ spec:
         - name: context
           value: $(params.context-helm)
         - name: description
-          value: $(params.description)
+          value: "Passed experience test! View site at: $(tasks.helm-skit-alert-and-verification.results.app_url)"
         - name: state
           value: "success"
         - name: pipeline-debug
