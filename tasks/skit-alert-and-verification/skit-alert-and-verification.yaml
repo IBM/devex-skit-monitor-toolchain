@@ -49,7 +49,7 @@ spec:
       description: if 'true', enable PagerDuty alerts
       default: ""
     - name: enable-slack-alerts
-      description: if 'true', enable PagerDuty alerts
+      description: if 'true', enable slack alerts
       default: "false"
     - name: pagerduty-events-api-url
       description: the PagerDuty Events API endpoint URL
