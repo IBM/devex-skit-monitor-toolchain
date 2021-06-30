@@ -478,17 +478,15 @@ spec:
         - name: owner-slack-channel-webhook
           value: $(params.owner-slack-channel-webhook)
         - name: enable-pd-alerts
-          value: $(params.enable-pd-alerts)
+          value: "false"
         - name: pagerduty-events-api-url
           value: $(params.pagerduty-events-api-url)
         - name: pagerduty-api-token
           value: $(params.pagerduty-api-token)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: enable-pd-alerts
-          value: "true"
         - name: enable-slack-alerts
-          value: "true"
+          value: "false"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -883,7 +881,7 @@ spec:
         - name: owner-slack-channel-webhook
           value: $(params.owner-slack-channel-webhook)
         - name: enable-pd-alerts
-          value: $(params.enable-pd-alerts)
+          value: "false"
         - name: pagerduty-events-api-url
           value: $(params.pagerduty-events-api-url)
         - name: pagerduty-api-token
