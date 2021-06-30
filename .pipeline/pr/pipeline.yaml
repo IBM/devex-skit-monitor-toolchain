@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: cf-pipeline
+  name: pr-pipeline
 spec:
   params:
       # Repo and PR parameters
@@ -419,9 +419,9 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    - name: cf-skit-alert-and-verification
+    - name: cf-skit-verify-alert-register
       taskRef:
-        name: skit-alert-and-verification
+        name: skit-verify-alert-register
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
@@ -472,7 +472,7 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: set-pr-status-cf-success
-      runAfter: [cf-skit-alert-and-verification]
+      runAfter: [cf-skit-verify-alert-register]
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -486,7 +486,7 @@ spec:
         - name: context
           value: $(params.context-cf)
         - name: description
-          value: "Passed experience test! View site at: $(tasks.cf-skit-alert-and-verification.results.app-url)"
+          value: "Passed experience test! View site at: $(tasks.cf-skit-verify-alert-register.results.app-url)"
         - name: state
           value: "success"
         - name: pipeline-debug
@@ -822,9 +822,9 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: helm-skit-alert-and-verification
+    - name: helm-skit-verify-alert-register
       taskRef:
-        name: skit-alert-and-verification
+        name: skit-verify-alert-register
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file
@@ -875,7 +875,7 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: set-pr-status-helm-success
-      runAfter: [helm-skit-alert-and-verification]
+      runAfter: [helm-skit-verify-alert-register]
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -889,7 +889,7 @@ spec:
         - name: context
           value: $(params.context-helm)
         - name: description
-          value: "Passed experience test! View site at: $(tasks.helm-skit-alert-and-verification.results.app-url)"
+          value: "Passed experience test! View site at: $(tasks.helm-skit-verify-alert-register.results.app-url)"
         - name: state
           value: "success"
         - name: pipeline-debug

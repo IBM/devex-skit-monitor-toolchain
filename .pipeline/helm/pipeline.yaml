@@ -560,9 +560,9 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: skit-alert-and-verification
+    - name: skit-verify-alert-register
       taskRef:
-        name: skit-alert-and-verification
+        name: skit-verify-alert-register
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file

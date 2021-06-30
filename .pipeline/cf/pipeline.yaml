@@ -352,9 +352,9 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    - name: skit-alert-and-verification
+    - name: skit-verify-alert-register
       taskRef:
-        name: skit-alert-and-verification
+        name: skit-verify-alert-register
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file

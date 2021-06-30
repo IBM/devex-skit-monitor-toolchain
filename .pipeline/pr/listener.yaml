@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-cf
+  name: trigger-template-pr
 spec:
   params:
     - name: repository
@@ -115,7 +115,7 @@ spec:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
-        name: cf-pipeline-$(uid)-pvc
+        name: pr-pipeline-$(uid)-pvc
       spec:
         resources:
           requests:
@@ -126,10 +126,10 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: cf-pipeline-$(uid)
+        name: pr-pipeline-$(uid)
       spec:
         pipelineRef:
-          name: cf-pipeline
+          name: pr-pipeline
         params:
           - name: repository
             value: $(params.repository)
@@ -233,7 +233,7 @@ spec:
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
-              claimName: cf-pipeline-$(uid)-pvc
+              claimName: pr-pipeline-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -251,7 +251,7 @@ spec:
     - binding:
         name: manual-run
       template:
-        name: trigger-template-cf
+        name: trigger-template-pr
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -283,4 +283,4 @@ spec:
     - binding:
         name: trigger-binding-github-pr-or-push
       template:
-        name: trigger-template-cf
+        name: trigger-template-pr

@@ -7,7 +7,7 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: tasks/skit-alert-and-verification
+    path: tasks/skit-verify-alert-register
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
