@@ -59,7 +59,7 @@ spec:
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
     - name: register-skit
-      description: if 'true', kick of registration pipeline
+      description: if 'true', kick off registration pipeline
       default: "false"
   results:
     - name: app-url
