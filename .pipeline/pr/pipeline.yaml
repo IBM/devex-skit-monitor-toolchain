@@ -890,10 +890,8 @@ spec:
           value: $(params.pagerduty-api-token)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: enable-pd-alerts
-          value: "true"
         - name: enable-slack-alerts
-          value: "true"
+          value: "false"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
