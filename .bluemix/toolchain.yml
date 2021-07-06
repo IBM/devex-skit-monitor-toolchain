@@ -232,7 +232,7 @@ services:
           ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
           HELM_CHART_NAME: >
-            $env.helmChartName ? '{{helmChartName}}pr' : ''
+            $env.helmChartName ? '{{helmChartName}}' : ''
           DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
           OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
           PAGERDUTY_API_URL: 'https://api.pagerduty.com/'

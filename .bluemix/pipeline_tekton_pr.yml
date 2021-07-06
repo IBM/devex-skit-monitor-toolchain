@@ -62,7 +62,7 @@ triggers:
 properties:
   - type: text
     name: cf-app
-    value: ${APP_NAME}-monitored-cf
+    value: ${APP_NAME}-monitored-cf-pr
   - type: text
     name: APP_NAME
     value: ${APP_NAME}
@@ -88,7 +88,7 @@ properties:
     value: ${REGISTRY_NAMESPACE}
     type: text
   - name: image-name
-    value: ${APP_NAME}-monitored-helm
+    value: ${APP_NAME}-monitored-helm-pr
     type: text
   - name: dev-cluster-namespace
     value: ${PROD_CLUSTER_NAMESPACE}
@@ -130,7 +130,7 @@ properties:
     value: ${ENABLED_HELM}
     type: text
   - name: HELM_CHART_NAME
-    value: ${HELM_CHART_NAME}
+    value: "${HELM_CHART_NAME}pr"
     type: text
   - name: DEVX_SLACK_CHANNEL_WEBHOOK
     value: ${DEVX_SLACK_CHANNEL_WEBHOOK}
