@@ -350,7 +350,7 @@ spec:
             cd $SKIT_DIR
             # Push app
             if ! cf app "$CF_APP"; then  
-              cf push "$CF_APP" -f ./manifest.yaml --hostname go-gin-app-devx-monitored-cf-pr #TODO: remove
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-cf-pr #TODO: remove
             else
               OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
               rollback() {
