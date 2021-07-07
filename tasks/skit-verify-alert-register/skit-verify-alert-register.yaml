@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: skit-verification
+  name: skit-verify-alert-register
 spec:
   params:
     - name: ibmcloud-api
@@ -14,6 +14,8 @@ spec:
     - name: api-key
       description: IBM Cloud API key
     - name: app-name
+      description: name of the cf or helm app
+    - name: skit-name
       description: name of the skit
     - name: skit-git-url
       description: repo URL of the skit
@@ -44,7 +46,11 @@ spec:
     - name: owner-slack-channel-webhook
       description: webhook for the slack skit owner's monitoring channel (if different)
     - name: enable-pd-alerts
-      description: whether to enable PagerDuty alerts
+      description: if 'true', enable PagerDuty alerts
+      default: "false"
+    - name: enable-slack-alerts
+      description: if 'true', enable slack alerts
+      default: "false"
     - name: pagerduty-events-api-url
       description: the PagerDuty Events API endpoint URL
     - name: pagerduty-api-token
@@ -52,9 +58,13 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
+    - name: register-skit
+      description: if 'true', kick off registration pipeline
+      default: "false"
   results:
     - name: app-url
       description: The running application's URL (obtained from APP_URL variable set by the executed script)
+
   workspaces:
     - name: artifacts
       description: A workspace
@@ -74,6 +84,8 @@ spec:
           value: $(params.enabled-cf)
         - name: DEPLOY_TARGET
           value: $(params.deploy-target)
+        - name: SKIT_NAME
+          value: $(params.skit-name)
         - name: SKIT_GIT_URL
           value: $(params.skit-git-url)
         - name: SKIT_GIT_BRANCH
@@ -98,8 +110,6 @@ spec:
           value: $(params.devx-slack-channel-webhook)
         - name: OWNER_SLACK_CHANNEL_WEBHOOK
           value: $(params.owner-slack-channel-webhook)
-        - name: ENABLE_PD_ALERTS
-          value: $(params.enable-pd-alerts)
         - name: PAGERDUTY_EVENTS_API_URL
           value: $(params.pagerduty-events-api-url)
         - name: PAGERDUTY_API_TOKEN
@@ -110,6 +120,13 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: REGISTER_SKIT
+          value: $(params.register-skit)
+        - name: ENABLE_PD_ALERTS
+          value: $(params.enable-pd-alerts)
+        - name: ENABLE_SLACK_ALERTS
+          value: $(params.enable-slack-alerts)
+
       script: |
         #!/bin/bash
         set -e -o pipefail
@@ -123,12 +140,12 @@ spec:
             cat $SHUTTLE_PROPERTIES_FILE
         fi
 
-        if [ "${DEPLOY_TARGET}" == "helm" ] && [ "${ENABLED_HELM}" == "false" ]; then
+        if [ "${DEPLOY_TARGET}" == "helm" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_HELM}" == "false" ]; then
             echo "Helm pipeline is disabled for this toolchain"
             exit 0
         fi
 
-        if [ "${DEPLOY_TARGET}" == "cf" ] && [ "${ENABLED_CF}" == "false" ]; then
+        if [ "${DEPLOY_TARGET}" == "cf" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_CF}" == "false" ]; then
             echo "CF pipeline is disabled for this toolchain"
             exit 0
         fi
@@ -140,14 +157,18 @@ spec:
 
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
 
+        export SKIT_DIR=/artifacts/${SKIT_NAME}
+
         if [ "${DEPLOY_TARGET}" == "cf" ]; then
-          export SKIT_DIR=/artifacts/${APP_NAME%"-monitored-cf"}
+          export APP_URL=$CF_APP_URL
           ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
-        else
-          export SKIT_DIR=/artifacts/${APP_NAME}
         fi
 
-        export SKIT_URL="https://github.com/IBM/${APP_NAME%"-monitored-cf"}"
+        if [ "${DEPLOY_TARGET}" == "helm" ]; then
+          export APP_URL=$HELM_APP_URL
+        fi
+
+        export SKIT_URL="$SKIT_GIT_URL"
 
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh

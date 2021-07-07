@@ -2,17 +2,24 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-cf
+  name: trigger-template-pr
 spec:
   params:
     - name: repository
-      description: The git repo
+      description: The target git repo
     - name: branch
-      description: the branch for the git repo
+      description: the branch for the target git repo
       default: "master"
     - name: revision
-      description: the git revision/commit for the git repo (default to '' means branch)
-      default: ""
+      description: the git revision/commit for the target repo
+    - name: pr-repository
+      description: The git repo of the incoming changes
+    - name: pr-branch
+      description: the branch of the incoming changes
+    - name: pr-revision
+      description: the git revision/commit for the incoming changes
+    - name: pr-url
+      description: the URL for the PR for CRA tasks.
     - name: region
       default: ""
     - name: apikey
@@ -20,6 +27,42 @@ spec:
     - name: cf-org
     - name: cf-space
     - name: cf-app
+    # Helm parameters
+    - name: fail-on-lint-errors
+      description: force failure of task when docker lint errors are found
+      default: "true"
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: registry-namespace
+      description: container registry namespace
+    - name: image-name
+      description: image name
+    - name: path-to-context
+      default: "."
+    - name: path-to-dockerfile
+      default: "."
+    - name: dockerfile
+      default: "Dockerfile"
+    - name: build-args
+      description: ibmcloud cr build argument list in the format 'KEY=VALUE' with a key-value pair per line.
+      default: ""
+    - name: fail-on-scanned-issues
+      description: force failure of task when vulnerability advisor scan issues are found
+      default: "false"
+    - name: helm-chart-path
+      description: |
+        path to the folder containing the helm chart content (at least Chart.yaml).
+        If not specified, it will default to first folder in /chart
+      default: ""
+    - name: cluster-name
+      description: the name of the cluster to target
+    - name: dev-region
+    - name: dev-resource-group
+    - name: dev-cluster-namespace
+      description: namespace dev
+    - name: helm-upgrade-extra-args
+      description: complementary argument for the helm upgrade command. Can be used to specify an additional values file
+      default: ""
     - name: GIT_URL
       description: the URL to the skit repo
     - name: DEVX_SKIT_ASSETS_GIT
@@ -33,6 +76,8 @@ spec:
       description: the repo URL used to download skit asset releases
     - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
       description: the repo URL used to download skit asset raw code
+    - name: HELM_CHART_NAME
+      description: the name of the directory containing the helm chart
     - name: DEPLOY_TARGET
       description: the deployment target
       default: "cf"
@@ -55,6 +100,9 @@ spec:
     - name: ENABLED_CF
       description: whether or not this pipeline is enabled
       default: "true"
+    - name: ENABLED_HELM
+      description: whether or not helm is enabled
+      default: "true"
     - name: DOCKER_USERNAME
       description: Docker login username
     - name: DOCKER_PASSWORD
@@ -67,7 +115,7 @@ spec:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
-        name: cf-pipeline-$(uid)-pvc
+        name: pr-pipeline-$(uid)-pvc
       spec:
         resources:
           requests:
@@ -78,10 +126,10 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: cf-pipeline-$(uid)
+        name: pr-pipeline-$(uid)
       spec:
         pipelineRef:
-          name: cf-pipeline
+          name: pr-pipeline
         params:
           - name: repository
             value: $(params.repository)
@@ -89,6 +137,15 @@ spec:
             value: $(params.branch)
           - name: revision
             value: $(params.revision)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: pr-branch
+            value: $(params.pr-branch)
+          - name: pr-revision
+            value: $(params.pr-revision)
+          - name: pr-url
+            value: $(params.pr-url)
+          # CF Parameters
           - name: region
             value: $(params.region)
           - name: cf-org
@@ -99,6 +156,38 @@ spec:
             value: $(params.cf-app)
           - name: api-key
             value: $(params.apikey)
+          # Helm Parameters
+          - name: fail-on-lint-errors
+            value: $(params.fail-on-lint-errors)
+          - name: registry-region
+            value: $(params.registry-region)
+          - name: registry-namespace
+            value: $(params.registry-namespace)
+          - name: image-name
+            value: $(params.image-name)
+          - name: path-to-context
+            value: $(params.path-to-context)
+          - name: path-to-dockerfile
+            value: $(params.path-to-dockerfile)
+          - name: dockerfile
+            value: $(params.dockerfile)
+          - name: build-args
+            value: $(params.build-args)
+          - name: fail-on-scanned-issues
+            value: $(params.fail-on-scanned-issues)
+          - name: helm-chart-path
+            value: /artifacts/$(params.APP_NAME)/chart/$(params.HELM_CHART_NAME)
+          - name: dev-region
+            value: $(params.dev-region)
+          - name: dev-resource-group
+            value: $(params.dev-resource-group)
+          - name: cluster-name
+            value: $(params.cluster-name)
+          - name: dev-cluster-namespace
+            value: $(params.dev-cluster-namespace)
+          - name: helm-upgrade-extra-args
+            value: $(params.helm-upgrade-extra-args)
+          #
           - name: git-url
             value: $(params.GIT_URL)
           - name: devex-skit-assets-git
@@ -131,6 +220,8 @@ spec:
             value: $(params.PAGERDUTY_API_TOKEN)
           - name: enabled-cf
             value: $(params.ENABLED_CF)
+          - name: enabled-helm
+            value: $(params.ENABLED_HELM)
           - name: docker-username
             value: $(params.DOCKER_USERNAME)
           - name: docker-password
@@ -142,7 +233,7 @@ spec:
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
-              claimName: cf-pipeline-$(uid)-pvc
+              claimName: pr-pipeline-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -160,20 +251,28 @@ spec:
     - binding:
         name: manual-run
       template:
-        name: trigger-template-cf
+        name: trigger-template-pr
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-commit
+  name: trigger-binding-github-pr-or-push
 spec:
   params:
     - name: repository
-      value: "$(event.repository.html_url)"
+      value: "$(event.pull_request.base.repo.clone_url)"
     - name: branch
-      value: "$(event.ref)"
+      value: "$(event.pull_request.base.ref)"
     - name: revision
-      value: "$(event.head_commit.id)"
+      value: "$(event.pull_request.base.sha)"
+    - name: pr-repository
+      value: "$(event.pull_request.head.repo.clone_url)"
+    - name: pr-branch
+      value: "$(event.pull_request.head.ref)"
+    - name: pr-revision
+      value: "$(event.pull_request.head.sha)"
+    - name: pr-url
+      value: "$(event.pull_request.html_url)"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
@@ -182,54 +281,6 @@ metadata:
 spec:
   triggers:
     - binding:
-        name: github-commit
+        name: trigger-binding-github-pr-or-push
       template:
-        name: trigger-template-cf
----
-apiVersion: tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: grit-or-gitlab-commit
-spec:
-  params:
-    - name: repository
-      value: "$(event.repository.git_http_url)"
-    - name: branch
-      value: "$(event.ref)"
-    - name: revision
-      value: "$(event.checkout_sha)"
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: grit-or-gitlab-commit
-spec:
-  triggers:
-    - binding:
-        name: grit-or-gitlab-commit
-      template:
-        name: trigger-template-cf
----
-apiVersion: tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: bitbucket-commit
-spec:
-  params:
-    - name: repository
-      value: "$(event.repository.links.html.href)"
-    - name: revision
-      value: "$(event.push.changes[0].new.target.hash)"
-    - name: branch
-      value: "$(event.push.changes[0].new.name)"
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: bitbucket-commit
-spec:
-  triggers:
-    - binding:
-        name: bitbucket-commit
-      template:
-        name: trigger-template-cf
+        name: trigger-template-pr
