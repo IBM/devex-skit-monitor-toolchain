@@ -136,7 +136,7 @@ spec:
         - name: branch
           value: $(params.pr-branch)
         - name: revision
-          value: $(params.pr-revision)
+          value: b85d7bd44f79d65e820369c2d01341d760ff7901
         - name: properties-file
           value: "build.properties"
         - name: directory-name
