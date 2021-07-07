@@ -83,7 +83,7 @@ spec:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
-          value: "toolchain-apikey"
+          value: "apikey"
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
         - name: repository
@@ -108,7 +108,7 @@ spec:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
-          value: "toolchain-apikey"
+          value: "apikey"
         - name: repository
           value: https://github.com/IBM/devex-skit-assets
         - name: branch
@@ -312,7 +312,7 @@ spec:
         - name: post-execution-script
           value: |
             # Keep APP_URL in shuttle file
-            echo "APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
             echo "CF_ORG=$CF_ORG" >> $SHUTTLE_PROPERTIES_FILE
             echo "CF_SPACE=$CF_SPACE" >> $SHUTTLE_PROPERTIES_FILE
 
@@ -352,9 +352,9 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    - name: skit-verification
+    - name: skit-verify-alert-register
       taskRef:
-        name: skit-verification
+        name: skit-verify-alert-register
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
@@ -363,6 +363,8 @@ spec:
           value: $(params.api-key)
         - name: app-name
           value: $(params.cf-app)
+        - name: skit-name
+          value: $(params.skit-name)
         - name: skit-git-url
           value: $(tasks.skit-git-clone.results.git-repository)
         - name: skit-git-branch
@@ -397,6 +399,10 @@ spec:
           value: $(params.pagerduty-api-token)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: enable-slack-alerts
+          value: "true"
+        - name: register-skit
+          value: "true"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws

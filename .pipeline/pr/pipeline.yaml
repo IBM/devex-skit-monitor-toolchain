@@ -2,9 +2,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: helm-pipeline
+  name: pr-pipeline
 spec:
   params:
+      # Repo and PR parameters
     - name: repository
       description: the git repo containing source code. If empty, the repository url will be found from toolchain
       default: ""
@@ -12,16 +13,34 @@ spec:
       description: the branch for the git repo
       default: "master"
     - name: revision
-      description: the git revision/commit for the git repo
+      description: the git revision/commit of the target branch
+    - name: pr-repository
+      description: The git repo of the incoming changes
+    - name: pr-branch
+      description: the branch of the incoming changes
+    - name: pr-revision
+      description: the git revision/commit for the incoming changes
+      # Parameters for cf
+    - name: region
+      description: Name of the region to deploy the CF app to. Default to the toolchain region
       default: ""
-    - name: fail-on-lint-errors
-      description: force failure of task when docker lint errors are found
-      default: "true"
-    - name: fail-on-scanned-issues
-      description: force failure of task when vulnerability advisor scan issues are found
-      default: "true"
     - name: api-key
       description: IBM Cloud API key
+    - name: cf-org
+      description: Name of organization to deploy the CF app to
+    - name: cf-space
+      description: Name of space to deploy the CF app to
+    - name: cf-app
+      description: Name of the CF application to be deployed
+    - name: pipeline-debug
+      default: "0"
+    - name: ibmcloud-api
+      description: IBM Cloud instance to target
+      default: "https://cloud.ibm.com"
+    - name: custom-script
+      description: user-provided script
+      default: ""
+      # Parameters for helm
     - name: path-to-context
       default: "."
     - name: path-to-dockerfile
@@ -38,8 +57,6 @@ spec:
     - name: registry-create-namespace
       description: create container registry namespace if it doesn't already exists
       default: "true"
-    - name: app-name
-      description: application name
     - name: image-name
       description: image name
     - name: helm-chart-path
@@ -56,11 +73,15 @@ spec:
     - name: helm-upgrade-extra-args
       description: complementary argument for the helm upgrade command
       default: ""
-    - name: git-url
-      description: the repo URL of the skit repo
+    - name: fail-on-lint-errors
+      description: force failure of task when docker lint errors are found
+      default: "true"
+    - name: fail-on-scanned-issues
+      description: force failure of task when vulnerability advisor scan issues are found
+      default: "true"
+      # Misc parameters
     - name: pr-url
       description: pr url
-      default: ""
     - name: scm-type
       default: "github"
     - name: project-id
@@ -85,25 +106,21 @@ spec:
     - name: enable-pd-alerts
     - name: pagerduty-events-api-url
     - name: pagerduty-api-token
-    - name: enabled-helm
     - name: enabled-cf
-      default: "false"
+    - name: enabled-helm
     - name: docker-username
     - name: docker-password
-    - name: pipeline-debug
-      default: "0"
+    - name: context
+      default: "skit-monitoring"
+    - name: context-helm
+      default: "helm-verification"
+    - name: context-cf
+      default: "cf-verification"
+    - name: description
+      default: "Testing the skit pipeline deploy automatically..."
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: extract-repository-url
-      taskRef:
-        name: toolchain-extract-value
-      params:
-        - name: expression
-          # if a params.repository is given, it takes precedence
-          value: '. as $toolchain | ["$(params.repository)"] | if .[0]=="" then $toolchain | .services[] | select(.toolchain_binding.name=="skitgitrepo") | .dashboard_url else .[0] end'
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: skit-git-clone
       taskRef:
         name: git-clone-repo
@@ -112,12 +129,16 @@ spec:
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: branch
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: revision
-          value: $(params.revision)
+          value: $(params.pr-revision)
+        - name: properties-file
+          value: "build.properties"
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -138,7 +159,9 @@ spec:
         - name: branch
           value: $(params.devex-skit-assets-git-release)
         - name: revision
-          value: $(params.revision)
+          value: ""
+        - name: properties-file
+          value: ""
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -146,34 +169,6 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-    - name: extract-doi-enablement
-      taskRef:
-        name: toolchain-extract-value
-      params:
-        # count the number of service in the toolchain that are DevopsInsights
-        - name: expression
-          value: 'reduce .services[] as $service (0; if $service.service_id=="draservicebroker" then .+1 else . end)'
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: publish-doi-buildrecord
-      runAfter: [extract-doi-enablement]
-      when:
-        - input: $(tasks.extract-doi-enablement.results.extracted-value)
-          operator: in
-          values: ["1"]
-      taskRef:
-        name: doi-publish-buildrecord
-      params:
-        - name: toolchain-apikey-secret-key
-          value: "apikey"
-        - name: app-name
-          value: $(params.app-name)
-        - name: git-repository
-          value: $(tasks.skit-git-clone.results.git-repository)
-        - name: git-branch
-          value: $(tasks.skit-git-clone.results.git-branch)
-        - name: git-commit
-          value: $(tasks.skit-git-clone.results.git-commit)
     - name: cra-discovery-scan
       runAfter: [skit-git-clone, assets-git-clone]
       taskRef:
@@ -183,9 +178,9 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.repository)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: commit-id
           value: $(tasks.skit-git-clone.results.git-commit)
         - name: pipeline-debug
@@ -206,9 +201,9 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.repository)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -229,9 +224,9 @@ spec:
           workspace: pipeline-ws
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.repository)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -254,21 +249,277 @@ spec:
           workspace: pipeline-ws          
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.skit-git-clone.results.git-commit)
+          value: $(params.pr-revision)
         - name: target-branch
           value: $(params.branch)
         - name: target-commit-id
-          value: $(tasks.skit-git-clone.results.git-commit)      
+          value: $(params.revision)      
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
           value: $(params.project-id)
+    - name: build
+      runAfter: [assets-git-clone, skit-git-clone] 
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+      taskRef:
+        name: toolchain-build
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: custom-script
+          value: |
+           if [[ -n $(find /artifacts -name pom.xml) ]]; then
+            echo "Additional build required. Running Maven build."
+            APP_NAME="$(params.skit-name)"
+            cd /artifacts/$APP_NAME
+            mvn -B package
+           fi
+    - name: set-pr-status-cf-pending
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
+      runAfter: [build]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-cf)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: rolling-deploy-task
+      runAfter: [set-pr-status-cf-pending]
+      taskRef:
+        name: cf-deploy-app
+      params:
+        - name: shuttle-properties-file
+          value: "/artifacts/build.properties"
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: cloud-foundry-apikey-secret-key
+          value: "apikey"
+        - name: region
+          value: $(params.region)
+        - name: cf-org
+          value: $(params.cf-org)
+        - name: cf-space
+          value: $(params.cf-space)
+        - name: cf-app
+          value: $(params.cf-app)
+        - name: setup-script
+          value: |
+            export SKIT_NAME="$(params.skit-name)"
+            export SKIT_DIR=/artifacts/${SKIT_NAME}
+            export DEPLOY_TARGET="cf"
+            export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
+            export DEVX_SKIT_ASSETS_GIT_URL_RAW=$(params.devex-skit-assets-git-url-raw)
+            source /artifacts/devex-skit-assets/scripts/copy_assets.sh
+        - name: cf-commands
+          value: |
+            #!/bin/bash
+            set -e -o pipefail
+
+            if [ $PIPELINE_DEBUG == 1 ]; then
+                pwd
+                env
+                ls -l
+                trap env EXIT
+                set -x
+                cat $SHUTTLE_PROPERTIES_FILE
+            fi
+
+            cd $SKIT_DIR
+            # Push app
+            if ! cf app "$CF_APP"; then  
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-pr
+            else
+              OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
+              rollback() {
+                set +e
+                if cf app "$OLD_CF_APP"; then
+                  cf logs "$CF_APP" --recent
+                  cf delete "$CF_APP" -f
+                  cf rename "$OLD_CF_APP" "$CF_APP"
+                fi
+                exit 1
+              }
+              set -e
+              trap rollback ERR
+              cf rename "$CF_APP" "$OLD_CF_APP"
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-pr
+              cf delete "$OLD_CF_APP" -f
+            fi
+
+            # Export app name and URL for use in later Pipeline jobs
+            export CF_APP_NAME="$CF_APP"
+            export APP_URL=https://$(cf app $CF_APP_NAME | grep -e urls: -e routes: | awk '{print $2}')
+
+            # View logs
+            cf logs "${CF_APP}" --recent
+
+        - name: post-execution-script
+          value: |
+            # Keep APP_URL in shuttle file
+            echo "CF_APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_ORG=$CF_ORG" >> $SHUTTLE_PROPERTIES_FILE
+            echo "CF_SPACE=$CF_SPACE" >> $SHUTTLE_PROPERTIES_FILE
+
+            if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              ls -l
+              cat $SHUTTLE_PROPERTIES_FILE
+            fi
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: source
+          workspace: pipeline-ws
+    - name: publish-deployable-task-cf
+      taskRef:
+        name: toolchain-publish-deployable-mapping
+      params:
+        - name: deployable-type
+          value: "app"
+        - name: deployable-region-id
+          value: $(tasks.rolling-deploy-task.results.region)
+        - name: deployable-guid
+          value: $(tasks.rolling-deploy-task.results.cf-app-guid)
+        - name: deployable-cf-org-id
+          value: $(tasks.rolling-deploy-task.results.cf-org-id)
+        - name: deployable-cf-org-name
+          value: $(params.cf-org)
+        - name: deployable-cf-space-id
+          value: $(tasks.rolling-deploy-task.results.cf-space-id)
+        - name: deployable-cf-space-name
+          value: $(params.cf-space)
+        - name: environment-label
+          value: "$(params.cf-org):$(params.cf-space)"
+        - name: git-inputs
+          value: "$(tasks.skit-git-clone.results.git-repository),$(tasks.skit-git-clone.results.git-commit),$(tasks.skit-git-clone.results.git-branch)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+    - name: cf-skit-verify-alert-register
+      taskRef:
+        name: skit-verify-alert-register
+      runAfter: [rolling-deploy-task]
+      params:
+        - name: shuttle-properties-file
+          value: "/artifacts/build.properties"
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.cf-app)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: enabled-helm
+          value: $(params.enabled-helm)
+        - name: enabled-cf
+          value: $(params.enabled-cf)
+        - name: deploy-target
+          value: "cf"
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: skit-reg-endpoint
+          value: $(params.skit-reg-endpoint)
+        - name: skit-reg-auth-token
+          value: $(params.skit-reg-auth-token)
+        - name: devx-slack-channel-webhook
+          value: $(params.devx-slack-channel-webhook)
+        - name: owner-slack-channel-webhook
+          value: $(params.owner-slack-channel-webhook)
+        - name: enable-pd-alerts
+          value: "false"
+        - name: pagerduty-events-api-url
+          value: $(params.pagerduty-events-api-url)
+        - name: pagerduty-api-token
+          value: $(params.pagerduty-api-token)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: enable-slack-alerts
+          value: "false"
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: set-pr-status-cf-success
+      runAfter: [cf-skit-verify-alert-register]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-cf)
+        - name: description
+          value: "Passed experience test! View site at: $(tasks.cf-skit-verify-alert-register.results.app-url)"
+        - name: state
+          value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    ### HELM DEPLOY
+    - name: extract-doi-enablement
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        # count the number of service in the toolchain that are DevopsInsights
+        - name: expression
+          value: 'reduce .services[] as $service (0; if $service.service_id=="draservicebroker" then .+1 else . end)'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: publish-doi-buildrecord
+      runAfter: [extract-doi-enablement]
+      when:
+        - input: $(tasks.extract-doi-enablement.results.extracted-value)
+          operator: in
+          values: ["1"]
+      taskRef:
+        name: doi-publish-buildrecord
+      params:
+        - name: toolchain-apikey-secret-key
+          value: "apikey"
+        - name: app-name
+          value: $(params.skit-name)
+        - name: git-repository
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
     - name: docker-lint
       runAfter: [skit-git-clone, assets-git-clone]
       taskRef:
@@ -284,19 +535,6 @@ spec:
           value: $(params.pipeline-debug)
       workspaces:
         - name: workspace
-          workspace: pipeline-ws
-    - name: build
-      runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
-      taskRef:
-        name: toolchain-build
-      params:
-        - name: custom-script
-          value: |
-            echo "No additional build script to be run."
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-      workspaces:
-        - name: output
           workspace: pipeline-ws
     - name: unit-tests
       runAfter: [docker-lint, build]
@@ -329,7 +567,7 @@ spec:
         - name: build-number
           value: "$(tasks.publish-doi-buildrecord.results.build-number)"
         - name: app-name
-          value: $(params.app-name)
+          value: $(params.skit-name)
         - name: file-locations
           value: "$(tasks.unit-tests.results.test-result-file-paths)"
         - name: test-types
@@ -339,8 +577,32 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: containerize
+    - name: set-pr-status-helm-pending
+      when:
+        - input: $(params.enabled-helm)
+          operator: in
+          values: ["true"]
       runAfter: [build]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-helm)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: containerize
+      runAfter: [set-pr-status-helm-pending]
       taskRef:
         name: icr-execute-in-dind
       params:
@@ -378,10 +640,8 @@ spec:
             if [ ! -z "${GIT_BRANCH}" ]; then IMAGE_TAG=${GIT_BRANCH}-${IMAGE_TAG} ; fi
             IMAGE_TAG=${BUILD_NUMBER}-${IMAGE_TAG}
             echo "$IMAGE_TAG"
-
             # avoid docker pull rate limit
             docker login --username $(params.docker-username) --password $(params.docker-password)
-
             # Default docker build / inspect / push command
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
             docker inspect ${IMAGE_URL}:${IMAGE_TAG}
@@ -426,7 +686,7 @@ spec:
         - name: build-number
           value: "$(tasks.publish-doi-buildrecord.results.build-number)"
         - name: app-name
-          value: $(params.app-name)
+          value: $(params.skit-name)
         - name: file-locations
           value: $(tasks.vulnerability-advisor.results.scan-report-file)
         - name: test-types
@@ -442,7 +702,7 @@ spec:
       runAfter: [vulnerability-advisor]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/build.properties"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -456,32 +716,35 @@ spec:
             export HELM_UPGRADE_EXTRA_ARGS="$(params.helm-upgrade-extra-args)"
             # pipeline build number is the doi build record id (if any)
             export SOURCE_BUILD_NUMBER=$BUILD_NUMBER
-            echo "SOURCE_BUILD_NUMBER=$BUILD_NUMBER" >> build.properties
+            echo "SOURCE_BUILD_NUMBER=$BUILD_NUMBER" >> $SHUTTLE_PROPERTIES_FILE
             # For doi plugin invocation if needed
             export TOOLCHAIN_ID=$PIPELINE_TOOLCHAIN_ID
             # Single tag for the image built
             export IMAGE_TAG=$IMAGE_TAGS
-            # Keep it in build.properties shuttle file
-            echo "IMAGE_TAG=$IMAGE_TAGS" >> build.properties
-
+            # Keep it in $SHUTTLE_PROPERTIES_FILE shuttle file
+            echo "IMAGE_TAG=$IMAGE_TAGS" >> $SHUTTLE_PROPERTIES_FILE
             export SKIT_NAME="$(params.skit-name)"
             export SKIT_DIR=/artifacts/${SKIT_NAME}
-            export DEPLOY_TARGET="$(params.deploy-target)"
+            export DEPLOY_TARGET="helm"
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW="$(params.devex-skit-assets-git-url-raw)"
-
             # use custom release name to avoid long names for watson skits
             CHART_NAME=$(basename $CHART_PATH)
             case "$CHART_NAME" in
                   naturallanguageunderstandingmonitoredhelm) export RELEASE_NAME="nlu-code-pattern-monitored-helm"
                   ;;
+                  naturallanguageunderstandingmonitoredhelmpr) export RELEASE_NAME="nlu-code-pattern-monitored-helm-pr"
+                  ;;
                   texttospeechmonitoredhelm) export RELEASE_NAME="text2speech-code-pattern-monitored-helm"
+                  ;;
+                  texttospeechmonitoredhelmpr) export RELEASE_NAME="text2speech-code-pattern-monitored-helm-pr"
                   ;;
                   speechtotextmonitoredhelm) export RELEASE_NAME="speech2text-code-pattern-monitored-helm"
                   ;;
+                  speechtotextmonitoredhelmpr) export RELEASE_NAME="speech2text-code-pattern-monitored-helm-pr"
+                  ;;
                   *) export RELEASE_NAME=""
             esac
-
             source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/copy_assets.sh")
         - name: script
           value: |
@@ -493,20 +756,19 @@ spec:
             #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_helm3.sh")
             # ------------------
             # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_helm3.sh
-
             # This script checks the IBM Container Service cluster is ready, has a namespace configured with access to the private
             # image registry (using an IBM Cloud API Key), perform a kubectl deploy of container image and check on outcome.
             source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_and_deploy_helm3.sh")
         - name: post-execution-script
           value: |
-            # Keep APP_URL in build.properties shuttle file
-            echo "HELM_APP_URL=$APP_URL" >> build.properties
+            # Keep APP_URL in $SHUTTLE_PROPERTIES_FILE shuttle file
+            echo "HELM_APP_URL=$APP_URL" >> $SHUTTLE_PROPERTIES_FILE
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: publish-deployable-task
+    - name: publish-deployable-task-helm
       runAfter: [deploy-to-kubernetes]
       taskRef:
         name: toolchain-publish-deployable-mapping
@@ -533,7 +795,7 @@ spec:
       runAfter: [deploy-to-kubernetes]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/build.properties"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -560,13 +822,13 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: skit-verify-alert-register
+    - name: helm-skit-verify-alert-register
       taskRef:
         name: skit-verify-alert-register
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/build.properties"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -584,7 +846,7 @@ spec:
         - name: enabled-cf
           value: $(params.enabled-cf)
         - name: deploy-target
-          value: $(params.deploy-target)
+          value: "helm"
         - name: devex-skit-assets-git
           value: $(params.devex-skit-assets-git)
         - name: devex-skit-assets-git-release
@@ -600,7 +862,7 @@ spec:
         - name: owner-slack-channel-webhook
           value: $(params.owner-slack-channel-webhook)
         - name: enable-pd-alerts
-          value: $(params.enable-pd-alerts)
+          value: "false"
         - name: pagerduty-events-api-url
           value: $(params.pagerduty-events-api-url)
         - name: pagerduty-api-token
@@ -608,9 +870,27 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: enable-slack-alerts
-          value: "true"
-        - name: register-skit
-          value: "true"
+          value: "false"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+    - name: set-pr-status-helm-success
+      runAfter: [helm-skit-verify-alert-register]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-helm)
+        - name: description
+          value: "Passed experience test! View site at: $(tasks.helm-skit-verify-alert-register.results.app-url)"
+        - name: state
+          value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

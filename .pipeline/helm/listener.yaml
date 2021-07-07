@@ -15,8 +15,6 @@ spec:
       default: ""
     - name: apikey
       description: IBM Cloud API key
-    - name: app-name
-      description: application name
     - name: fail-on-lint-errors
       description: force failure of task when docker lint errors are found
       default: "true"
