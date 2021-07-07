@@ -350,7 +350,7 @@ spec:
             cd $SKIT_DIR
             # Push app
             if ! cf app "$CF_APP"; then  
-              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-cf-pr #TODO: remove
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-pr
             else
               OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
               rollback() {
@@ -365,7 +365,7 @@ spec:
               set -e
               trap rollback ERR
               cf rename "$CF_APP" "$OLD_CF_APP"
-              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-cf-pr #TODO: remove
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-pr
               cf delete "$OLD_CF_APP" -f
             fi
 
