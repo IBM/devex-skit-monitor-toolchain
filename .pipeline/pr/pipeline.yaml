@@ -350,7 +350,7 @@ spec:
             cd $SKIT_DIR
             # Push app
             if ! cf app "$CF_APP"; then  
-              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-pr
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-pr
             else
               OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
               rollback() {
@@ -889,7 +889,7 @@ spec:
         - name: context
           value: $(params.context-helm)
         - name: description
-          value: "Passed experience test! View site at: $(tasks.helm-skit-verify-alert-register.results.app-url)"
+          value: "URL: $(tasks.helm-skit-verify-alert-register.results.app-url) Passed Experience Test!"
         - name: state
           value: "success"
         - name: pipeline-debug
