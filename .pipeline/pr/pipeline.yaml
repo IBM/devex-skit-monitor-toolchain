@@ -347,6 +347,8 @@ spec:
                 cat $SHUTTLE_PROPERTIES_FILE
             fi
 
+            echo "cf-status=failed" >> $SHUTTLE_PROPERTIES_FILE
+
             cd $SKIT_DIR
             # Push app
             if ! cf app "$CF_APP"; then  
@@ -711,6 +713,8 @@ spec:
           value: $(params.cluster-name)
         - name: setup-script
           value: |
+            echot "helm-status=failed" >> $SHUTTLE_PROPERTIES_FILE
+
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
             export CHART_PATH="$(params.helm-chart-path)"
             export HELM_UPGRADE_EXTRA_ARGS="$(params.helm-upgrade-extra-args)"
@@ -910,8 +914,10 @@ spec:
           value: $(params.context-cf)
         - name: description
           value: "Test"
-        - name: state
-          value: '$([$(tasks.cf-skit-verify-alert-register.status) == "Succeeded"] && echo "Succeeded" || echo "Failed")'
+        - name: state-var
+          value: 'cf-status'
+        - name: build-properties
+          value: "/artifacts/build.properties"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-pr-status-helm-finally
@@ -929,7 +935,9 @@ spec:
           value: $(params.context-helm)
         - name: description
           value: "Test"
-        - name: state
-          value: '$([$(tasks.helm-skit-verify-alert-register.status) == "Succeeded"] && echo "Succeeded" || echo "Failed")'
+        - name: state-var
+          value: 'helm-status'
+        - name: build-properties
+          value: "/artifacts/build.properties"
         - name: pipeline-debug
           value: $(params.pipeline-debug)

@@ -177,6 +177,10 @@ spec:
         source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
 
         # Record task results
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          sed -ir "s/^[#]*\s*$(DEPLOY_TARGET)-status=.*/$(DEPLOY_TARGET)-status=success" $SHUTTLE_PROPERTIES_FILE
+        fi
+        
         echo -n "$APP_URL" > $(results.app-url.path)
       volumeMounts:
         - mountPath: /cd-config
