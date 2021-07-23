@@ -630,6 +630,8 @@ spec:
             # e.g. 3-master-50da6912-20181123114435
             # (use build number as first segment to allow image tag as a patch release name according to semantic versioning)
             GIT_BRANCH="$(tasks.skit-git-clone.results.git-branch)"
+            # Ensure that a tag will only have letters, numbers, underscores, dashes, dots
+            GIT_BRANCH=$(GIT_BRANCH//![-.:word:]/)
             GIT_COMMIT="$(tasks.skit-git-clone.results.git-commit)"
             TIMESTAMP=$( date -u "+%Y%m%d%H%M%S")
             IMAGE_TAG=${TIMESTAMP}
