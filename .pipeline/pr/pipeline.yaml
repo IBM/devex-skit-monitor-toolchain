@@ -632,6 +632,8 @@ spec:
             GIT_BRANCH="$(tasks.skit-git-clone.results.git-branch)"
             # Ensure that a tag will only have letters, numbers, underscores, dashes, dots, replace unallowed with underscore
             GIT_BRANCH=${GIT_BRANCH//[!.[:word:]-]/_}
+            # Limit length of git branch, 100 characters guarentees we won't go over the 128 limit for tags
+            GIT_BRANCH=${GIT_BRANCH:0:100}
             GIT_COMMIT="$(tasks.skit-git-clone.results.git-commit)"
             TIMESTAMP=$( date -u "+%Y%m%d%H%M%S")
             IMAGE_TAG=${TIMESTAMP}
