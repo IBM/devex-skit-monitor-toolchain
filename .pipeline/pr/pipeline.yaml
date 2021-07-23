@@ -347,7 +347,7 @@ spec:
                 cat $SHUTTLE_PROPERTIES_FILE
             fi
 
-            echo "cf-status=failed" >> $SHUTTLE_PROPERTIES_FILE
+            echo "cf_status=failed" >> $SHUTTLE_PROPERTIES_FILE
 
             cd $SKIT_DIR
             # Push app
@@ -628,6 +628,7 @@ spec:
           value: $(params.dockerfile)
         - name: docker-commands
           value: |
+            echo "helm_status=failed" >> $SHUTTLE_PROPERTIES_FILE
             # Minting image tag using format: BUILD_NUMBER-BRANCH-COMMIT_ID-TIMESTAMP
             # e.g. 3-master-50da6912-20181123114435
             # (use build number as first segment to allow image tag as a patch release name according to semantic versioning)
@@ -713,8 +714,6 @@ spec:
           value: $(params.cluster-name)
         - name: setup-script
           value: |
-            echot "helm-status=failed" >> $SHUTTLE_PROPERTIES_FILE
-
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
             export CHART_PATH="$(params.helm-chart-path)"
             export HELM_UPGRADE_EXTRA_ARGS="$(params.helm-upgrade-extra-args)"
@@ -936,7 +935,7 @@ spec:
         - name: description
           value: "Test"
         - name: state-var
-          value: 'helm-status'
+          value: 'helm_status'
         - name: build-properties
           value: "/artifacts/build.properties"
         - name: pipeline-debug
