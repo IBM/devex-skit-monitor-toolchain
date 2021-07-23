@@ -178,7 +178,7 @@ spec:
 
         # Record task results
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
-          sed -ir "s/^[#]*\s*$(DEPLOY_TARGET)_status=.*/$(DEPLOY_TARGET)_status=success" $SHUTTLE_PROPERTIES_FILE
+          sed -ir "s/^[#]*\s*$(DEPLOY_TARGET)_status=.*/$(DEPLOY_TARGET)_status=success/" $SHUTTLE_PROPERTIES_FILE
         fi
 
         echo -n "$APP_URL" > $(results.app-url.path)
