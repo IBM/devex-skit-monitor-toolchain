@@ -486,7 +486,7 @@ spec:
         - name: context
           value: $(params.context-cf)
         - name: description
-          value: "URL: $(tasks.cf-skit-verify-alert-register.results.app-url) Passed Experience Test!"
+          value: "$(tasks.cf-skit-verify-alert-register.results.app-url) Passed Experience Test!"
         - name: state
           value: "success"
         - name: pipeline-debug
@@ -889,8 +889,47 @@ spec:
         - name: context
           value: $(params.context-helm)
         - name: description
-          value: "URL: $(tasks.helm-skit-verify-alert-register.results.app-url) Passed Experience Test!"
+          value: "$(tasks.helm-skit-verify-alert-register.results.app-url) Passed Experience Test!"
         - name: state
           value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+  finally:
+    - name: set-pr-status-cf-finally
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-cf)
+        - name: description
+          value: "Test"
+        - name: state
+          value: '$([$(tasks.cf-skit-verify-alert-register.status) == "Succeeded"] && echo "Succeeded" || echo "Failed")'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-pr-status-helm-finally
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context-helm)
+        - name: description
+          value: "Test"
+        - name: state
+          value: '$([$(tasks.helm-skit-verify-alert-register.status) == "Succeeded"] && echo "Succeeded" || echo "Failed")'
         - name: pipeline-debug
           value: $(params.pipeline-debug)
