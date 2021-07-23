@@ -915,7 +915,7 @@ spec:
         - name: description
           value: "Test"
         - name: state-var
-          value: 'cf-status'
+          value: 'cf_status'
         - name: build-properties
           value: "/artifacts/build.properties"
         - name: pipeline-debug
