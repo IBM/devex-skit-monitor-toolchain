@@ -484,7 +484,7 @@ spec:
         - name: revision
           value: $(params.pr-revision)
         - name: context
-          value: $(params.context-cf)
+          value: "cf-verification"
         - name: description
           value: "$(tasks.cf-skit-verify-alert-register.results.app-url) Passed Experience Test!"
         - name: state
@@ -582,7 +582,7 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: containerize
-      runAfter: [publish-doi-code-test]
+      runAfter: [publish-doi-code-tests]
       taskRef:
         name: icr-execute-in-dind
       params:
@@ -875,7 +875,7 @@ spec:
         - name: revision
           value: $(params.pr-revision)
         - name: context
-          value: $(params.context-helm)
+          value: "helm-verification"
         - name: description
           value: "$(tasks.helm-skit-verify-alert-register.results.app-url) Passed Experience Test!"
         - name: state
