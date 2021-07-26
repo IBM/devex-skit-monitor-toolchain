@@ -917,7 +917,7 @@ spec:
         - name: state-var
           value: 'cf_status'
         - name: build-properties
-          value: "/artifacts/build.properties"
+          value: "build.properties"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-pr-status-helm-finally
@@ -938,6 +938,6 @@ spec:
         - name: state-var
           value: 'helm_status'
         - name: build-properties
-          value: "/artifacts/build.properties"
+          value: "build.properties"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
