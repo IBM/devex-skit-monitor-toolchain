@@ -630,6 +630,10 @@ spec:
             # e.g. 3-master-50da6912-20181123114435
             # (use build number as first segment to allow image tag as a patch release name according to semantic versioning)
             GIT_BRANCH="$(tasks.skit-git-clone.results.git-branch)"
+            # Ensure that a tag will only have letters, numbers, underscores, dashes, dots, replace unallowed with underscore
+            GIT_BRANCH=$(echo $GIT_BRANCH | sed 's/[^A-Za-z0-9\._-]/_/g')
+            # Limit length of git branch, 100 characters guarentees we won't go over the 128 limit for tags
+            GIT_BRANCH=${GIT_BRANCH:0:100}
             GIT_COMMIT="$(tasks.skit-git-clone.results.git-commit)"
             TIMESTAMP=$( date -u "+%Y%m%d%H%M%S")
             IMAGE_TAG=${TIMESTAMP}
@@ -639,6 +643,8 @@ spec:
             fi
             if [ ! -z "${GIT_BRANCH}" ]; then IMAGE_TAG=${GIT_BRANCH}-${IMAGE_TAG} ; fi
             IMAGE_TAG=${BUILD_NUMBER}-${IMAGE_TAG}
+            # Truncate IMAGE_TAG to max length
+            IMAGE_TAG=${IMAGE_TAG:0:128}
             echo "$IMAGE_TAG"
             # avoid docker pull rate limit
             docker login --username $(params.docker-username) --password $(params.docker-password)
