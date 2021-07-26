@@ -179,7 +179,24 @@ spec:
         # Record task results
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
           sed -ir "s/^[#]*\s*${DEPLOY_TARGET}_status=.*/${DEPLOY_TARGET}_status=success/" $SHUTTLE_PROPERTIES_FILE
+
+          if [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "true" ]; then
+            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE && grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+            fi
+          elif [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "false" ]; then
+            if grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+            fi
+          elif [ "${ENABLED_HELM}" == "false" ] && [ "${ENABLED_CF}" == "true" ]; then
+            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+            fi
+          else
+            sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+          fi
         fi
+        
 
         echo -n "$APP_URL" > $(results.app-url.path)
       volumeMounts:
