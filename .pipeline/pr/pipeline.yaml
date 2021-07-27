@@ -331,7 +331,6 @@ spec:
             export DEVX_SKIT_ASSETS_GIT_REPO_DIR="/artifacts/devex-skit-assets"
             export DEVX_SKIT_ASSETS_GIT_URL_RAW=$(params.devex-skit-assets-git-url-raw)
             source /artifacts/devex-skit-assets/scripts/copy_assets.sh
-            exit 1
         - name: cf-commands
           value: |
             #!/bin/bash
