@@ -345,8 +345,6 @@ spec:
                 cat $SHUTTLE_PROPERTIES_FILE
             fi
 
-            echo "cf_status=failed" >> $SHUTTLE_PROPERTIES_FILE
-
             cd $SKIT_DIR
             # Push app
             if ! cf app "$CF_APP"; then  
@@ -697,8 +695,6 @@ spec:
           value: $(params.cluster-name)
         - name: setup-script
           value: |
-            echo "helm_status=failed" >> $SHUTTLE_PROPERTIES_FILE
-
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
             export CHART_PATH="$(params.helm-chart-path)"
             export HELM_UPGRADE_EXTRA_ARGS="$(params.helm-upgrade-extra-args)"
