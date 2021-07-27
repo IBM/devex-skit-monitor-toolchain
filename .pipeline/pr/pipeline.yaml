@@ -111,16 +111,33 @@ spec:
     - name: docker-username
     - name: docker-password
     - name: context
-      default: "skit-monitoring"
-    - name: context-helm
-      default: "helm-verification"
-    - name: context-cf
-      default: "cf-verification"
+      default: "skit-monitoring-pl"
     - name: description
       default: "Testing the skit pipeline deploy automatically..."
+    - name: build-properties
+      default: "build.properties"
   workspaces:
     - name: pipeline-ws
   tasks:
+    - name: set-pr-status-pipeline-pending
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context)
+        - name: description
+          value: "Pipeline is now running..."
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: skit-git-clone
       taskRef:
         name: git-clone-repo
@@ -138,7 +155,7 @@ spec:
         - name: revision
           value: $(params.pr-revision)
         - name: properties-file
-          value: "build.properties"
+          value: $(params.build-properties)
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -276,43 +293,24 @@ spec:
           value: $(params.pipeline-debug)
         - name: custom-script
           value: |
+           echo "pl_status=failed" >> /artifacts/$(params.build-properties)
            if [[ -n $(find /artifacts -name pom.xml) ]]; then
             echo "Additional build required. Running Maven build."
             APP_NAME="$(params.skit-name)"
             cd /artifacts/$APP_NAME
             mvn -B package
            fi
-    - name: set-pr-status-cf-pending
+    - name: rolling-deploy-task
+      runAfter: [build]
       when:
         - input: $(params.enabled-cf)
           operator: in
           values: ["true"]
-      runAfter: [build]
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.context-cf)
-        - name: description
-          value: $(params.description)
-        - name: state
-          value: "pending"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: rolling-deploy-task
-      runAfter: [set-pr-status-cf-pending]
       taskRef:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -350,7 +348,7 @@ spec:
             cd $SKIT_DIR
             # Push app
             if ! cf app "$CF_APP"; then  
-              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-pr
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-pr
             else
               OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
               rollback() {
@@ -365,7 +363,7 @@ spec:
               set -e
               trap rollback ERR
               cf rename "$CF_APP" "$OLD_CF_APP"
-              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-monitored-pr
+              cf push "$CF_APP" -f ./manifest.yaml --hostname ${SKIT_NAME}-devx-pr
               cf delete "$OLD_CF_APP" -f
             fi
 
@@ -425,7 +423,7 @@ spec:
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -484,9 +482,9 @@ spec:
         - name: revision
           value: $(params.pr-revision)
         - name: context
-          value: $(params.context-cf)
+          value: "cf-verification"
         - name: description
-          value: "Passed experience test! View site at: $(tasks.cf-skit-verify-alert-register.results.app-url)"
+          value: "$(tasks.cf-skit-verify-alert-register.results.app-url) Passed Experience Test!"
         - name: state
           value: "success"
         - name: pipeline-debug
@@ -522,6 +520,10 @@ spec:
           value: $(tasks.skit-git-clone.results.git-commit)
     - name: docker-lint
       runAfter: [skit-git-clone, assets-git-clone]
+      when:
+        - input: $(params.enabled-helm)
+          operator: in
+          values: ["true"]
       taskRef:
         name: linter-docker-lint
       params:
@@ -577,32 +579,8 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: set-pr-status-helm-pending
-      when:
-        - input: $(params.enabled-helm)
-          operator: in
-          values: ["true"]
-      runAfter: [build]
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.context-helm)
-        - name: description
-          value: $(params.description)
-        - name: state
-          value: "pending"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: containerize
-      runAfter: [set-pr-status-helm-pending]
+      runAfter: [publish-doi-code-tests]
       taskRef:
         name: icr-execute-in-dind
       params:
@@ -708,7 +686,7 @@ spec:
       runAfter: [vulnerability-advisor]
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -801,7 +779,7 @@ spec:
       runAfter: [deploy-to-kubernetes]
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -893,10 +871,32 @@ spec:
         - name: revision
           value: $(params.pr-revision)
         - name: context
-          value: $(params.context-helm)
+          value: "helm-verification"
         - name: description
-          value: "Passed experience test! View site at: $(tasks.helm-skit-verify-alert-register.results.app-url)"
+          value: "$(tasks.helm-skit-verify-alert-register.results.app-url) Passed Experience Test!"
         - name: state
           value: "success"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+  finally:
+    - name: set-pr-status-pipeline-finally
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context)
+        - name: description
+          value: "Pipeline has finished running"
+        - name: state-var
+          value: 'pl_status'
+        - name: build-properties
+          value: "$(params.build-properties)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)

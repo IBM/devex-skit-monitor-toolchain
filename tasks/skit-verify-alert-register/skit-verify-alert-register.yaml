@@ -140,6 +140,10 @@ spec:
             cat $SHUTTLE_PROPERTIES_FILE
         fi
 
+        if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE
+          echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
+        fi
+
         if [ "${DEPLOY_TARGET}" == "helm" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_HELM}" == "false" ]; then
             echo "Helm pipeline is disabled for this toolchain"
             exit 0
@@ -177,6 +181,27 @@ spec:
         source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
 
         # Record task results
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          echo "${DEPLOY_TARGET}_status=success" >> $SHUTTLE_PROPERTIES_FILE
+
+          if [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "true" ]; then
+            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE && grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+            fi
+          elif [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "false" ]; then
+            if grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+            fi
+          elif [ "${ENABLED_HELM}" == "false" ] && [ "${ENABLED_CF}" == "true" ]; then
+            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+            fi
+          else
+            sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+          fi
+        fi
+        
+
         echo -n "$APP_URL" > $(results.app-url.path)
       volumeMounts:
         - mountPath: /cd-config
