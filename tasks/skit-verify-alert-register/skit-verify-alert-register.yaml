@@ -140,7 +140,7 @@ spec:
             cat $SHUTTLE_PROPERTIES_FILE
         fi
 
-        if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE
+        if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE; then
           echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
         fi
 
