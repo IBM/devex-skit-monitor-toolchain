@@ -543,6 +543,7 @@ spec:
         - name: setup-script
           value: |
             export CLUSTER_NAMESPACE="$(params.dev-cluster-namespace)"
+            export APP_URL=$HELM_APP_URL
         - name: script
           value: |
             # uncomment to debug the script
