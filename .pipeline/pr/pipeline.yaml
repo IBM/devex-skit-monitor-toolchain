@@ -110,6 +110,8 @@ spec:
     - name: enabled-helm
     - name: docker-username
     - name: docker-password
+    - name: run-build-image
+      description: The image used during the build of the skit.
     - name: context
       default: "skit-monitoring-pl"
     - name: description
