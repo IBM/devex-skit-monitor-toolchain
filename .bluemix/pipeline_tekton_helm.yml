@@ -158,6 +158,9 @@ properties:
   - name: branch
     value: "master"
     type: text
+  - name: run-build-image
+    value: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.7
+    type: text
   - name: pipeline-debug
     type: single_select
     value:

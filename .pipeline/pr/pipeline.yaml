@@ -300,6 +300,8 @@ spec:
             cd /artifacts/$APP_NAME
             mvn -B package
            fi
+        - name: run-build-image
+          value: $(params.run-build-image)
     - name: rolling-deploy-task
       runAfter: [build]
       when:

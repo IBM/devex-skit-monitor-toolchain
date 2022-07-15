@@ -293,6 +293,8 @@ spec:
         - name: custom-script
           value: |
             echo "No additional build script to be run."
+        - name: run-build-image
+          value: $(params.run-build-image)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
