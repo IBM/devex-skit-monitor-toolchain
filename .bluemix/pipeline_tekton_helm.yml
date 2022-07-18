@@ -159,7 +159,7 @@ properties:
     value: "master"
     type: text
   - name: run-build-image
-    value: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.7
+    value: ${run-build-image}
     type: text
   - name: pipeline-debug
     type: single_select
