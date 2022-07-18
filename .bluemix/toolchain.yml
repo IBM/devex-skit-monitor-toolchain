@@ -129,6 +129,8 @@ services:
             $env.dockerUsername ? '{{dockerUsername}}' : ''
           DOCKER_PASSWORD: >
             $env.dockerPassword ? '{{dockerPassword}}' : ''
+          run-build-image: >
+            $env.run-build-image ? '{{run-build-image}}' : ''
       label: Pipeline for deploying a starter kit app via Helm
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-helm'
       services:
@@ -262,6 +264,8 @@ services:
             $env.dockerUsername ? '{{dockerUsername}}' : ''
           DOCKER_PASSWORD: >
             $env.dockerPassword ? '{{dockerPassword}}' : ''
+          run-build-image: >
+            $env.run-build-image ? '{{run-build-image}}' : ''
       label: Pipeline for deploying a starter kit app via Cloud Foundry
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-pr'
       services:
@@ -320,5 +324,8 @@ form:
       enable-pd-alerts: "$env.enablePDAlerts === 'true'"
       skit-reg-endpoint: "{{skitRegEndpoint}}"
       skit-reg-auth-token: "{{skitRegAuthToken}}"
+      run-build-image: >
+        $env.run-build-image ?
+          "{{run-build-image}}" : "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.7"
     schema:
       $ref: deploy.json
