@@ -326,6 +326,6 @@ form:
       skit-reg-auth-token: "{{skitRegAuthToken}}"
       run-build-image: >
         $env.run-build-image ?
-          "{{run-build-image}}" : "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.7"
+          '{{run-build-image}}' : 'icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.7'
     schema:
       $ref: deploy.json
