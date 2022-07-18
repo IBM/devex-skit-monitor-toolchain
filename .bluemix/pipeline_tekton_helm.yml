@@ -159,7 +159,7 @@ properties:
     value: "master"
     type: text
   - name: run-build-image
-    value: ${run-build-image}
+    value: ${runBuildImage}
     type: text
   - name: pipeline-debug
     type: single_select
