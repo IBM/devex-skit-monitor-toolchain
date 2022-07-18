@@ -107,6 +107,8 @@ spec:
       description: Docker login username
     - name: DOCKER_PASSWORD
       description: Docker login password
+    - name: run-build-image
+      description: The image used during the build of the skit.
     - name: pipeline-debug
       default: "0"
     - name: ibmcloud-api
@@ -230,6 +232,8 @@ spec:
             value: $(params.pipeline-debug)
           - name: ibmcloud-api
             value: $(params.ibmcloud-api)
+          - name: run-build-image
+            value: $(params.run-build-image)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

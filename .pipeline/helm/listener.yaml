@@ -92,6 +92,8 @@ spec:
       description: Docker login username
     - name: DOCKER_PASSWORD
       description: Docker login password
+    - name: run-build-image
+      description: The image used during the build of the skit.
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -188,6 +190,8 @@ spec:
             value: $(params.DOCKER_USERNAME)
           - name: docker-password
             value: $(params.DOCKER_PASSWORD)
+          - name: run-build-image
+            value: $(params.run-build-image)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:

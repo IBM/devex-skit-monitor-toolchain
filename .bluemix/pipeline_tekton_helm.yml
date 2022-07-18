@@ -158,6 +158,9 @@ properties:
   - name: branch
     value: "master"
     type: text
+  - name: run-build-image
+    value: ${run-build-image}
+    type: text
   - name: pipeline-debug
     type: single_select
     value:

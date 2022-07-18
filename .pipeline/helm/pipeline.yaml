@@ -90,6 +90,8 @@ spec:
       default: "false"
     - name: docker-username
     - name: docker-password
+    - name: run-build-image
+      description: The image used during the build of the skit.
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -293,6 +295,8 @@ spec:
         - name: custom-script
           value: |
             echo "No additional build script to be run."
+        - name: run-build-image
+          value: $(params.run-build-image)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:

@@ -168,6 +168,9 @@ properties:
   - name: DOCKER_PASSWORD
     value: ${DOCKER_PASSWORD}
     type: secure
+  - name: run-build-image
+    value: ${run-build-image}
+    type: text
   - name: branch
     value: "master"
     type: text
