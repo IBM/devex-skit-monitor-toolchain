@@ -406,7 +406,11 @@ spec:
           workspace: pipeline-ws
     - name: publish-deployable-task-cf
       retries: 1
-      taskref:
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
+      taskRef:
         name: toolchain-publish-deployable-mapping
       params:
         - name: deployable-type
@@ -433,7 +437,11 @@ spec:
           value: $(params.ibmcloud-api)
     - name: cf-skit-verify-alert-register
       retries: 1
-      taskref:
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
+      taskRef:
         name: skit-verify-alert-register
       runAfter: [rolling-deploy-task]
       params:
@@ -485,6 +493,10 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: set-pr-status-cf-success
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
       runAfter: [cf-skit-verify-alert-register]
       retries: 1
       taskref:
