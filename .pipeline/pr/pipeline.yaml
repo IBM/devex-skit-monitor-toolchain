@@ -396,6 +396,10 @@ spec:
         - name: source
           workspace: pipeline-ws
     - name: publish-deployable-task-cf
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
       taskRef:
         name: toolchain-publish-deployable-mapping
       params:
@@ -422,6 +426,10 @@ spec:
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
     - name: cf-skit-verify-alert-register
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
       taskRef:
         name: skit-verify-alert-register
       runAfter: [rolling-deploy-task]
@@ -474,6 +482,10 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: set-pr-status-cf-success
+      when:
+        - input: $(params.enabled-cf)
+          operator: in
+          values: ["true"]
       runAfter: [cf-skit-verify-alert-register]
       taskRef:
         name: git-set-commit-status
