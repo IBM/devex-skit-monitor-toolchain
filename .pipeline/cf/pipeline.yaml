@@ -68,7 +68,8 @@ spec:
     - name: pipeline-ws
   tasks:
     - name: extract-repository-url
-      taskRef:
+      retries: 1
+      taskref:
         name: toolchain-extract-value
       params:
         - name: expression
@@ -77,7 +78,8 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)  
     - name: skit-git-clone
-      taskRef:
+      retries: 1
+      taskref:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -102,7 +104,8 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: assets-git-clone
-      taskRef:
+      retries: 1
+      taskref:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -126,7 +129,8 @@ spec:
           workspace: pipeline-ws
     - name: cra-discovery-scan
       runAfter: [skit-git-clone, assets-git-clone]
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-discovery
       workspaces:
         - name: artifacts
@@ -147,7 +151,8 @@ spec:
     - name: code-vulnerability-scan
       runAfter:
         - cra-discovery-scan
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-vulnerability-remediation
       workspaces:
         - name: artifacts
@@ -168,7 +173,8 @@ spec:
         - name: project-id
           value: $(params.project-id) 
     - name: cra-cis-check
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-cis-check
       runAfter:
         - cra-discovery-scan
@@ -193,7 +199,8 @@ spec:
         - name: project-id
           value: $(params.project-id)
     - name: cra-bom
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-bom
       runAfter:
         - cra-discovery-scan
@@ -224,7 +231,8 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
-      taskRef:
+      retries: 1
+      taskref:
         name: toolchain-build
       params:
         - name: pipeline-debug
@@ -240,7 +248,8 @@ spec:
            fi
     - name: rolling-deploy-task
       runAfter: [build]
-      taskRef:
+      retries: 1
+      taskref:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
@@ -327,7 +336,8 @@ spec:
         - name: source
           workspace: pipeline-ws
     - name: publish-deployable-task
-      taskRef:
+      retries: 1
+      taskref:
         name: toolchain-publish-deployable-mapping
       params:
         - name: deployable-type
@@ -353,7 +363,8 @@ spec:
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
     - name: skit-verify-alert-register
-      taskRef:
+      retries: 1
+      taskref:
         name: skit-verify-alert-register
       runAfter: [rolling-deploy-task]
       params:

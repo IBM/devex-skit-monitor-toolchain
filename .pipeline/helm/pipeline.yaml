@@ -98,7 +98,8 @@ spec:
     - name: pipeline-ws
   tasks:
     - name: extract-repository-url
-      taskRef:
+      retries: 1
+      taskref:
         name: toolchain-extract-value
       params:
         - name: expression
@@ -107,7 +108,8 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: skit-git-clone
-      taskRef:
+      retries: 1
+      taskref:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -128,7 +130,8 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: assets-git-clone
-      taskRef:
+      retries: 1
+      taskref:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -149,7 +152,8 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: extract-doi-enablement
-      taskRef:
+      retries: 1
+      taskref:
         name: toolchain-extract-value
       params:
         # count the number of service in the toolchain that are DevopsInsights
@@ -163,7 +167,8 @@ spec:
         - input: $(tasks.extract-doi-enablement.results.extracted-value)
           operator: in
           values: ["1"]
-      taskRef:
+      retries: 1
+      taskref:
         name: doi-publish-buildrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -178,7 +183,8 @@ spec:
           value: $(tasks.skit-git-clone.results.git-commit)
     - name: cra-discovery-scan
       runAfter: [skit-git-clone, assets-git-clone]
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-discovery
       workspaces:
         - name: artifacts
@@ -199,7 +205,8 @@ spec:
     - name: code-vulnerability-scan
       runAfter:
         - cra-discovery-scan
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-vulnerability-remediation
       workspaces:
         - name: artifacts
@@ -220,7 +227,8 @@ spec:
         - name: project-id
           value: $(params.project-id) 
     - name: cra-cis-check
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-cis-check
       runAfter:
         - cra-discovery-scan
@@ -245,7 +253,8 @@ spec:
         - name: project-id
           value: $(params.project-id)
     - name: cra-bom
-      taskRef:
+      retries: 1
+      taskref:
         name: cra-bom
       runAfter:
         - cra-discovery-scan
@@ -273,7 +282,8 @@ spec:
           value: $(params.project-id)
     - name: docker-lint
       runAfter: [skit-git-clone, assets-git-clone]
-      taskRef:
+      retries: 1
+      taskref:
         name: linter-docker-lint
       params:
         - name: path-to-dockerfile
@@ -289,7 +299,8 @@ spec:
           workspace: pipeline-ws
     - name: build
       runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
-      taskRef:
+      retries: 1
+      taskref:
         name: toolchain-build
       params:
         - name: custom-script
@@ -304,7 +315,8 @@ spec:
           workspace: pipeline-ws
     - name: unit-tests
       runAfter: [docker-lint, build]
-      taskRef:
+      retries: 1
+      taskref:
         name: tester-run-tests
       params:
         - name: tests-script
@@ -325,7 +337,8 @@ spec:
         - input: $(tasks.extract-doi-enablement.results.extracted-value)
           operator: in
           values: ["1"]
-      taskRef:
+      retries: 1
+      taskref:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -345,7 +358,8 @@ spec:
           workspace: pipeline-ws
     - name: containerize
       runAfter: [build]
-      taskRef:
+      retries: 1
+      taskref:
         name: icr-execute-in-dind
       params:
         - name: continuous-delivery-context-secret
@@ -396,7 +410,8 @@ spec:
         - name: source
           workspace: pipeline-ws
     - name: vulnerability-advisor
-      taskRef:
+      retries: 1
+      taskref:
         name: icr-check-va-scan
       params:
         - name: continuous-delivery-context-secret
@@ -422,7 +437,8 @@ spec:
         - input: $(tasks.extract-doi-enablement.results.extracted-value)
           operator: in
           values: ["1"]
-      taskRef:
+      retries: 1
+      taskref:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -441,7 +457,8 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: deploy-to-kubernetes
-      taskRef:
+      retries: 1
+      taskref:
         name: iks-deploy-to-kubernetes
       runAfter: [vulnerability-advisor]
       params:
@@ -512,7 +529,8 @@ spec:
           workspace: pipeline-ws
     - name: publish-deployable-task
       runAfter: [deploy-to-kubernetes]
-      taskRef:
+      retries: 1
+      taskref:
         name: toolchain-publish-deployable-mapping
       params:
         - name: deployable-type
@@ -532,7 +550,8 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: check-health
-      taskRef:
+      retries: 1
+      taskref:
         name: iks-deploy-to-kubernetes
       runAfter: [deploy-to-kubernetes]
       params:
@@ -566,7 +585,8 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: skit-verify-alert-register
-      taskRef:
+      retries: 1
+      taskref:
         name: skit-verify-alert-register
       runAfter: [deploy-to-kubernetes, check-health]
       params:
