@@ -1,0 +1,40 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: skit-cleanup-cf
+spec:
+  params:
+    - name: api-key
+      description: IBM Cloud API key
+    - name: app-name
+      description: name of the cf app
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
+      default: "0"
+  steps:
+    - name: skit-cleanup-cf
+      image: ibmcom/pipeline-base-image:2.13
+      env:
+        - name: API_KEY
+          value: $(params.api-key)
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            env
+            pwd
+            ls -l
+            trap env EXIT
+            set -x
+        fi
+
+        ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
+        
+        echo "Deleteing Cloud Foundry app: ${APP_NAME}..."
+        ibmcloud cf delete "${APP_NAME}" -f
