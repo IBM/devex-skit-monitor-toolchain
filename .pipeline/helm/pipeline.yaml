@@ -639,3 +639,23 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+    - name: sleep
+        taskref:
+          name: sleep
+        runAfter: [skit-verify-alert-register]
+        params:
+          - name: sleep-duration
+            value: 120
+    - name: skit-cleanup-helm
+      taskref:
+        name: skit-cleanup-helm
+      runafter: [sleep]
+      params:
+        - name: api-key
+          description: IBM Cloud API key
+        - name: app-name
+          description: name of the cf app
+        - name: cluster-name
+          valued: $(params.cluster-name)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

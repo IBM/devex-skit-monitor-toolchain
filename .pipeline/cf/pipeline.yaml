@@ -417,3 +417,21 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+    - name: sleep
+      taskref:
+        name: sleep
+      runAfter: [skit-verify-alert-register]
+      params:
+        - name: sleep-duration
+          value: 120
+    - name: skit-cleanup-cf
+      taskref:
+        name: skit-cleanup-cf
+      runafter: [sleep]
+      params:
+        - name: api-key
+          description: IBM Cloud API key
+        - name: app-name
+          description: name of the cf app
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
