@@ -12,9 +12,14 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
       default: "0"
+  workspaces:
+    - name: artifacts
+      description: A workspace
+      mountPath: /artifacts
   steps:
     - name: skit-cleanup-cf
       image: ibmcom/pipeline-base-image:2.13
+      workingDir: /artifacts
       env:
         - name: API_KEY
           value: $(params.api-key)
