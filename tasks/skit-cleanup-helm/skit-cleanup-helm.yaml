@@ -40,7 +40,7 @@ spec:
 
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
         
-        ibmcloud ks config --cluster "${KUBE_CLUSTER}"
+        ibmcloud ks cluster config --cluster "${KUBE_CLUSTER}"
         echo "Deleteing Helm deployment: ${APP_NAME}..."
         kubectl delete deployment.apps/${APP_NAME}-deployment
         echo "Deleteing Helm service: ${APP_NAME}..."
