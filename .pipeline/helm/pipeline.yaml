@@ -640,12 +640,12 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: skit-sleep
-        taskref:
-          name: skit-sleep
-        runAfter: [skit-verify-alert-register]
-        params:
-          - name: skit-sleep-duration
-            value: "120"
+      taskref:
+        name: skit-sleep
+      runAfter: [skit-verify-alert-register]
+      params:
+        - name: skit-sleep-duration
+          value: "120"
     - name: skit-cleanup-helm
       taskref:
         name: skit-cleanup-helm
