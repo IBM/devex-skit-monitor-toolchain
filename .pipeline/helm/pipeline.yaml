@@ -639,17 +639,17 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: sleep
+    - name: skit-sleep
         taskref:
-          name: sleep
+          name: skit-sleep
         runAfter: [skit-verify-alert-register]
         params:
-          - name: sleep-duration
+          - name: skit-sleep-duration
             value: "120"
     - name: skit-cleanup-helm
       taskref:
         name: skit-cleanup-helm
-      runafter: [sleep]
+      runafter: [skit-sleep]
       params:
         - name: api-key
           value: $(params.api-key)
