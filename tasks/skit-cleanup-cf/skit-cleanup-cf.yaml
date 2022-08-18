@@ -9,6 +9,10 @@ spec:
       description: IBM Cloud API key
     - name: app-name
       description: name of the cf app
+    - name: cf-org
+      description: Name of organization to deploy the CF app to
+    - name: cf-space
+      description: Name of space to deploy the CF app to
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
       default: "0"
@@ -20,6 +24,10 @@ spec:
           value: $(params.api-key)
         - name: APP_NAME
           value: $(params.app-name)
+        - name: CF_ORG
+          value: $(params.cf-org)
+        - name: CF_SPACE
+          value: $(params.cf-space)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
       script: |
@@ -35,6 +43,7 @@ spec:
         fi
 
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
+        ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
         
         echo "Deleteing Cloud Foundry app: ${APP_NAME}..."
         ibmcloud cf delete "${APP_NAME}" -f

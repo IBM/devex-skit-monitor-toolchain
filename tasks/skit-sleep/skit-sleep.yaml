@@ -18,4 +18,5 @@ spec:
         #!/bin/bash
         set -e -o pipefail
         
+        printf 'Sleeping for %d minutes\n' $((SLEEP_DURATION%3600/60))
         sleep "$SLEEP_DURATION"
