@@ -7,7 +7,7 @@ spec:
   params:
     - name: sleep-duration
       description: the amount of seconds to sleep
-      default: 600
+      default: "600"
   workspaces:
     - name: artifacts
       description: A workspace
