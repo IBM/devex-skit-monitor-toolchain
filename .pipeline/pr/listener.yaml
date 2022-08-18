@@ -245,6 +245,20 @@ metadata:
   name: manual-run
 spec:
   params:
+    - name: repository
+      value: "$(event.pull_request.base.repo.clone_url)"
+    - name: branch
+      value: "$(event.pull_request.base.ref)"
+    - name: revision
+      value: "$(event.pull_request.base.sha)"
+    - name: pr-repository
+      value: "$(event.pull_request.head.repo.clone_url)"
+    - name: pr-branch
+      value: "$(event.pull_request.head.ref)"
+    - name: pr-revision
+      value: "$(event.pull_request.head.sha)"
+    - name: pr-url
+      value: "$(event.pull_request.html_url)"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
