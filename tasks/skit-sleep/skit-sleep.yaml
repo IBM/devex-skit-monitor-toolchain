@@ -5,17 +5,17 @@ metadata:
   name: skit-sleep
 spec:
   params:
-    name: skit-sleep-duration
-    description: the amount of seconds to sleep
-    default: "600"
+    - name: skit-sleep-duration
+      description: the amount of seconds to sleep
+      default: "600"
   steps:
-    name: run-sleep
-    image: ibmcom/pipeline-base-image:2.13
-    env:
-      name: SLEEP_DURATION
-      value: $(params.skit-sleep-duration)
-    script: |
-      #!/bin/bash
-      set -e -o pipefail
+    - name: run-sleep
+      image: ibmcom/pipeline-base-image:2.13
+      env:
+        - name: SLEEP_DURATION
+          value: $(params.skit-sleep-duration)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
         
-      sleep "$SLEEP_DURATION"
+        sleep "$SLEEP_DURATION"
