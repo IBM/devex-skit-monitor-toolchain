@@ -8,14 +8,9 @@ spec:
     - name: sleep-duration
       description: the amount of seconds to sleep
       default: "600"
-  workspaces:
-    - name: artifacts
-      description: A workspace
-      mountPath: /artifacts
   steps:
     - name: sleep
       image: ibmcom/pipeline-base-image:2.13
-      workingDir: /artifacts
       env:
         - name: SLEEP_DURATION
           value: $(params.sleep-duration)
