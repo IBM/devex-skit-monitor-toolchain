@@ -652,10 +652,10 @@ spec:
       runafter: [sleep]
       params:
         - name: api-key
-          description: IBM Cloud API key
+          value: $(params.api-key)
         - name: app-name
-          description: name of the cf app
+          value: $(params.image-name)
         - name: cluster-name
-          valued: $(params.cluster-name)
+          value: $(params.cluster-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)

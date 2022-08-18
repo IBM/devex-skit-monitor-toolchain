@@ -9,6 +9,14 @@ inputs:
     service: ${PIPELINE_REPO}
     path: tasks/skit-verify-alert-register
   - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/sleep
+  - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/skit-cleanup-cf
+  - type: git
     service: ${TEKTON_CATALOG_REPO}
     branch: master
     path: git
