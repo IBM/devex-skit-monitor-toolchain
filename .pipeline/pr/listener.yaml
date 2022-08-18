@@ -246,19 +246,19 @@ metadata:
 spec:
   params:
     - name: repository
-      value: "$(event.pull_request.base.repo.clone_url)"
+      value: $(params.repository)
     - name: branch
-      value: "$(event.pull_request.base.ref)"
+      value: $(params.branch)
     - name: revision
-      value: "$(event.pull_request.base.sha)"
+      value: $(params.revision)
     - name: pr-repository
-      value: "$(event.pull_request.head.repo.clone_url)"
+      value: $(params.pr-repository)
     - name: pr-branch
-      value: "$(event.pull_request.head.ref)"
+      value: $(params.pr-branch)
     - name: pr-revision
-      value: "$(event.pull_request.head.sha)"
+      value: $(params.pr-revision)
     - name: pr-url
-      value: "$(event.pull_request.html_url)"
+      value: $(params.pr-url)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
