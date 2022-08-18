@@ -125,9 +125,6 @@ properties:
   - name: SKIT_REG_AUTH_TOKEN
     value: ${SKIT_REG_AUTH_TOKEN}
     type: secure
-  - name: skit-sleep-duration
-    value: ${SLEEP_DURATION}
-    type: text
   - name: DEPLOY_TARGET
     value: cf
     type: text
