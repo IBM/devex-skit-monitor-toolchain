@@ -18,5 +18,5 @@ spec:
         #!/bin/bash
         set -e -o pipefail
         
-        printf 'Sleeping for %d minutes\n' $((SLEEP_DURATION%3600/60))
+        printf 'Allowing app to run for %d minutes before deleting it.\n' $((SLEEP_DURATION%3600/60))
         sleep "$SLEEP_DURATION"
