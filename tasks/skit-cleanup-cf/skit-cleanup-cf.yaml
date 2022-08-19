@@ -47,4 +47,4 @@ spec:
         ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
         
         echo "Deleteing Cloud Foundry app: ${APP_NAME}..."
-        ibmcloud cf delete fake_app -f
+        ibmcloud cf delete "${APP_NAME}" -f
