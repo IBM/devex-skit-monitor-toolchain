@@ -417,18 +417,18 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-  finally:
     - name: skit-sleep
       taskref:
         name: skit-sleep
+      runAfter: [skit-verify-alert-register]
       params:
         - name: skit-sleep-duration
           value: "60"
+  finally:
     - name: skit-cleanup-cf
       retries: 1
       taskref:
         name: skit-cleanup-cf
-      runafter: [skit-sleep]
       params:
         - name: api-key
           value: $(params.api-key)
