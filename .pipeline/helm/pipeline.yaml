@@ -646,11 +646,11 @@ spec:
       params:
         - name: skit-sleep-duration
           value: "600"
+  finally:
     - name: skit-cleanup-helm
       retries: 1
       taskref:
         name: skit-cleanup-helm
-      runafter: [skit-sleep]
       params:
         - name: api-key
           value: $(params.api-key)

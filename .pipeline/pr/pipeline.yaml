@@ -920,7 +920,6 @@ spec:
           value: "success"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-  finally:
     - name: set-pr-status-pipeline-finally
       retries: 1
       taskref:
@@ -950,11 +949,11 @@ spec:
       params:
         - name: skit-sleep-duration
           value: "600"
+  finally:
     - name: skit-cleanup-cf
       retries: 1
       taskref:
         name: skit-cleanup-cf
-      runafter: [skit-sleep]
       params:
         - name: api-key
           value: $(params.api-key)
@@ -970,7 +969,6 @@ spec:
       retries: 1
       taskref:
         name: skit-cleanup-helm
-      runafter: [skit-sleep]
       params:
         - name: api-key
           value: $(params.api-key)

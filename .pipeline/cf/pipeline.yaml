@@ -423,7 +423,7 @@ spec:
       runAfter: [skit-verify-alert-register]
       params:
         - name: skit-sleep-duration
-          value: "60"
+          value: "600"
   finally:
     - name: skit-cleanup-cf
       retries: 1
