@@ -425,6 +425,7 @@ spec:
         - name: skit-sleep-duration
           value: "600"
     - name: skit-cleanup-cf
+      retries: 1
       taskref:
         name: skit-cleanup-cf
       runafter: [skit-sleep]

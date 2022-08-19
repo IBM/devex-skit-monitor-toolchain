@@ -920,41 +920,6 @@ spec:
           value: "success"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: skit-sleep
-      taskref:
-        name: skit-sleep
-      runAfter: [set-pr-status-helm-success]
-      params:
-        - name: skit-sleep-duration
-          value: "600"
-    - name: skit-cleanup-cf
-      taskref:
-        name: skit-cleanup-cf
-      runafter: [skit-sleep]
-      params:
-        - name: api-key
-          value: $(params.api-key)
-        - name: app-name
-          value: $(params.cf-app)
-        - name: cf-org
-          value: $(params.cf-org)
-        - name: cf-space
-          value: $(params.cf-space)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: skit-cleanup-helm
-      taskref:
-        name: skit-cleanup-helm
-      runafter: [skit-sleep]
-      params:
-        - name: api-key
-          value: $(params.api-key)
-        - name: app-name
-          value: $(params.image-name)
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
   finally:
     - name: set-pr-status-pipeline-finally
       retries: 1
@@ -976,5 +941,42 @@ spec:
           value: 'pl_status'
         - name: build-properties
           value: "$(params.build-properties)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: skit-sleep
+      taskref:
+        name: skit-sleep
+      runAfter: [set-pr-status-helm-success]
+      params:
+        - name: skit-sleep-duration
+          value: "600"
+    - name: skit-cleanup-cf
+      retries: 1
+      taskref:
+        name: skit-cleanup-cf
+      runafter: [skit-sleep]
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.cf-app)
+        - name: cf-org
+          value: $(params.cf-org)
+        - name: cf-space
+          value: $(params.cf-space)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: skit-cleanup-helm
+      retries: 1
+      taskref:
+        name: skit-cleanup-helm
+      runafter: [skit-sleep]
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.image-name)
+        - name: cluster-name
+          value: $(params.cluster-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)

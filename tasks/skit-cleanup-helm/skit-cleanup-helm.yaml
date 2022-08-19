@@ -17,6 +17,7 @@ spec:
   steps:
     - name: cleanup-helm
       image: ibmcom/pipeline-base-image:2.13
+      onError: continue
       env:
         - name: API_KEY
           value: $(params.api-key)
