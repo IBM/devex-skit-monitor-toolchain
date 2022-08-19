@@ -245,20 +245,6 @@ metadata:
   name: manual-run
 spec:
   params:
-    - name: repository
-      value: $(params.repository)
-    - name: branch
-      value: $(params.branch)
-    - name: revision
-      value: $(params.revision)
-    - name: pr-repository
-      value: $(params.pr-repository)
-    - name: pr-branch
-      value: $(params.pr-branch)
-    - name: pr-revision
-      value: $(params.pr-revision)
-    - name: pr-url
-      value: $(params.pr-url)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener

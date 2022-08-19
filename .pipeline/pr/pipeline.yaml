@@ -926,7 +926,7 @@ spec:
       runAfter: [set-pr-status-helm-success]
       params:
         - name: skit-sleep-duration
-          value: "120"
+          value: "600"
     - name: skit-cleanup-cf
       taskref:
         name: skit-cleanup-cf
