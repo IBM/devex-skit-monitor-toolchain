@@ -639,3 +639,19 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+  finally:
+    - name: skit-cleanup-helm
+      retries: 1
+      taskref:
+        name: skit-cleanup-helm
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.image-name)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: sleep-duration
+          value: "600"

@@ -1,0 +1,63 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: skit-cleanup-helm
+spec:
+  params:
+    - name: api-key
+      description: IBM Cloud API key
+    - name: app-name
+      description: name of the helm app
+    - name: cluster-name
+      description: name of the kube cluster
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
+      default: "0"
+    - name: sleep-duration
+      description: the amount of seconds to sleep
+      default: "60"
+  steps:
+    - name: run-sleep
+      image: ibmcom/pipeline-base-image:2.13
+      env:
+        - name: SLEEP_DURATION
+          value: $(params.sleep-duration)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        
+        printf 'Allowing app to run for %d minutes before deleting it.\n' $((SLEEP_DURATION%3600/60))
+        sleep "$SLEEP_DURATION"
+    - name: cleanup-helm
+      image: ibmcom/pipeline-base-image:2.13
+      onError: continue
+      env:
+        - name: API_KEY
+          value: $(params.api-key)
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: KUBE_CLUSTER
+          value: $(params.cluster-name)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            env
+            pwd
+            ls -l
+            trap env EXIT
+            set -x
+        fi
+
+        ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
+        
+        ibmcloud ks cluster config --cluster "${KUBE_CLUSTER}"
+        HELM_NAME=$(echo "$APP_NAME" | tr -d '-')  # Removes hyphens from APP_NAME
+        echo "Deleting Helm deployment: $HELM_NAME..."
+        kubectl delete deployment.apps/$HELM_NAME-deployment
+        echo "Deleting Helm service: $HELM_NAME..."
+        kubectl delete service/$HELM_NAME-application-service

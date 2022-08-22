@@ -417,3 +417,21 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+  finally:
+    - name: skit-cleanup-cf
+      retries: 1
+      taskref:
+        name: skit-cleanup-cf
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.cf-app)
+        - name: cf-org
+          value: $(params.cf-org)
+        - name: cf-space
+          value: $(params.cf-space)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: sleep-duration
+          value: "600"

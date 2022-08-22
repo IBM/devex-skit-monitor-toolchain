@@ -1,0 +1,22 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sleep
+spec:
+  params:
+    - name: sleep-duration
+      description: the amount of seconds to sleep
+      default: "0"
+  steps:
+    - name: run-sleep
+      image: ibmcom/pipeline-base-image:2.13
+      env:
+        - name: SLEEP_DURATION
+          value: $(params.sleep-duration)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        
+        printf 'Sleeping for %d minutes.\n' $((SLEEP_DURATION%3600/60))
+        sleep "$SLEEP_DURATION"
