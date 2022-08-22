@@ -2,10 +2,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: skit-sleep
+  name: sleep
 spec:
   params:
-    - name: skit-sleep-duration
+    - name: sleep-duration
       description: the amount of seconds to sleep
       default: "0"
   steps:
@@ -13,10 +13,10 @@ spec:
       image: ibmcom/pipeline-base-image:2.13
       env:
         - name: SLEEP_DURATION
-          value: $(params.skit-sleep-duration)
+          value: $(params.sleep-duration)
       script: |
         #!/bin/bash
         set -e -o pipefail
         
-        printf 'Allowing app to run for %d minutes before deleting it.\n' $((SLEEP_DURATION%3600/60))
+        printf 'Sleeping for %d minutes.\n' $((SLEEP_DURATION%3600/60))
         sleep "$SLEEP_DURATION"

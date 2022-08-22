@@ -16,7 +16,7 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
       default: "0"
-    - name: skit-sleep-duration
+    - name: sleep-duration
       description: the amount of seconds to sleep
       default: "60"
   steps:
@@ -24,7 +24,7 @@ spec:
       image: ibmcom/pipeline-base-image:2.13
       env:
         - name: SLEEP_DURATION
-          value: $(params.skit-sleep-duration)
+          value: $(params.sleep-duration)
       script: |
         #!/bin/bash
         set -e -o pipefail
@@ -60,5 +60,5 @@ spec:
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
         ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
         
-        echo "Deleteing Cloud Foundry app: ${APP_NAME}..."
+        echo "Deleting Cloud Foundry app: ${APP_NAME}..."
         ibmcloud cf delete "${APP_NAME}" -f

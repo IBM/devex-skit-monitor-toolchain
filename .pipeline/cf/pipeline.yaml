@@ -433,5 +433,5 @@ spec:
           value: $(params.cf-space)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: skit-sleep-duration
+        - name: sleep-duration
           value: "600"

@@ -14,7 +14,7 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
       default: "0"
-    - name: skit-sleep-duration
+    - name: sleep-duration
       description: the amount of seconds to sleep
       default: "60"
   steps:
@@ -22,7 +22,7 @@ spec:
       image: ibmcom/pipeline-base-image:2.13
       env:
         - name: SLEEP_DURATION
-          value: $(params.skit-sleep-duration)
+          value: $(params.sleep-duration)
       script: |
         #!/bin/bash
         set -e -o pipefail
@@ -57,7 +57,7 @@ spec:
         
         ibmcloud ks cluster config --cluster "${KUBE_CLUSTER}"
         HELM_NAME=$(echo "$APP_NAME" | tr -d '-')  # Removes hyphens from APP_NAME
-        echo "Deleteing Helm deployment: $HELM_NAME..."
+        echo "Deleting Helm deployment: $HELM_NAME..."
         kubectl delete deployment.apps/$HELM_NAME-deployment
-        echo "Deleteing Helm service: $HELM_NAME..."
+        echo "Deleting Helm service: $HELM_NAME..."
         kubectl delete service/$HELM_NAME-application-service
