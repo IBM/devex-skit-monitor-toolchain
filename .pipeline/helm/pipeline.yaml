@@ -639,13 +639,6 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: skit-sleep
-      taskref:
-        name: skit-sleep
-      runAfter: [skit-verify-alert-register]
-      params:
-        - name: skit-sleep-duration
-          value: "600"
   finally:
     - name: skit-cleanup-helm
       retries: 1
@@ -660,3 +653,5 @@ spec:
           value: $(params.cluster-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: skit-sleep-duration
+          value: "600"

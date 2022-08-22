@@ -7,7 +7,7 @@ spec:
   params:
     - name: skit-sleep-duration
       description: the amount of seconds to sleep
-      default: "60"
+      default: "0"
   steps:
     - name: run-sleep
       image: ibmcom/pipeline-base-image:2.13

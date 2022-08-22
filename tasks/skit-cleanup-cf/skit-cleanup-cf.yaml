@@ -16,7 +16,21 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
       default: "0"
+    - name: skit-sleep-duration
+      description: the amount of seconds to sleep
+      default: "60"
   steps:
+    - name: run-sleep
+      image: ibmcom/pipeline-base-image:2.13
+      env:
+        - name: SLEEP_DURATION
+          value: $(params.skit-sleep-duration)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        
+        printf 'Allowing app to run for %d minutes before deleting it.\n' $((SLEEP_DURATION%3600/60))
+        sleep "$SLEEP_DURATION"
     - name: cleanup-cf
       image: ibmcom/pipeline-base-image:2.13
       onError: continue
