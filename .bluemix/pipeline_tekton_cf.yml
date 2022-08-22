@@ -11,10 +11,6 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: tasks/skit-sleep
-  - type: git
-    branch: ${PIPELINE_REPO_BRANCH}
-    service: ${PIPELINE_REPO}
     path: tasks/skit-cleanup-cf
   - type: git
     service: ${TEKTON_CATALOG_REPO}
