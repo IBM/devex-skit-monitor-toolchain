@@ -9,6 +9,8 @@ spec:
       description: IBM Cloud API key
     - name: cluster-name
       description: name of the kube cluster
+    - name: HELM_CHART_NAME
+      description: name of the helm deployment
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
       default: "0"
@@ -33,6 +35,8 @@ spec:
       env:
         - name: API_KEY
           value: $(params.api-key)
+        - name: HELM_CHART_NAME
+          value: $(params.HELM_CHART_NAME)
         - name: KUBE_CLUSTER
           value: $(params.cluster-name)
         - name: PIPELINE_DEBUG
