@@ -647,8 +647,6 @@ spec:
       params:
         - name: api-key
           value: $(params.api-key)
-        - name: app-name
-          value: $(params.image-name)
         - name: cluster-name
           value: $(params.cluster-name)
         - name: pipeline-debug
