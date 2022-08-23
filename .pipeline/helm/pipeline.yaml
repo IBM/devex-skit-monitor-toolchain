@@ -656,4 +656,4 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: sleep-duration
-          value: "60"
+          value: "600"
