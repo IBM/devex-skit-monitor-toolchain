@@ -584,11 +584,52 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: skit-verify-alert-register
+    - name: skit-verify
       retries: 1
       taskref:
-        name: skit-verify-alert-register
+        name: skit-verify
       runAfter: [deploy-to-kubernetes, check-health]
+      params:
+        - name: shuttle-properties-file
+          value: "build.properties"
+        - name: api-key
+          value: $(params.api-key)
+        - name: app-name
+          value: $(params.image-name)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: enabled-helm
+          value: $(params.enabled-helm)
+        - name: enabled-cf
+          value: $(params.enabled-cf)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: skit-register
+      retries: 1
+      taskref:
+        name: skit-register
+      runAfter: [skit-verify]
+      when:
+        - input: $(tasks.skit-verify.results.pl-status)
+          operator: in
+          values: ["success"]
       params:
         - name: shuttle-properties-file
           value: "build.properties"
@@ -620,22 +661,196 @@ spec:
           value: $(params.skit-reg-endpoint)
         - name: skit-reg-auth-token
           value: $(params.skit-reg-auth-token)
+        - name: register-skit
+          value: "true"
+        - name: exp-test-passed
+          value: "true"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: slack-msg
+      retries: 1
+      taskref:
+        name: slack-msg
+      runAfter: [skit-verify]
+      when:
+        - input: $(tasks.skit-verify.results.pl-status)
+          operator: in
+          values: ["success"]
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: ibm-cloud-region
+          value: $(params.dev-region)
+        - name: app-name
+          value: $(params.image-name)
+        - name: app-url
+          value: $(tasks.skit-verify.results.app-url)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
         - name: devx-slack-channel-webhook
           value: $(params.devx-slack-channel-webhook)
         - name: owner-slack-channel-webhook
           value: $(params.owner-slack-channel-webhook)
-        - name: enable-pd-alerts
-          value: $(params.enable-pd-alerts)
+        - name: enable-slack-alerts)
+          value: $(params.enable-slack-alerts)
+        - name: slack-msg
+          value: ":white_check_mark: Skit Experience Test Passed"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: slack-msg
+      retries: 1
+      taskref:
+        name: slack-msg
+      runAfter: [skit-verify]
+      when:
+        - input: $(tasks.skit-verify.results.pl-status)
+          operator: notin
+          values: ["success"]
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: ibm-cloud-region
+          value: $(params.dev-region)
+        - name: app-name
+          value: $(params.image-name)
+        - name: app-url
+          value: $(tasks.skit-verify.results.app-url)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: devx-slack-channel-webhook
+          value: $(params.devx-slack-channel-webhook)
+        - name: owner-slack-channel-webhook
+          value: $(params.owner-slack-channel-webhook)
+        - name: enable-slack-alerts)
+          value: $(params.enable-slack-alerts)
+        - name: slack-msg
+          value: ":spinning-siren: Skit Experience Test Passed"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: slack-msg
+      retries: 1
+      taskref:
+        name: slack-msg
+      runAfter: [skit-register]
+      when:
+        - input: $(tasks.skit-register.results.skit-reg-success)
+          operator: notin
+          values: ["true"]
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: ibm-cloud-region
+          value: $(params.dev-region)
+        - name: app-name
+          value: $(params.image-name)
+        - name: app-url
+          value: $(tasks.skit-verify.results.app-url)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: devx-slack-channel-webhook
+          value: $(params.devx-slack-channel-webhook)
+        - name: owner-slack-channel-webhook
+          value: $(params.owner-slack-channel-webhook)
+        - name: enable-slack-alerts)
+          value: $(params.enable-slack-alerts)
+        - name: slack-msg
+          value: $(params.skit-register.results.slack-msg)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: pd-alert
+      retries: 1
+      taskref:
+        name: pd-alert
+      runAfter: [skit-verify]
+      when:
+        - input: $(tasks.skit-verify.results.pl-status)
+          operator: notin
+          values: ["success"]
+      params:
+        - name: ibm-cloud-region
+          value: $(params.dev-region)
+        - name: shuttle-properties-file
+          value: "build.properties"
+        - name: app-name
+          value: $(params.image-name)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
         - name: pagerduty-events-api-url
           value: $(params.pagerduty-events-api-url)
         - name: pagerduty-api-token
           value: $(params.pagerduty-api-token)
+        - name: enable-pd-alerts
+          value: $(params.enable-pd-alerts)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: enable-slack-alerts
-          value: "true"
-        - name: register-skit
-          value: "true"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws

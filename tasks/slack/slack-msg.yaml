@@ -1,0 +1,121 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: slack-msg
+spec:
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: ibm-cloud-region
+      description: The IBM Cloud region
+      default: "us-south"
+    - name: app-name
+      description: name of the cf or helm app
+    - name: app-url
+      description: URL to the cf or helm app
+    - name: skit-git-url
+      description: repo URL of the skit
+    - name: deploy-target
+      description: the deployment target
+    - name: devex-skit-assets-git
+      description: the org and repo name where skit assets are stored
+      default: "IBM/devex-skit-assets"
+    - name: devex-skit-assets-git-release
+      description: the release branch for skit assets
+    - name: devex-skit-assets-git-url-raw
+      description: URL where skit asset releases are downloaded
+    - name: devx-slack-channel-webhook
+      description: webhook for the slack DevX skit monitoring channel
+    - name: owner-slack-channel-webhook
+      description: webhook for the slack skit owner's monitoring channel (if different)
+    - name: enable-slack-alerts
+      description: if 'true', enable slack alerts
+      default: "false"
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      default: "0"
+    - name: slack-msg
+      description: The message to send.
+    - name: notify
+      description: If true, the Slack message will include a notification.
+
+  workspaces:
+    - name: artifacts
+      description: A workspace
+      mountPath: /artifacts
+  steps:
+    - name: experience-test
+      image: ibmcom/pipeline-base-image:2.13
+      workingDir: /artifacts
+      env:
+        - name: API_KEY
+          value: $(params.api-key)
+        - name: IBM_CLOUD_REGION
+          value: $(params.ibm-cloud-region)
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: APP_URL
+          value: $(params.app-url)
+        - name: SKIT_URL
+          value: $(params.skit-git-url)
+        - name: DEPLOY_TARGET
+          value: $(params.deploy-target)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: DEVX_SKIT_ASSETS_GIT
+          value: $(params.devex-skit-assets-git)
+        - name: DEVX_SKIT_ASSETS_GIT_RELEASE
+          value: $(params.devex-skit-assets-git-release)
+        - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: DEVX_SLACK_CHANNEL_WEBHOOK
+          value: $(params.devx-slack-channel-webhook)
+        - name: OWNER_SLACK_CHANNEL_WEBHOOK
+          value: $(params.owner-slack-channel-webhook)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: LOGS_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: ENABLE_SLACK_ALERTS
+          value: $(params.enable-slack-alerts)
+        - name: SLACK_MSG
+          value: $(params.slack-msg)
+        - name: NOTIFY
+          value: $(params.notify)
+
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            env
+            pwd
+            ls -l
+            trap env EXIT
+            set -x
+        fi
+
+        if [ $ENABLE_SLACK_ALERTS == "true" ]; then
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$SLACK_MSG"
+        fi
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /artifacts/_toolchain.json
+          subPath: toolchain.json
+          name: cd-config-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
