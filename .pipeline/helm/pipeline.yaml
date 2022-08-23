@@ -42,6 +42,8 @@ spec:
       description: application name
     - name: image-name
       description: image name
+    - name: HELM_CHART_NAME
+      description: name of the helm deployment
     - name: helm-chart-path
       description: |
         path to the folder containing the helm chart content (at least Chart.yaml).
@@ -647,10 +649,10 @@ spec:
       params:
         - name: api-key
           value: $(params.api-key)
-        - name: app-name
-          value: $(params.image-name)
         - name: cluster-name
           value: $(params.cluster-name)
+        - name: HELM_CHART_NAME
+          value: $(params.HELM_CHART_NAME)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: sleep-duration

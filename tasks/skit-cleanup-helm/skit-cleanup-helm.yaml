@@ -7,10 +7,10 @@ spec:
   params:
     - name: api-key
       description: IBM Cloud API key
-    - name: app-name
-      description: name of the helm app
     - name: cluster-name
       description: name of the kube cluster
+    - name: HELM_CHART_NAME
+      description: name of the helm deployment
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 (off) or 1 (on)
       default: "0"
@@ -35,8 +35,8 @@ spec:
       env:
         - name: API_KEY
           value: $(params.api-key)
-        - name: APP_NAME
-          value: $(params.app-name)
+        - name: HELM_CHART_NAME
+          value: $(params.HELM_CHART_NAME)
         - name: KUBE_CLUSTER
           value: $(params.cluster-name)
         - name: PIPELINE_DEBUG
@@ -56,8 +56,7 @@ spec:
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
         
         ibmcloud ks cluster config --cluster "${KUBE_CLUSTER}"
-        HELM_NAME=$(echo "$APP_NAME" | tr -d '-')  # Removes hyphens from APP_NAME
-        echo "Deleting Helm deployment: $HELM_NAME..."
-        kubectl delete deployment.apps/$HELM_NAME-deployment
-        echo "Deleting Helm service: $HELM_NAME..."
-        kubectl delete service/$HELM_NAME-application-service
+        echo "Deleting Helm deployment: $HELM_CHART_NAME..."
+        kubectl delete deployment.apps/$HELM_CHART_NAME-deployment
+        echo "Deleting Helm service: $HELM_CHART_NAME..."
+        kubectl delete service/$HELM_CHART_NAME-application-service
