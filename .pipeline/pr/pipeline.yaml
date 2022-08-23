@@ -59,6 +59,8 @@ spec:
       default: "true"
     - name: image-name
       description: image name
+    - name: HELM_CHART_NAME
+      description: name of the helm deployment
     - name: helm-chart-path
       description: |
         path to the folder containing the helm chart content (at least Chart.yaml).
@@ -969,6 +971,8 @@ spec:
           value: $(params.api-key)
         - name: cluster-name
           value: $(params.cluster-name)
+        - name: HELM_CHART_NAME
+          value: $(params.HELM_CHART_NAME)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: sleep-duration
