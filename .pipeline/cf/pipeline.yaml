@@ -64,12 +64,15 @@ spec:
     - name: enabled-cf
     - name: enabled-helm
       default: "false"
+    - name: force-verify-failure
+      description: If true, forces a skit verify failure. For testing purposes only.
+      default: "false"
   workspaces:
     - name: pipeline-ws
   tasks:
     - name: extract-repository-url
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-extract-value
       params:
         - name: expression
@@ -79,7 +82,7 @@ spec:
           value: $(params.pipeline-debug)  
     - name: skit-git-clone
       retries: 1
-      taskref:
+      taskRef:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -105,7 +108,7 @@ spec:
           workspace: pipeline-ws
     - name: assets-git-clone
       retries: 1
-      taskref:
+      taskRef:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -130,7 +133,7 @@ spec:
     - name: cra-discovery-scan
       runAfter: [skit-git-clone, assets-git-clone]
       retries: 1
-      taskref:
+      taskRef:
         name: cra-discovery
       workspaces:
         - name: artifacts
@@ -152,7 +155,7 @@ spec:
       runAfter:
         - cra-discovery-scan
       retries: 1
-      taskref:
+      taskRef:
         name: cra-vulnerability-remediation
       workspaces:
         - name: artifacts
@@ -174,7 +177,7 @@ spec:
           value: $(params.project-id) 
     - name: cra-cis-check
       retries: 1
-      taskref:
+      taskRef:
         name: cra-cis-check
       runAfter:
         - cra-discovery-scan
@@ -200,7 +203,7 @@ spec:
           value: $(params.project-id)
     - name: cra-bom
       retries: 1
-      taskref:
+      taskRef:
         name: cra-bom
       runAfter:
         - cra-discovery-scan
@@ -232,7 +235,7 @@ spec:
         - name: output
           workspace: pipeline-ws
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-build
       params:
         - name: pipeline-debug
@@ -249,7 +252,7 @@ spec:
     - name: rolling-deploy-task
       runAfter: [build]
       retries: 1
-      taskref:
+      taskRef:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
@@ -337,7 +340,7 @@ spec:
           workspace: pipeline-ws
     - name: publish-deployable-task
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-publish-deployable-mapping
       params:
         - name: deployable-type
@@ -362,10 +365,10 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    - name: skit-verify-alert-register
+    - name: skit-verify
       retries: 1
-      taskref:
-        name: skit-verify-alert-register
+      taskRef:
+        name: skit-verify
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
@@ -394,33 +397,152 @@ spec:
           value: $(params.devex-skit-assets-git-release)
         - name: devex-skit-assets-git-url-raw
           value: $(params.devex-skit-assets-git-url-raw)
-        - name: skit-reg-endpoint
-          value: $(params.skit-reg-endpoint)
-        - name: skit-reg-auth-token
-          value: $(params.skit-reg-auth-token)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: slack-msg
+      retries: 1
+      taskRef:
+        name: slack-msg
+      runAfter: [skit-verify]
+      when:
+        - input: $(tasks.skit-verify.results.pl-status)
+          operator: in
+          values: ["success"]
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: ibm-cloud-region
+          value: $(params.dev-region)
+        - name: app-name
+          value: $(params.image-name)
+        - name: app-url
+          value: $(tasks.skit-verify.results.app-url)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
         - name: devx-slack-channel-webhook
           value: $(params.devx-slack-channel-webhook)
         - name: owner-slack-channel-webhook
           value: $(params.owner-slack-channel-webhook)
-        - name: enable-pd-alerts
-          value: $(params.enable-pd-alerts)
+        - name: enable-slack-alerts)
+          value: $(params.enable-slack-alerts)
+        - name: slack-msg
+          value: ":white_check_mark: Skit Experience Test Passed"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: slack-msg
+      retries: 1
+      taskRef:
+        name: slack-msg
+      runAfter: [skit-verify]
+      when:
+        - input: $(tasks.skit-verify.results.pl-status)
+          operator: notin
+          values: ["success"]
+      params:
+        - name: api-key
+          value: $(params.api-key)
+        - name: ibm-cloud-region
+          value: $(params.dev-region)
+        - name: app-name
+          value: $(params.image-name)
+        - name: app-url
+          value: $(tasks.skit-verify.results.app-url)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: devx-slack-channel-webhook
+          value: $(params.devx-slack-channel-webhook)
+        - name: owner-slack-channel-webhook
+          value: $(params.owner-slack-channel-webhook)
+        - name: enable-slack-alerts)
+          value: $(params.enable-slack-alerts)
+        - name: slack-msg
+          value: ":spinning-siren: Skit Experience Test Failed"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: pd-alert
+      retries: 1
+      taskRef:
+        name: pd-alert
+      runAfter: [skit-verify]
+      when:
+        - input: $(tasks.skit-verify.results.pl-status)
+          operator: notin
+          values: ["success"]
+      params:
+        - name: ibm-cloud-region
+          value: $(params.dev-region)
+        - name: shuttle-properties-file
+          value: "build.properties"
+        - name: app-name
+          value: $(params.image-name)
+        - name: skit-name
+          value: $(params.skit-name)
+        - name: skit-git-url
+          value: $(tasks.skit-git-clone.results.git-repository)
+        - name: skit-git-branch
+          value: $(tasks.skit-git-clone.results.git-branch)
+        - name: skit-git-commit
+          value: $(tasks.skit-git-clone.results.git-commit)
+        - name: deploy-target
+          value: $(params.deploy-target)
+        - name: devex-skit-assets-git
+          value: $(params.devex-skit-assets-git)
+        - name: devex-skit-assets-git-release
+          value: $(params.devex-skit-assets-git-release)
+        - name: devex-skit-assets-git-url-raw
+          value: $(params.devex-skit-assets-git-url-raw)
         - name: pagerduty-events-api-url
           value: $(params.pagerduty-events-api-url)
         - name: pagerduty-api-token
           value: $(params.pagerduty-api-token)
+        - name: enable-pd-alerts
+          value: $(params.enable-pd-alerts)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: enable-slack-alerts
-          value: "true"
-        - name: register-skit
-          value: "true"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
   finally:
     - name: skit-cleanup-cf
       retries: 1
-      taskref:
+      taskRef:
         name: skit-cleanup-cf
       params:
         - name: api-key

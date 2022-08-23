@@ -94,12 +94,15 @@ spec:
       description: The image used during the build of the skit.
     - name: pipeline-debug
       default: "0"
+    - name: force-verify-failure
+      description: If true, forces a skit verify failure. For testing purposes only.
+      default: "false"
   workspaces:
     - name: pipeline-ws
   tasks:
     - name: extract-repository-url
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-extract-value
       params:
         - name: expression
@@ -109,7 +112,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: skit-git-clone
       retries: 1
-      taskref:
+      taskRef:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -131,7 +134,7 @@ spec:
           workspace: pipeline-ws
     - name: assets-git-clone
       retries: 1
-      taskref:
+      taskRef:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -153,7 +156,7 @@ spec:
           workspace: pipeline-ws
     - name: extract-doi-enablement
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-extract-value
       params:
         # count the number of service in the toolchain that are DevopsInsights
@@ -168,7 +171,7 @@ spec:
           operator: in
           values: ["1"]
       retries: 1
-      taskref:
+      taskRef:
         name: doi-publish-buildrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -184,7 +187,7 @@ spec:
     - name: cra-discovery-scan
       runAfter: [skit-git-clone, assets-git-clone]
       retries: 1
-      taskref:
+      taskRef:
         name: cra-discovery
       workspaces:
         - name: artifacts
@@ -206,7 +209,7 @@ spec:
       runAfter:
         - cra-discovery-scan
       retries: 1
-      taskref:
+      taskRef:
         name: cra-vulnerability-remediation
       workspaces:
         - name: artifacts
@@ -228,7 +231,7 @@ spec:
           value: $(params.project-id) 
     - name: cra-cis-check
       retries: 1
-      taskref:
+      taskRef:
         name: cra-cis-check
       runAfter:
         - cra-discovery-scan
@@ -254,7 +257,7 @@ spec:
           value: $(params.project-id)
     - name: cra-bom
       retries: 1
-      taskref:
+      taskRef:
         name: cra-bom
       runAfter:
         - cra-discovery-scan
@@ -283,7 +286,7 @@ spec:
     - name: docker-lint
       runAfter: [skit-git-clone, assets-git-clone]
       retries: 1
-      taskref:
+      taskRef:
         name: linter-docker-lint
       params:
         - name: path-to-dockerfile
@@ -300,7 +303,7 @@ spec:
     - name: build
       runAfter: [code-vulnerability-scan, cra-cis-check, cra-bom]
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-build
       params:
         - name: custom-script
@@ -316,7 +319,7 @@ spec:
     - name: unit-tests
       runAfter: [docker-lint, build]
       retries: 1
-      taskref:
+      taskRef:
         name: tester-run-tests
       params:
         - name: tests-script
@@ -338,7 +341,7 @@ spec:
           operator: in
           values: ["1"]
       retries: 1
-      taskref:
+      taskRef:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -359,7 +362,7 @@ spec:
     - name: containerize
       runAfter: [build]
       retries: 1
-      taskref:
+      taskRef:
         name: icr-execute-in-dind
       params:
         - name: continuous-delivery-context-secret
@@ -411,7 +414,7 @@ spec:
           workspace: pipeline-ws
     - name: vulnerability-advisor
       retries: 1
-      taskref:
+      taskRef:
         name: icr-check-va-scan
       params:
         - name: continuous-delivery-context-secret
@@ -438,7 +441,7 @@ spec:
           operator: in
           values: ["1"]
       retries: 1
-      taskref:
+      taskRef:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -458,7 +461,7 @@ spec:
           workspace: pipeline-ws
     - name: deploy-to-kubernetes
       retries: 1
-      taskref:
+      taskRef:
         name: iks-deploy-to-kubernetes
       runAfter: [vulnerability-advisor]
       params:
@@ -530,7 +533,7 @@ spec:
     - name: publish-deployable-task
       runAfter: [deploy-to-kubernetes]
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-publish-deployable-mapping
       params:
         - name: deployable-type
@@ -551,7 +554,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: check-health
       retries: 1
-      taskref:
+      taskRef:
         name: iks-deploy-to-kubernetes
       runAfter: [deploy-to-kubernetes]
       params:
@@ -586,7 +589,7 @@ spec:
           workspace: pipeline-ws
     - name: skit-verify
       retries: 1
-      taskref:
+      taskRef:
         name: skit-verify
       runAfter: [deploy-to-kubernetes, check-health]
       params:
@@ -623,7 +626,7 @@ spec:
           workspace: pipeline-ws
     - name: skit-register
       retries: 1
-      taskref:
+      taskRef:
         name: skit-register
       runAfter: [skit-verify]
       when:
@@ -672,7 +675,7 @@ spec:
           workspace: pipeline-ws
     - name: slack-msg
       retries: 1
-      taskref:
+      taskRef:
         name: slack-msg
       runAfter: [skit-verify]
       when:
@@ -719,7 +722,7 @@ spec:
           workspace: pipeline-ws
     - name: slack-msg
       retries: 1
-      taskref:
+      taskRef:
         name: slack-msg
       runAfter: [skit-verify]
       when:
@@ -758,7 +761,7 @@ spec:
         - name: enable-slack-alerts)
           value: $(params.enable-slack-alerts)
         - name: slack-msg
-          value: ":spinning-siren: Skit Experience Test Passed"
+          value: ":spinning-siren: Skit Experience Test Failed"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -766,7 +769,7 @@ spec:
           workspace: pipeline-ws
     - name: slack-msg
       retries: 1
-      taskref:
+      taskRef:
         name: slack-msg
       runAfter: [skit-register]
       when:
@@ -805,7 +808,7 @@ spec:
         - name: enable-slack-alerts)
           value: $(params.enable-slack-alerts)
         - name: slack-msg
-          value: $(params.skit-register.results.slack-msg)
+          value: $(tasks.skit-register.results.slack-msg)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -813,7 +816,7 @@ spec:
           workspace: pipeline-ws
     - name: pd-alert
       retries: 1
-      taskref:
+      taskRef:
         name: pd-alert
       runAfter: [skit-verify]
       when:
@@ -857,7 +860,7 @@ spec:
   finally:
     - name: skit-cleanup-helm
       retries: 1
-      taskref:
+      taskRef:
         name: skit-cleanup-helm
       params:
         - name: api-key

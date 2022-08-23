@@ -36,30 +36,11 @@ spec:
       description: the release branch for skit assets
     - name: devex-skit-assets-git-url-raw
       description: URL where skit asset releases are downloaded
-    - name: skit-reg-endpoint
-      description: the skit registration endpoint URL
-      default: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/111efe7d-5858-4d5b-a5b4-cdd1d591ff78/run/eefc7f6c-0cbe-4eab-848f-2dfa44bd31de"
-    - name: skit-reg-auth-token
-      description: authentication token for executing skit registration
-    - name: devx-slack-channel-webhook
-      description: webhook for the slack DevX skit monitoring channel
-    - name: owner-slack-channel-webhook
-      description: webhook for the slack skit owner's monitoring channel (if different)
-    - name: enable-pd-alerts
-      description: if 'true', enable PagerDuty alerts
-      default: "false"
-    - name: enable-slack-alerts
-      description: if 'true', enable slack alerts
-      default: "false"
-    - name: pagerduty-events-api-url
-      description: the PagerDuty Events API endpoint URL
-    - name: pagerduty-api-token
-      description: PagerDuty API token
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
-    - name: register-skit
-      description: if 'true', kick off registration pipeline
+    - name: force-verify-failure
+      description: If true, forces a skit verify failure. For testing purposes only.
       default: "false"
   results:
     - name: app-url
@@ -110,6 +91,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: FORCE_VERIFY_FAILURE
+          value: $(params.force-verify-failure)
 
       script: |
         #!/bin/bash
@@ -126,6 +109,12 @@ spec:
 
         if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE; then
           echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
+          echo -n "failed" > $(results.pl-status.path)
+        fi
+
+        if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
+          echo "Skit verify failure forced!"
+          exit 1
         fi
 
         if [ "${DEPLOY_TARGET}" == "helm" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_HELM}" == "false" ]; then

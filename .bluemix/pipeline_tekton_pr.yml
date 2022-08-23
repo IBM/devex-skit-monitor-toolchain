@@ -7,7 +7,19 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: tasks/skit-verify-alert-register
+    path: tasks/skit-verify
+  - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/skit-register
+  - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/slack
+  - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: tasks/pd-alert
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
@@ -187,5 +199,8 @@ properties:
     value:
       "0": true
       "1": false
+  - name: force-verify-failure
+    value: ${FORCE_VERIFY_FAILURE}
+    type: text
 settings:
   slackEnabled: false
