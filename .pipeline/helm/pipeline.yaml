@@ -762,6 +762,8 @@ spec:
           value: $(params.enable-slack-alerts)
         - name: slack-msg
           value: ":spinning-siren: Skit Experience Test Failed"
+        - name: notify
+          value: "true"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -809,6 +811,8 @@ spec:
           value: $(params.enable-slack-alerts)
         - name: slack-msg
           value: $(tasks.skit-register.results.slack-msg)
+        - name: notify
+          value: "true"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:

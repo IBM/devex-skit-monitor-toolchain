@@ -40,6 +40,7 @@ spec:
       description: The message to send.
     - name: notify
       description: If true, the Slack message will include a notification.
+      default: "false"
 
   workspaces:
     - name: artifacts
