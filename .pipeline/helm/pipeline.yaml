@@ -673,7 +673,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: slack-msg
+    - name: verify-slack-msg
       retries: 1
       taskRef:
         name: slack-msg
@@ -708,7 +708,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: slack-msg
+    - name: register-slack-msg
       retries: 1
       taskRef:
         name: slack-msg
