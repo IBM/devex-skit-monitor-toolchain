@@ -131,6 +131,8 @@ services:
             $env.dockerPassword ? '{{dockerPassword}}' : ''
           run-build-image: >
             $env.runBuildImage ? '{{runBuildImage}}' : ''
+          FORCE_VERIFY_FAILURE: >
+            $env.forceVerifyFailure ? '{{forceVerifyFailure}}' : 'false'
       label: Pipeline for deploying a starter kit app via Helm
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-helm'
       services:
