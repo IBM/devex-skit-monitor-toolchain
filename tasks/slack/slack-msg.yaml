@@ -70,7 +70,7 @@ spec:
           value: $(params.owner-slack-channel-webhook)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
-        - name: LOGS_URL
+        - name: PIPELINE_RUN_URL
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
