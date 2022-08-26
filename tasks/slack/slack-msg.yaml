@@ -32,7 +32,7 @@ spec:
       description: webhook for the slack skit owner's monitoring channel (if different)
     - name: enable-slack-alerts
       description: if 'true', enable slack alerts
-      default: "false"
+      default: "true"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"

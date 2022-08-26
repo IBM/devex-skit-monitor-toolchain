@@ -678,13 +678,7 @@ spec:
       taskRef:
         name: slack-msg
       runAfter: [skit-verify]
-      when:
-        - input: $(tasks.skit-verify.results.pl-status)
-          operator: in
-          values: ["success"]
       params:
-        - name: api-key
-          value: $(params.api-key)
         - name: ibm-cloud-region
           value: $(params.dev-region)
         - name: app-name
@@ -711,59 +705,10 @@ spec:
           value: $(params.devx-slack-channel-webhook)
         - name: owner-slack-channel-webhook
           value: $(params.owner-slack-channel-webhook)
-        - name: enable-slack-alerts)
-          value: $(params.enable-slack-alerts)
         - name: slack-msg
-          value: ":white_check_mark: Skit Experience Test Passed"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-    - name: slack-msg
-      retries: 1
-      taskRef:
-        name: slack-msg
-      runAfter: [skit-verify]
-      when:
-        - input: $(tasks.skit-verify.results.pl-status)
-          operator: notin
-          values: ["success"]
-      params:
-        - name: api-key
-          value: $(params.api-key)
-        - name: ibm-cloud-region
-          value: $(params.dev-region)
-        - name: app-name
-          value: $(params.image-name)
-        - name: app-url
-          value: $(tasks.skit-verify.results.app-url)
-        - name: skit-name
-          value: $(params.skit-name)
-        - name: skit-git-url
-          value: $(tasks.skit-git-clone.results.git-repository)
-        - name: skit-git-branch
-          value: $(tasks.skit-git-clone.results.git-branch)
-        - name: skit-git-commit
-          value: $(tasks.skit-git-clone.results.git-commit)
-        - name: deploy-target
-          value: $(params.deploy-target)
-        - name: devex-skit-assets-git
-          value: $(params.devex-skit-assets-git)
-        - name: devex-skit-assets-git-release
-          value: $(params.devex-skit-assets-git-release)
-        - name: devex-skit-assets-git-url-raw
-          value: $(params.devex-skit-assets-git-url-raw)
-        - name: devx-slack-channel-webhook
-          value: $(params.devx-slack-channel-webhook)
-        - name: owner-slack-channel-webhook
-          value: $(params.owner-slack-channel-webhook)
-        - name: enable-slack-alerts)
-          value: $(params.enable-slack-alerts)
-        - name: slack-msg
-          value: ":spinning-siren: Skit Experience Test Failed"
+          value: $(tasks.skit-verify.results.slack-msg)
         - name: notify
-          value: "true"
+          value: $(tasks.skit-verify.results.slack-notify)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -779,8 +724,6 @@ spec:
           operator: notin
           values: ["true"]
       params:
-        - name: api-key
-          value: $(params.api-key)
         - name: ibm-cloud-region
           value: $(params.dev-region)
         - name: app-name
@@ -807,8 +750,6 @@ spec:
           value: $(params.devx-slack-channel-webhook)
         - name: owner-slack-channel-webhook
           value: $(params.owner-slack-channel-webhook)
-        - name: enable-slack-alerts)
-          value: $(params.enable-slack-alerts)
         - name: slack-msg
           value: $(tasks.skit-register.results.slack-msg)
         - name: notify

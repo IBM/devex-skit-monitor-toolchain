@@ -47,6 +47,10 @@ spec:
       description: The running application's URL (obtained from APP_URL variable set by the executed script)
     - name: pl-status
       description: The status of the test on CF.
+    - name: slack-msg
+      description: The Slack message to send after this task.
+    - name: slack-notify
+      description: If true, the Slack message went will include a notification.
 
   workspaces:
     - name: artifacts
@@ -109,8 +113,10 @@ spec:
 
         if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE; then
           echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
-          echo -n "failed" > $(results.pl-status.path)
         fi
+        echo -n "failed" > $(results.pl-status.path)
+        echo -n ":spinning-siren: Skit Experience Test Failed" > $(results.slack-msg.path)
+        echo -n "true" > $(results.slack-notify.path)
 
         if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
           echo "Skit verify failure forced!"
@@ -179,6 +185,8 @@ spec:
         fi
         
         echo -n "$APP_URL" > $(results.app-url.path)
+        echo -n ":white_check_mark: Skit Experience Test Passed" > $(results.slack-msg.path)
+        echo -n "false" > $(results.slack-notify.path)
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
