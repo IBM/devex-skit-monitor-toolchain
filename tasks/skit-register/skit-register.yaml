@@ -7,7 +7,7 @@ spec:
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
-      default: https://cloud.ibm.com
+      default: "https://cloud.ibm.com"
     - name: shuttle-properties-file
       description: name of the properties file that contain properties to include in the environment for the script execution
       default: ""
