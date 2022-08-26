@@ -48,8 +48,6 @@ spec:
       image: ibmcom/pipeline-base-image:2.13
       workingDir: /artifacts
       env:
-        - name: API_KEY
-          value: $(params.api-key)
         - name: IBM_CLOUD_REGION
           value: $(params.ibm-cloud-region)
         - name: APP_NAME
