@@ -795,6 +795,11 @@ spec:
       retries: 1
       taskRef:
         name: skit-cleanup-helm
+      when:
+        - input: $(tasks.deploy-to-kubernetes.status)
+          operator: notin
+          values:
+            - "Failed"
       params:
         - name: api-key
           value: $(params.api-key)
