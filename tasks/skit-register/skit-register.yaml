@@ -60,7 +60,7 @@ spec:
       description: A workspace
       mountPath: /artifacts
   steps:
-    - name: experience-test
+    - name: register
       image: ibmcom/pipeline-base-image:2.13
       workingDir: /artifacts
       env:
@@ -151,6 +151,7 @@ spec:
             exit 1
           else
             echo -n "true" > $(results.skit-reg-success.path)
+            echo -n "Skit registration succeeded!" > $(results.slack-msg.path)
           fi
         fi
       volumeMounts:

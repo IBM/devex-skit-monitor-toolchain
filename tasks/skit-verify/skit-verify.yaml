@@ -57,7 +57,7 @@ spec:
       description: A workspace
       mountPath: /artifacts
   steps:
-    - name: experience-test
+    - name: verify
       image: ibmcom/pipeline-base-image:2.13
       workingDir: /artifacts
       env:
