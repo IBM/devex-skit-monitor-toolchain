@@ -81,8 +81,6 @@ spec:
           value: $(params.skit-git-commit)
         - name: SHUTTLE_PROPERTIES_FILE
           value: $(params.shuttle-properties-file)
-        - name: PIPELINE_DEBUG
-          value: $(params.pipeline-debug)
         - name: DEVX_SKIT_ASSETS_GIT
           value: $(params.devex-skit-assets-git)
         - name: DEVX_SKIT_ASSETS_GIT_RELEASE

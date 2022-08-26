@@ -63,8 +63,6 @@ spec:
           value: $(params.skit-git-url)
         - name: DEPLOY_TARGET
           value: $(params.deploy-target)
-        - name: PIPELINE_DEBUG
-          value: $(params.pipeline-debug)
         - name: DEVX_SKIT_ASSETS_GIT
           value: $(params.devex-skit-assets-git)
         - name: DEVX_SKIT_ASSETS_GIT_RELEASE
