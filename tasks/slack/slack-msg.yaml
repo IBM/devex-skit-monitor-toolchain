@@ -94,7 +94,7 @@ spec:
         fi
 
         if [ $ENABLE_SLACK_ALERTS == "true" ]; then
-          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$SLACK_MSG"
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$SLACK_MSG" "$NOTIFY"
         fi
       volumeMounts:
         - mountPath: /cd-config
