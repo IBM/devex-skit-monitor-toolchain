@@ -404,6 +404,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+  finally:
     - name: verify-slack-msg
       retries: 1
       taskRef:
@@ -482,7 +483,6 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-  finally:
     - name: skit-cleanup-cf
       retries: 1
       taskRef:
