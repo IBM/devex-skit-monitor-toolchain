@@ -397,6 +397,8 @@ spec:
           value: $(params.devex-skit-assets-git-release)
         - name: devex-skit-assets-git-url-raw
           value: $(params.devex-skit-assets-git-url-raw)
+        - name: force-verify-failure
+          value: $(params.force-verify-failure)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
