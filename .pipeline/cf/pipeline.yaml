@@ -487,6 +487,11 @@ spec:
       retries: 1
       taskRef:
         name: skit-cleanup-cf
+      when:
+        - input: $(tasks.rolling-deploy-task.status)
+          operator: notin
+          values:
+            - "Failed"
       params:
         - name: api-key
           value: $(params.api-key)
