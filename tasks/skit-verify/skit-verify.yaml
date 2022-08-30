@@ -148,7 +148,9 @@ spec:
         if [ "${DEPLOY_TARGET}" == "helm" ]; then
           export APP_URL=$HELM_APP_URL
         fi
-
+        
+        echo -n "$APP_URL" > $(results.app-url.path)
+        
         export SKIT_URL="$SKIT_GIT_URL"
 
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
@@ -181,8 +183,6 @@ spec:
             echo -n "success" > $(results.pl-status.path)
           fi
         fi
-        
-        echo -n "$APP_URL" > $(results.app-url.path)
         echo -n ":white_check_mark: Skit Experience Test Passed" > $(results.slack-msg.path)
         echo -n "false" > $(results.slack-notify.path)
       volumeMounts:
