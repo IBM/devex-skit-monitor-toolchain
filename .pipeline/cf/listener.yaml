@@ -134,10 +134,6 @@ spec:
             value: $(params.PAGERDUTY_API_TOKEN)
           - name: enabled-cf
             value: $(params.ENABLED_CF)
-          - name: docker-username
-            value: $(params.DOCKER_USERNAME)
-          - name: docker-password
-            value: $(params.DOCKER_PASSWORD)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
           - name: ibmcloud-api

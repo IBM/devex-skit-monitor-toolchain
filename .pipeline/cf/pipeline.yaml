@@ -402,26 +402,20 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: slack-msg
+    - name: verify-slack-msg
       retries: 1
       taskRef:
         name: slack-msg
       runAfter: [skit-verify]
       params:
         - name: ibm-cloud-region
-          value: $(params.dev-region)
+          value: $(params.region)
         - name: app-name
-          value: $(params.image-name)
+          value: $(params.cf-app)
         - name: app-url
           value: $(tasks.skit-verify.results.app-url)
-        - name: skit-name
-          value: $(params.skit-name)
         - name: skit-git-url
           value: $(tasks.skit-git-clone.results.git-repository)
-        - name: skit-git-branch
-          value: $(tasks.skit-git-clone.results.git-branch)
-        - name: skit-git-commit
-          value: $(tasks.skit-git-clone.results.git-commit)
         - name: deploy-target
           value: $(params.deploy-target)
         - name: devex-skit-assets-git
@@ -454,11 +448,11 @@ spec:
           values: ["success"]
       params:
         - name: ibm-cloud-region
-          value: $(params.dev-region)
+          value: $(params.region)
         - name: shuttle-properties-file
           value: "build.properties"
         - name: app-name
-          value: $(params.image-name)
+          value: $(params.cf-app)
         - name: skit-name
           value: $(params.skit-name)
         - name: skit-git-url
