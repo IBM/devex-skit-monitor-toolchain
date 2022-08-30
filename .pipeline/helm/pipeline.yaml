@@ -684,7 +684,7 @@ spec:
         - name: ibm-cloud-region
           value: $(params.dev-region)
         - name: app-name
-          value: $(params.image-name)
+          value: $(params.skit-name)
         - name: app-url
           value: $(tasks.skit-verify.results.app-url)
         - name: skit-git-url
@@ -723,7 +723,7 @@ spec:
         - name: ibm-cloud-region
           value: $(params.dev-region)
         - name: app-name
-          value: $(params.image-name)
+          value: $(params.skit-name)
         - name: app-url
           value: $(tasks.skit-verify.results.app-url)
         - name: skit-git-url
