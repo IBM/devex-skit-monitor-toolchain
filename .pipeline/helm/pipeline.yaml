@@ -675,10 +675,10 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-  finally:
     - name: verify-slack-msg
       taskRef:
         name: slack-msg
+      runAfter: [skit-verify]
       params:
         - name: ibm-cloud-region
           value: $(params.dev-region)
@@ -709,6 +709,7 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
+  finally:
     - name: register-slack-msg
       taskRef:
         name: slack-msg
