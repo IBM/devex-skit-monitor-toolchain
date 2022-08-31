@@ -119,19 +119,6 @@ spec:
             exit 0
         fi
 
-        if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE; then
-          echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
-        fi
-        echo -n "failed" > $(results.pl-status.path)
-        echo -n ":spinning-siren: Skit Experience Test Failed" > $(results.slack-msg.path)
-        echo -n "true" > $(results.slack-notify.path)
-        echo -n "" > $(results.app-url.path)
-
-        if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
-          echo "Skit verify failure forced! Pipeline will fail at the end."
-          exit 0
-        fi
-
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
           source $SHUTTLE_PROPERTIES_FILE
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
@@ -153,6 +140,18 @@ spec:
         echo -n "$APP_URL" > $(results.app-url.path)
         
         export SKIT_URL="$SKIT_GIT_URL"
+
+        if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE; then
+          echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
+        fi
+        echo -n "failed" > $(results.pl-status.path)
+        echo -n ":spinning-siren: Skit Experience Test Failed" > $(results.slack-msg.path)
+        echo -n "true" > $(results.slack-notify.path)
+
+        if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
+          echo "Skit verify failure forced! Pipeline will fail at the end."
+          exit 0
+        fi
 
         set -e
         EXIT_CODE=0
