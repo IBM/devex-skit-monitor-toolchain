@@ -133,6 +133,7 @@ spec:
 
         if [ "$ENABLE_PD_ALERTS" == "true" ]; then
           source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/pagerduty_alert.sh") "$ALERT_MSG" "$PD_EVT_ACTION" "$PD_CLASS" "$PD_SVC_NAME" "$PD_SEVERITY"
+          exit 1
         fi
       volumeMounts:
         - mountPath: /cd-config

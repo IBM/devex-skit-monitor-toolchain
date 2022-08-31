@@ -127,8 +127,8 @@ spec:
         echo -n "true" > $(results.slack-notify.path)
 
         if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
-          echo "Skit verify failure forced!"
-          exit 1
+          echo "Skit verify failure forced! Pipeline will fail at the end."
+          exit 0
         fi
 
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
@@ -190,6 +190,7 @@ spec:
           echo -n ":white_check_mark: Skit Experience Test Passed" > $(results.slack-msg.path)
           echo -n "false" > $(results.slack-notify.path)
         else
+          echo "Skit Experience Test failed! Pipeline will fail at the end."
           EXIT_CODE=0
         fi
       volumeMounts:

@@ -409,7 +409,6 @@ spec:
       retries: 1
       taskRef:
         name: slack-msg
-      runAfter: [skit-verify]
       params:
         - name: ibm-cloud-region
           value: $(params.region)
@@ -444,11 +443,10 @@ spec:
       retries: 1
       taskRef:
         name: pd-alert
-      runAfter: [skit-verify]
       when:
         - input: $(tasks.skit-verify.results.pl-status)
-          operator: notin
-          values: ["success"]
+          operator: in
+          values: ["failed"]
       params:
         - name: ibm-cloud-region
           value: $(params.region)
