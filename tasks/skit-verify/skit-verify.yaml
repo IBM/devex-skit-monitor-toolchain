@@ -125,6 +125,7 @@ spec:
         echo -n "failed" > $(results.pl-status.path)
         echo -n ":spinning-siren: Skit Experience Test Failed" > $(results.slack-msg.path)
         echo -n "true" > $(results.slack-notify.path)
+        echo -n "" > $(results.app-url.path)
 
         if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
           echo "Skit verify failure forced! Pipeline will fail at the end."
