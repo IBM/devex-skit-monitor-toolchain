@@ -109,6 +109,16 @@ spec:
             cat $SHUTTLE_PROPERTIES_FILE
         fi
 
+        if [ "${DEPLOY_TARGET}" == "helm" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_HELM}" == "false" ]; then
+            echo "Helm pipeline is disabled for this toolchain"
+            exit 0
+        fi
+
+        if [ "${DEPLOY_TARGET}" == "cf" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_CF}" == "false" ]; then
+            echo "CF pipeline is disabled for this toolchain"
+            exit 0
+        fi
+
         if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE; then
           echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
         fi
@@ -119,16 +129,6 @@ spec:
         if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
           echo "Skit verify failure forced!"
           exit 1
-        fi
-
-        if [ "${DEPLOY_TARGET}" == "helm" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_HELM}" == "false" ]; then
-            echo "Helm pipeline is disabled for this toolchain"
-            exit 0
-        fi
-
-        if [ "${DEPLOY_TARGET}" == "cf" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_CF}" == "false" ]; then
-            echo "CF pipeline is disabled for this toolchain"
-            exit 0
         fi
 
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
@@ -153,38 +153,45 @@ spec:
         
         export SKIT_URL="$SKIT_GIT_URL"
 
+        set -e
+        EXIT_CODE=0
+
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh
         # alternatively, you can source it from online script:
         #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
-        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh") || EXIT_CODE=$?
 
-        # Record task results
-        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
-          echo "${DEPLOY_TARGET}_status=success" >> $SHUTTLE_PROPERTIES_FILE
+        if [ $EXIT_CODE == 0 ]; then
+          # Record task results
+          if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+            echo "${DEPLOY_TARGET}_status=success" >> $SHUTTLE_PROPERTIES_FILE
 
-          if [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "true" ]; then
-            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE && grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+            if [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "true" ]; then
+              if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE && grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+                sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+                echo -n "success" > $(results.pl-status.path)
+              fi
+            elif [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "false" ]; then
+              if grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+                sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+                echo -n "success" > $(results.pl-status.path)
+              fi
+            elif [ "${ENABLED_HELM}" == "false" ] && [ "${ENABLED_CF}" == "true" ]; then
+              if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+                sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+                echo -n "success" > $(results.pl-status.path)
+              fi
+            else
               sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
               echo -n "success" > $(results.pl-status.path)
             fi
-          elif [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "false" ]; then
-            if grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
-              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
-              echo -n "success" > $(results.pl-status.path)
-            fi
-          elif [ "${ENABLED_HELM}" == "false" ] && [ "${ENABLED_CF}" == "true" ]; then
-            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE; then
-              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
-              echo -n "success" > $(results.pl-status.path)
-            fi
-          else
-            sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
-            echo -n "success" > $(results.pl-status.path)
           fi
+          echo -n ":white_check_mark: Skit Experience Test Passed" > $(results.slack-msg.path)
+          echo -n "false" > $(results.slack-notify.path)
+        else
+          EXIT_CODE=0
         fi
-        echo -n ":white_check_mark: Skit Experience Test Passed" > $(results.slack-msg.path)
-        echo -n "false" > $(results.slack-notify.path)
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume

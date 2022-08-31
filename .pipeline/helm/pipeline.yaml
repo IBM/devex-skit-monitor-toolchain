@@ -677,10 +677,8 @@ spec:
           workspace: pipeline-ws
   finally:
     - name: verify-slack-msg
-      retries: 1
       taskRef:
         name: slack-msg
-      runAfter: [skit-verify]
       params:
         - name: ibm-cloud-region
           value: $(params.dev-region)
@@ -712,10 +710,8 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: register-slack-msg
-      retries: 1
       taskRef:
         name: slack-msg
-      runAfter: [skit-register]
       when:
         - input: $(tasks.skit-register.results.skit-reg-success)
           operator: notin
@@ -754,11 +750,10 @@ spec:
       retries: 1
       taskRef:
         name: pd-alert
-      runAfter: [skit-verify]
       when:
         - input: $(tasks.skit-verify.results.pl-status)
-          operator: notin
-          values: ["success"]
+          operator: in
+          values: ["failed"]
       params:
         - name: ibm-cloud-region
           value: $(params.dev-region)
