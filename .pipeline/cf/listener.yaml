@@ -63,6 +63,9 @@ spec:
       default: "0"
     - name: ibmcloud-api
       default: "https://cloud.ibm.com"
+    - name: force-verify-failure
+      description: If true, forces a skit verify failure. For testing purposes only.
+      default: "false"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -131,14 +134,12 @@ spec:
             value: $(params.PAGERDUTY_API_TOKEN)
           - name: enabled-cf
             value: $(params.ENABLED_CF)
-          - name: docker-username
-            value: $(params.DOCKER_USERNAME)
-          - name: docker-password
-            value: $(params.DOCKER_PASSWORD)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
           - name: ibmcloud-api
             value: $(params.ibmcloud-api)
+          - name: force-verify-failure
+            value: $(params.force-verify-failure)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

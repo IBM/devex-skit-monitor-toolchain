@@ -96,6 +96,9 @@ spec:
       description: Docker login password
     - name: run-build-image
       description: The image used during the build of the skit.
+    - name: force-verify-failure
+      description: If true, forces a skit verify failure. For testing purposes only.
+      default: "false"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -198,6 +201,8 @@ spec:
             value: $(params.run-build-image)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
+          - name: force-verify-failure
+            value: $(params.force-verify-failure)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

@@ -2,12 +2,12 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: skit-verify-alert-register
+  name: skit-register
 spec:
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
-      default: https://cloud.ibm.com
+      default: "https://cloud.ibm.com"
     - name: shuttle-properties-file
       description: name of the properties file that contain properties to include in the environment for the script execution
       default: ""
@@ -41,36 +41,26 @@ spec:
       default: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/111efe7d-5858-4d5b-a5b4-cdd1d591ff78/run/eefc7f6c-0cbe-4eab-848f-2dfa44bd31de"
     - name: skit-reg-auth-token
       description: authentication token for executing skit registration
-    - name: devx-slack-channel-webhook
-      description: webhook for the slack DevX skit monitoring channel
-    - name: owner-slack-channel-webhook
-      description: webhook for the slack skit owner's monitoring channel (if different)
-    - name: enable-pd-alerts
-      description: if 'true', enable PagerDuty alerts
-      default: "false"
-    - name: enable-slack-alerts
-      description: if 'true', enable slack alerts
-      default: "false"
-    - name: pagerduty-events-api-url
-      description: the PagerDuty Events API endpoint URL
-    - name: pagerduty-api-token
-      description: PagerDuty API token
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
     - name: register-skit
       description: if 'true', kick off registration pipeline
       default: "false"
+    - name: exp-test-passed
+      description: If true, the experience test passed and registration should be performed.
   results:
-    - name: app-url
-      description: The running application's URL (obtained from APP_URL variable set by the executed script)
+    - name: skit-reg-success
+      description: If true, skit registration succeeded.
+    - name: slack-msg
+      description: If set, the message to send to Slack after this task. Typically only used to send a failure message.
 
   workspaces:
     - name: artifacts
       description: A workspace
       mountPath: /artifacts
   steps:
-    - name: experience-test
+    - name: register
       image: ibmcom/pipeline-base-image:2.13
       workingDir: /artifacts
       env:
@@ -86,7 +76,7 @@ spec:
           value: $(params.deploy-target)
         - name: SKIT_NAME
           value: $(params.skit-name)
-        - name: SKIT_GIT_URL
+        - name: SKIT_URL
           value: $(params.skit-git-url)
         - name: SKIT_GIT_BRANCH
           value: $(params.skit-git-branch)
@@ -94,8 +84,6 @@ spec:
           value: $(params.skit-git-commit)
         - name: SHUTTLE_PROPERTIES_FILE
           value: $(params.shuttle-properties-file)
-        - name: PIPELINE_DEBUG
-          value: $(params.pipeline-debug)
         - name: DEVX_SKIT_ASSETS_GIT
           value: $(params.devex-skit-assets-git)
         - name: DEVX_SKIT_ASSETS_GIT_RELEASE
@@ -106,14 +94,6 @@ spec:
           value: $(params.skit-reg-endpoint)
         - name: SKIT_REG_AUTH_TOKEN
           value: $(params.skit-reg-auth-token)
-        - name: DEVX_SLACK_CHANNEL_WEBHOOK
-          value: $(params.devx-slack-channel-webhook)
-        - name: OWNER_SLACK_CHANNEL_WEBHOOK
-          value: $(params.owner-slack-channel-webhook)
-        - name: PAGERDUTY_EVENTS_API_URL
-          value: $(params.pagerduty-events-api-url)
-        - name: PAGERDUTY_API_TOKEN
-          value: $(params.pagerduty-api-token)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
         - name: PIPELINE_RUN_URL
@@ -122,10 +102,8 @@ spec:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
         - name: REGISTER_SKIT
           value: $(params.register-skit)
-        - name: ENABLE_PD_ALERTS
-          value: $(params.enable-pd-alerts)
-        - name: ENABLE_SLACK_ALERTS
-          value: $(params.enable-slack-alerts)
+        - name: EXP_TEST_PASSED
+          value: $(params.exp-test-passed)
 
       script: |
         #!/bin/bash
@@ -161,48 +139,21 @@ spec:
 
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
 
-        export SKIT_DIR=/artifacts/${SKIT_NAME}
-
-        if [ "${DEPLOY_TARGET}" == "cf" ]; then
-          export APP_URL=$CF_APP_URL
-          ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
-        fi
-
-        if [ "${DEPLOY_TARGET}" == "helm" ]; then
-          export APP_URL=$HELM_APP_URL
-        fi
-
-        export SKIT_URL="$SKIT_GIT_URL"
-
-        # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
-        #    source ./scripts/verification_experience_test.sh
-        # alternatively, you can source it from online script:
-        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
-        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
-
-        # Record task results
-        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
-          echo "${DEPLOY_TARGET}_status=success" >> $SHUTTLE_PROPERTIES_FILE
-
-          if [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "true" ]; then
-            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE && grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
-              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
-            fi
-          elif [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "false" ]; then
-            if grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
-              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
-            fi
-          elif [ "${ENABLED_HELM}" == "false" ] && [ "${ENABLED_CF}" == "true" ]; then
-            if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE; then
-              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
-            fi
+        if [ "$EXP_TEST_PASSED" == "true" ] && [ "$DEPLOY_TARGET" != "cf" ] && [ "$REGISTER_SKIT" == "true" ]; then
+          source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/skit_registration.sh")
+          echo "Beginning skit registration..."
+          register_skit
+          if [ $REG_EXIT != 0 ]; then
+            echo -n "false" > $(results.skit-reg-success.path)
+            msg="Skit registration failed. Check the starter-kit-registration Tekton pipeline logs under DevOps Toolchains for details."
+            fail_msg=":spinning-siren: $msg"
+            echo -n "$fail_msg" > $(results.slack-msg.path)
+            exit 1
           else
-            sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+            echo -n "true" > $(results.skit-reg-success.path)
+            echo -n "Skit registration succeeded!" > $(results.slack-msg.path)
           fi
         fi
-        
-
-        echo -n "$APP_URL" > $(results.app-url.path)
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume

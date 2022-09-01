@@ -1,0 +1,212 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: skit-verify
+spec:
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: "https://cloud.ibm.com"
+    - name: shuttle-properties-file
+      description: name of the properties file that contain properties to include in the environment for the script execution
+      default: ""
+    - name: api-key
+      description: IBM Cloud API key
+    - name: app-name
+      description: name of the cf or helm app
+    - name: skit-name
+      description: name of the skit
+    - name: skit-git-url
+      description: repo URL of the skit
+    - name: skit-git-branch
+      description: repo branch of the skit
+    - name: skit-git-commit
+      description: repo commit of the skit
+    - name: enabled-helm
+      description: whether helm pipeline is enabled
+    - name: enabled-cf
+      description: whether cf pipeline is enabled
+    - name: deploy-target
+      description: the deployment target
+    - name: devex-skit-assets-git
+      description: the org and repo name where skit assets are stored
+      default: "IBM/devex-skit-assets"
+    - name: devex-skit-assets-git-release
+      description: the release branch for skit assets
+    - name: devex-skit-assets-git-url-raw
+      description: URL where skit asset releases are downloaded
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      default: "0"
+    - name: force-verify-failure
+      description: If true, forces a skit verify failure. For testing purposes only.
+      default: "false"
+  results:
+    - name: app-url
+      description: The running application's URL (obtained from APP_URL variable set by the executed script)
+    - name: pl-status
+      description: The status of the test on CF.
+    - name: slack-msg
+      description: The Slack message to send after this task.
+    - name: slack-notify
+      description: If true, the Slack message went will include a notification.
+
+  workspaces:
+    - name: artifacts
+      description: A workspace
+      mountPath: /artifacts
+  steps:
+    - name: verify
+      image: ibmcom/pipeline-base-image:2.13
+      workingDir: /artifacts
+      env:
+        - name: API_KEY
+          value: $(params.api-key)
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: ENABLED_HELM
+          value: $(params.enabled-helm)
+        - name: ENABLED_CF
+          value: $(params.enabled-cf)
+        - name: DEPLOY_TARGET
+          value: $(params.deploy-target)
+        - name: SKIT_NAME
+          value: $(params.skit-name)
+        - name: SKIT_GIT_URL
+          value: $(params.skit-git-url)
+        - name: SKIT_GIT_BRANCH
+          value: $(params.skit-git-branch)
+        - name: SKIT_GIT_COMMIT
+          value: $(params.skit-git-commit)
+        - name: SHUTTLE_PROPERTIES_FILE
+          value: $(params.shuttle-properties-file)
+        - name: DEVX_SKIT_ASSETS_GIT
+          value: $(params.devex-skit-assets-git)
+        - name: DEVX_SKIT_ASSETS_GIT_RELEASE
+          value: $(params.devex-skit-assets-git-release)
+        - name: DEVX_SKIT_ASSETS_GIT_URL_RAW
+          value: $(params.devex-skit-assets-git-url-raw)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: FORCE_VERIFY_FAILURE
+          value: $(params.force-verify-failure)
+
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            env
+            pwd
+            ls -l
+            trap env EXIT
+            set -x
+            cat $SHUTTLE_PROPERTIES_FILE
+        fi
+
+        if [ "${DEPLOY_TARGET}" == "helm" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_HELM}" == "false" ]; then
+            echo "Helm pipeline is disabled for this toolchain"
+            exit 0
+        fi
+
+        if [ "${DEPLOY_TARGET}" == "cf" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_CF}" == "false" ]; then
+            echo "CF pipeline is disabled for this toolchain"
+            exit 0
+        fi
+
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          source $SHUTTLE_PROPERTIES_FILE
+          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
+        fi
+
+        ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
+
+        export SKIT_DIR=/artifacts/${SKIT_NAME}
+
+        if [ "${DEPLOY_TARGET}" == "cf" ]; then
+          export APP_URL=$CF_APP_URL
+          ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
+        fi
+
+        if [ "${DEPLOY_TARGET}" == "helm" ]; then
+          export APP_URL=$HELM_APP_URL
+        fi
+        
+        echo -n "$APP_URL" > $(results.app-url.path)
+        
+        export SKIT_URL="$SKIT_GIT_URL"
+
+        if ! grep -q "pl_status=" < $SHUTTLE_PROPERTIES_FILE; then
+          echo "pl_status=failed" >> $SHUTTLE_PROPERTIES_FILE
+        fi
+        echo -n "failed" > $(results.pl-status.path)
+        echo -n ":spinning-siren: Skit Experience Test Failed" > $(results.slack-msg.path)
+        echo -n "true" > $(results.slack-notify.path)
+
+        if [ "$FORCE_VERIFY_FAILURE" == "true" ]; then
+          echo "Skit verify failure forced! Pipeline will fail at the end."
+          exit 0
+        fi
+
+        set -e
+        EXIT_CODE=0
+
+        # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
+        #    source ./scripts/verification_experience_test.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh") || EXIT_CODE=$?
+
+        if [ $EXIT_CODE == 0 ]; then
+          # Record task results
+          if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+            echo "${DEPLOY_TARGET}_status=success" >> $SHUTTLE_PROPERTIES_FILE
+
+            if [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "true" ]; then
+              if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE && grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+                sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+                echo -n "success" > $(results.pl-status.path)
+              fi
+            elif [ "${ENABLED_HELM}" == "true" ] && [ "${ENABLED_CF}" == "false" ]; then
+              if grep -q "helm_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+                sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+                echo -n "success" > $(results.pl-status.path)
+              fi
+            elif [ "${ENABLED_HELM}" == "false" ] && [ "${ENABLED_CF}" == "true" ]; then
+              if grep -q "cf_status=success" < $SHUTTLE_PROPERTIES_FILE; then
+                sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+                echo -n "success" > $(results.pl-status.path)
+              fi
+            else
+              sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
+              echo -n "success" > $(results.pl-status.path)
+            fi
+          fi
+          echo -n ":white_check_mark: Skit Experience Test Passed" > $(results.slack-msg.path)
+          echo -n "false" > $(results.slack-notify.path)
+        else
+          echo "Skit Experience Test failed! Pipeline will fail at the end."
+          EXIT_CODE=0
+        fi
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /artifacts/_toolchain.json
+          subPath: toolchain.json
+          name: cd-config-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

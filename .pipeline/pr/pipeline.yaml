@@ -120,12 +120,15 @@ spec:
       default: "Testing the skit pipeline deploy automatically..."
     - name: build-properties
       default: "build.properties"
+    - name: force-verify-failure
+      description: If true, forces a skit verify failure. For testing purposes only.
+      default: "false"
   workspaces:
     - name: pipeline-ws
   tasks:
     - name: set-pr-status-pipeline-pending
       retries: 1
-      taskref:
+      taskRef:
         name: git-set-commit-status
       workspaces:
         - name: artifacts
@@ -145,7 +148,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: skit-git-clone
       retries: 1
-      taskref:
+      taskRef:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -171,7 +174,7 @@ spec:
           workspace: pipeline-ws
     - name: assets-git-clone
       retries: 1
-      taskref:
+      taskRef:
         name: git-clone-repo
       params:
         - name: continuous-delivery-context-secret
@@ -196,7 +199,7 @@ spec:
     - name: cra-discovery-scan
       runAfter: [skit-git-clone, assets-git-clone]
       retries: 1
-      taskref:
+      taskRef:
         name: cra-discovery
       workspaces:
         - name: artifacts
@@ -218,7 +221,7 @@ spec:
       runAfter:
         - cra-discovery-scan
       retries: 1
-      taskref:
+      taskRef:
         name: cra-vulnerability-remediation
       workspaces:
         - name: artifacts
@@ -240,7 +243,7 @@ spec:
           value: $(params.project-id) 
     - name: cra-cis-check
       retries: 1
-      taskref:
+      taskRef:
         name: cra-cis-check
       runAfter:
         - cra-discovery-scan
@@ -266,7 +269,7 @@ spec:
           value: $(params.project-id)
     - name: cra-bom
       retries: 1
-      taskref:
+      taskRef:
         name: cra-bom
       runAfter:
         - cra-discovery-scan
@@ -298,7 +301,7 @@ spec:
         - name: output
           workspace: pipeline-ws
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-build
       params:
         - name: pipeline-debug
@@ -321,7 +324,7 @@ spec:
           operator: in
           values: ["true"]
       retries: 2
-      taskref:
+      taskRef:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
@@ -444,7 +447,7 @@ spec:
           operator: in
           values: ["true"]
       taskRef:
-        name: skit-verify-alert-register
+        name: skit-verify
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
@@ -461,10 +464,10 @@ spec:
           value: $(tasks.skit-git-clone.results.git-branch)
         - name: skit-git-commit
           value: $(tasks.skit-git-clone.results.git-commit)
-        - name: enabled-helm
-          value: $(params.enabled-helm)
         - name: enabled-cf
           value: $(params.enabled-cf)
+        - name: enabled-helm
+          value: $(params.enabled-helm)
         - name: deploy-target
           value: "cf"
         - name: devex-skit-assets-git
@@ -473,24 +476,8 @@ spec:
           value: $(params.devex-skit-assets-git-release)
         - name: devex-skit-assets-git-url-raw
           value: $(params.devex-skit-assets-git-url-raw)
-        - name: skit-reg-endpoint
-          value: $(params.skit-reg-endpoint)
-        - name: skit-reg-auth-token
-          value: $(params.skit-reg-auth-token)
-        - name: devx-slack-channel-webhook
-          value: $(params.devx-slack-channel-webhook)
-        - name: owner-slack-channel-webhook
-          value: $(params.owner-slack-channel-webhook)
-        - name: enable-pd-alerts
-          value: "false"
-        - name: pagerduty-events-api-url
-          value: $(params.pagerduty-events-api-url)
-        - name: pagerduty-api-token
-          value: $(params.pagerduty-api-token)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: enable-slack-alerts
-          value: "false"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -501,7 +488,7 @@ spec:
           values: ["true"]
       runAfter: [cf-skit-verify-alert-register]
       retries: 1
-      taskref:
+      taskRef:
         name: git-set-commit-status
       workspaces:
         - name: artifacts
@@ -522,7 +509,7 @@ spec:
     ### HELM DEPLOY
     - name: extract-doi-enablement
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-extract-value
       params:
         # count the number of service in the toolchain that are DevopsInsights
@@ -537,7 +524,7 @@ spec:
           operator: in
           values: ["1"]
       retries: 1
-      taskref:
+      taskRef:
         name: doi-publish-buildrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -557,7 +544,7 @@ spec:
           operator: in
           values: ["true"]
       retries: 1
-      taskref:
+      taskRef:
         name: linter-docker-lint
       params:
         - name: path-to-dockerfile
@@ -574,7 +561,7 @@ spec:
     - name: unit-tests
       runAfter: [docker-lint, build]
       retries: 1
-      taskref:
+      taskRef:
         name: tester-run-tests
       params:
         - name: tests-script
@@ -596,7 +583,7 @@ spec:
           operator: in
           values: ["1"]
       retries: 1
-      taskref:
+      taskRef:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -617,7 +604,7 @@ spec:
     - name: containerize
       runAfter: [publish-doi-code-tests]
       retries: 1
-      taskref:
+      taskRef:
         name: icr-execute-in-dind
       params:
         - name: continuous-delivery-context-secret
@@ -673,7 +660,7 @@ spec:
           workspace: pipeline-ws
     - name: vulnerability-advisor
       retries: 1
-      taskref:
+      taskRef:
         name: icr-check-va-scan
       params:
         - name: continuous-delivery-context-secret
@@ -700,7 +687,7 @@ spec:
           operator: in
           values: ["1"]
       retries: 1
-      taskref:
+      taskRef:
         name: doi-publish-testrecord
       params:
         - name: toolchain-apikey-secret-key
@@ -720,7 +707,7 @@ spec:
           workspace: pipeline-ws
     - name: deploy-to-kubernetes
       retries: 1
-      taskref:
+      taskRef:
         name: iks-deploy-to-kubernetes
       runAfter: [vulnerability-advisor]
       params:
@@ -794,7 +781,7 @@ spec:
     - name: publish-deployable-task-helm
       runAfter: [deploy-to-kubernetes]
       retries: 1
-      taskref:
+      taskRef:
         name: toolchain-publish-deployable-mapping
       params:
         - name: deployable-type
@@ -815,7 +802,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: check-health
       retries: 1
-      taskref:
+      taskRef:
         name: iks-deploy-to-kubernetes
       runAfter: [deploy-to-kubernetes]
       params:
@@ -848,14 +835,14 @@ spec:
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
-    - name: helm-skit-verify-alert-register
+    - name: helm-skit-verify
       retries: 1
-      taskref:
-        name: skit-verify-alert-register
+      taskRef:
+        name: skit-verify
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "build.properties"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -880,31 +867,15 @@ spec:
           value: $(params.devex-skit-assets-git-release)
         - name: devex-skit-assets-git-url-raw
           value: $(params.devex-skit-assets-git-url-raw)
-        - name: skit-reg-endpoint
-          value: $(params.skit-reg-endpoint)
-        - name: skit-reg-auth-token
-          value: $(params.skit-reg-auth-token)
-        - name: devx-slack-channel-webhook
-          value: $(params.devx-slack-channel-webhook)
-        - name: owner-slack-channel-webhook
-          value: $(params.owner-slack-channel-webhook)
-        - name: enable-pd-alerts
-          value: "false"
-        - name: pagerduty-events-api-url
-          value: $(params.pagerduty-events-api-url)
-        - name: pagerduty-api-token
-          value: $(params.pagerduty-api-token)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: enable-slack-alerts
-          value: "false"
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
     - name: set-pr-status-helm-success
-      runAfter: [helm-skit-verify-alert-register]
+      runAfter: [helm-skit-verify]
       retries: 1
-      taskref:
+      taskRef:
         name: git-set-commit-status
       workspaces:
         - name: artifacts
@@ -917,7 +888,7 @@ spec:
         - name: context
           value: "helm-verification"
         - name: description
-          value: "$(tasks.helm-skit-verify-alert-register.results.app-url) Passed Experience Test!"
+          value: "$(tasks.helm-skit-verify.results.app-url) Passed Experience Test!"
         - name: state
           value: "success"
         - name: pipeline-debug
@@ -925,7 +896,7 @@ spec:
   finally:
     - name: set-pr-status-pipeline-finally
       retries: 1
-      taskref:
+      taskRef:
         name: git-set-commit-status
       workspaces:
         - name: artifacts
@@ -947,7 +918,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: skit-cleanup-cf
       retries: 1
-      taskref:
+      taskRef:
         name: skit-cleanup-cf
       params:
         - name: api-key
@@ -964,7 +935,7 @@ spec:
           value: "600"
     - name: skit-cleanup-helm
       retries: 1
-      taskref:
+      taskRef:
         name: skit-cleanup-helm
       params:
         - name: api-key

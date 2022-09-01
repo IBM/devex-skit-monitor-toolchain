@@ -131,6 +131,8 @@ services:
             $env.dockerPassword ? '{{dockerPassword}}' : ''
           run-build-image: >
             $env.runBuildImage ? '{{runBuildImage}}' : ''
+          FORCE_VERIFY_FAILURE: >
+            $env.forceVerifyFailure ? '{{forceVerifyFailure}}' : 'false'
       label: Pipeline for deploying a starter kit app via Helm
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-helm'
       services:
@@ -196,6 +198,8 @@ services:
             $env.dockerUsername ? '{{dockerUsername}}' : ''
           DOCKER_PASSWORD: >
             $env.dockerPassword ? '{{dockerPassword}}' : ''
+          FORCE_VERIFY_FAILURE: >
+            $env.forceVerifyFailure ? '{{forceVerifyFailure}}' : 'false'
       label: Pipeline for deploying a starter kit app via Cloud Foundry
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-cf'
       services:
@@ -266,6 +270,8 @@ services:
             $env.dockerPassword ? '{{dockerPassword}}' : ''
           run-build-image: >
             $env.runBuildImage ? '{{runBuildImage}}' : ''
+          FORCE_VERIFY_FAILURE: >
+            $env.forceVerifyFailure ? '{{forceVerifyFailure}}' : 'false'
       label: Pipeline for deploying a starter kit app via Cloud Foundry
       name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-pr'
       services:
@@ -327,5 +333,8 @@ form:
       run-build-image: >
         $env.runBuildImage ?
           '{{runBuildImage}}' : 'icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.7'
+      force-verify-failure: >
+        $env.forceVerifyFailure ?
+          '{{forceVerifyFailure}}' : 'false'
     schema:
       $ref: deploy.json
