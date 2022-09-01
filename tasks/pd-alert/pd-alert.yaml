@@ -125,7 +125,9 @@ spec:
             cat $SHUTTLE_PROPERTIES_FILE
         fi
 
-        export ALERT_MSG="${ALERT_MSG:Skit Experience Test Failed for skit $SKIT_NAME on $DEPLOY_TARGET}"
+        if [ -z "$ALERT_MSG" ]; then
+          export ALERT_MSG="Skit Experience Test Failed for skit $SKIT_NAME on $DEPLOY_TARGET"
+        fi
         export PD_EVT_ACTION=${PD_EVT_ACTION:trigger}
         export PD_CLASS="${PD_CLASS:Skit Experience Test}"
         export PD_SVC_NAME="${PD_SVC_NAME:DevX Skit Monitor}"
