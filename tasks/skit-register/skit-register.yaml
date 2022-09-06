@@ -151,8 +151,15 @@ spec:
             exit 1
           else
             echo -n "true" > $(results.skit-reg-success.path)
+            sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE
             echo -n "Skit registration succeeded!" > $(results.slack-msg.path)
           fi
+        fi
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            ls -l
+            cat $SHUTTLE_PROPERTIES_FILE
         fi
       volumeMounts:
         - mountPath: /cd-config

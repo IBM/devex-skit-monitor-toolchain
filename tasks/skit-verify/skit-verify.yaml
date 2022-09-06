@@ -193,6 +193,12 @@ spec:
           echo "Skit Experience Test failed! Pipeline will fail at the end."
           EXIT_CODE=0
         fi
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            ls -l
+            cat $SHUTTLE_PROPERTIES_FILE
+        fi
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
