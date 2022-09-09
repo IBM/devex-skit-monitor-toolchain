@@ -839,10 +839,14 @@ spec:
       retries: 1
       taskRef:
         name: skit-verify
+      when:
+        - input: $(params.enabled-helm)
+          operator: in
+          values: ["true"]
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file
-          value: "/artifact/$(params.build-properties)"
+          value: "/artifacts/$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
