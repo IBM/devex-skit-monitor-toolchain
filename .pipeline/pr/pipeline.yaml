@@ -440,7 +440,7 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-    - name: cf-skit-verify-alert-register
+    - name: cf-skit-verify
       retries: 1
       when:
         - input: $(params.enabled-cf)
@@ -486,7 +486,7 @@ spec:
         - input: $(params.enabled-cf)
           operator: in
           values: ["true"]
-      runAfter: [cf-skit-verify-alert-register]
+      runAfter: [cf-skit-verify]
       retries: 1
       taskRef:
         name: git-set-commit-status
@@ -501,7 +501,7 @@ spec:
         - name: context
           value: "cf-verification"
         - name: description
-          value: "$(tasks.cf-skit-verify-alert-register.results.app-url) Passed Experience Test!"
+          value: "$(tasks.cf-skit-verify.results.app-url) Passed Experience Test!"
         - name: state
           value: "success"
         - name: pipeline-debug
