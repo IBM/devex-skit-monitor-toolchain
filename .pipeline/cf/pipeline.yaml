@@ -41,6 +41,8 @@ spec:
       default: "github"
     - name: project-id
       default: ""
+    - name: build-properties
+      default: "build.properties"
     - name: devex-skit-assets-git
       description: the org and repo containing skit assets
     - name: devex-skit-assets-git-release
@@ -98,7 +100,7 @@ spec:
         - name: revision
           value: $(params.revision)
         - name: properties-file
-          value: "build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -256,7 +258,7 @@ spec:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -372,7 +374,7 @@ spec:
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -451,7 +453,7 @@ spec:
         - name: ibm-cloud-region
           value: $(params.region)
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: app-name
           value: $(params.cf-app)
         - name: skit-name
