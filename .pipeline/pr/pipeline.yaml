@@ -164,7 +164,7 @@ spec:
         - name: revision
           value: $(params.pr-revision)
         - name: properties-file
-          value: $(params.build-properties)
+          value: "/artifacts/$(params.build-properties)"
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -842,7 +842,7 @@ spec:
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifact/$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name

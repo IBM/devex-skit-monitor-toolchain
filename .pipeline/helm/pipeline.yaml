@@ -67,6 +67,8 @@ spec:
       default: "github"
     - name: project-id
       default: ""
+    - name: build-properties
+      default: "build.properties"
     - name: devex-skit-assets-git
       description: the org and repo containing skit assets
     - name: devex-skit-assets-git-release
@@ -468,7 +470,7 @@ spec:
       runAfter: [vulnerability-advisor]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -561,7 +563,7 @@ spec:
       runAfter: [deploy-to-kubernetes]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: cluster-region
           value: $(params.dev-region)
         - name: resource-group
@@ -596,7 +598,7 @@ spec:
       runAfter: [deploy-to-kubernetes, check-health]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -639,7 +641,7 @@ spec:
           values: ["success"]
       params:
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -761,7 +763,7 @@ spec:
         - name: ibm-cloud-region
           value: $(params.dev-region)
         - name: shuttle-properties-file
-          value: "build.properties"
+          value: "/artifacts/$(params.build-properties)"
         - name: app-name
           value: $(params.image-name)
         - name: skit-name
