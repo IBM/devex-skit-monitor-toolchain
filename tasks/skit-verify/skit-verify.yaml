@@ -193,7 +193,9 @@ spec:
         if [ $PIPELINE_DEBUG == 1 ]; then
             pwd
             ls -l
-            cat $SHUTTLE_PROPERTIES_FILE
+            if [ -f "$SHUTTLE_PROPERTIES_FILE" ]; then
+              cat $SHUTTLE_PROPERTIES_FILE
+            fi
         fi
       volumeMounts:
         - mountPath: /cd-config
