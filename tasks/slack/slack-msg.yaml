@@ -38,6 +38,9 @@ spec:
     - name: notify
       description: If true, the Slack message will include a notification.
       default: "false"
+    - name: fail-build
+      description: If true, the build will be failed.
+      default: "false"
 
   workspaces:
     - name: artifacts
@@ -80,6 +83,8 @@ spec:
           value: $(params.slack-msg)
         - name: NOTIFY
           value: $(params.notify)
+        - name: FAIL_BUILD
+          value: $(params.fail-build)
 
       script: |
         #!/bin/bash
@@ -95,6 +100,10 @@ spec:
 
         if [ $ENABLE_SLACK_ALERTS == "true" ]; then
           source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/slack_message.sh") "$SLACK_MSG" "$NOTIFY"
+        fi
+
+        if [ $FAIL_BUILD == "true" ]; then
+          exit 1
         fi
       volumeMounts:
         - mountPath: /cd-config
