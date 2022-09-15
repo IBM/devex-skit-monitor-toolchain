@@ -754,7 +754,6 @@ spec:
         - name: artifacts
           workspace: pipeline-ws
     - name: pd-alert
-      retries: 1
       taskRef:
         name: pd-alert
       when:

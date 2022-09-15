@@ -446,7 +446,6 @@ spec:
           workspace: pipeline-ws
   finally:
     - name: pd-alert
-      retries: 1
       taskRef:
         name: pd-alert
       when:
