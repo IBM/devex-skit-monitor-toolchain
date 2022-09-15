@@ -393,6 +393,10 @@ spec:
           value: $(params.enabled-helm)
         - name: deploy-target
           value: $(params.deploy-target)
+        - name: cf-org
+          value: "$(params.cf-org)"
+        - name: cf-space
+          value: "$(params.cf-space)"
         - name: devex-skit-assets-git
           value: $(params.devex-skit-assets-git)
         - name: devex-skit-assets-git-release
