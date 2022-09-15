@@ -100,7 +100,7 @@ spec:
         - name: revision
           value: $(params.revision)
         - name: properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -258,7 +258,7 @@ spec:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -374,7 +374,7 @@ spec:
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -453,7 +453,7 @@ spec:
         - name: ibm-cloud-region
           value: $(params.region)
         - name: shuttle-properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: app-name
           value: $(params.cf-app)
         - name: skit-name
