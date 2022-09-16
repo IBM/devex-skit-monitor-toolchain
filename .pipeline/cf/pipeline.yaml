@@ -100,7 +100,7 @@ spec:
         - name: revision
           value: $(params.revision)
         - name: properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: directory-name
           value: ""
         - name: pipeline-debug
@@ -258,7 +258,7 @@ spec:
         name: cf-deploy-app
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: continuous-delivery-context-secret
           value: "secure-properties"
         - name: cloud-foundry-apikey-secret-key
@@ -374,7 +374,7 @@ spec:
       runAfter: [rolling-deploy-task]
       params:
         - name: shuttle-properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: api-key
           value: $(params.api-key)
         - name: app-name
@@ -393,6 +393,10 @@ spec:
           value: $(params.enabled-helm)
         - name: deploy-target
           value: $(params.deploy-target)
+        - name: cf-org
+          value: "$(params.cf-org)"
+        - name: cf-space
+          value: "$(params.cf-space)"
         - name: devex-skit-assets-git
           value: $(params.devex-skit-assets-git)
         - name: devex-skit-assets-git-release
@@ -442,7 +446,6 @@ spec:
           workspace: pipeline-ws
   finally:
     - name: pd-alert
-      retries: 1
       taskRef:
         name: pd-alert
       when:
@@ -453,7 +456,7 @@ spec:
         - name: ibm-cloud-region
           value: $(params.region)
         - name: shuttle-properties-file
-          value: "/artifacts/$(params.build-properties)"
+          value: "$(params.build-properties)"
         - name: app-name
           value: $(params.cf-app)
         - name: skit-name

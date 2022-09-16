@@ -746,13 +746,14 @@ spec:
           value: $(tasks.skit-register.results.slack-msg)
         - name: notify
           value: "true"
+        - name: fail-build
+          value: "true"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
     - name: pd-alert
-      retries: 1
       taskRef:
         name: pd-alert
       when:

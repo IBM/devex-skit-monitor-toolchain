@@ -148,7 +148,6 @@ spec:
             msg="Skit registration failed. Check the starter-kit-registration Tekton pipeline logs under DevOps Toolchains for details."
             fail_msg=":spinning-siren: $msg"
             echo -n "$fail_msg" > $(results.slack-msg.path)
-            exit 1
           else
             echo -n "true" > $(results.skit-reg-success.path)
             sed -ir "s/^[#]*\s*pl_status=.*/pl_status=success/" $SHUTTLE_PROPERTIES_FILE

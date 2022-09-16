@@ -29,6 +29,12 @@ spec:
       description: whether cf pipeline is enabled
     - name: deploy-target
       description: the deployment target
+    - name: cf-org
+      description: Name of organization to deploy the CF app to
+      default: ""
+    - name: cf-space
+      description: Name of space to deploy the CF app to
+      default: ""
     - name: devex-skit-assets-git
       description: the org and repo name where skit assets are stored
       default: "IBM/devex-skit-assets"
@@ -71,6 +77,10 @@ spec:
           value: $(params.enabled-cf)
         - name: DEPLOY_TARGET
           value: $(params.deploy-target)
+        - name: CF_ORG
+          value: $(params.cf-org)
+        - name: CF_SPACE
+          value: $(params.cf-space)
         - name: SKIT_NAME
           value: $(params.skit-name)
         - name: SKIT_GIT_URL
@@ -129,7 +139,6 @@ spec:
         export SKIT_DIR=/artifacts/${SKIT_NAME}
 
         if [ "${DEPLOY_TARGET}" == "cf" ]; then
-          export APP_URL=$CF_APP_URL
           ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
         fi
 
@@ -153,16 +162,13 @@ spec:
           exit 0
         fi
 
-        set -e
-        EXIT_CODE=0
-
         # copy the script below into your app code repo (e.g. ./scripts/verification_experience_test.sh) and 'source' it from your pipeline job
         #    source ./scripts/verification_experience_test.sh
         # alternatively, you can source it from online script:
         #    source <(curl -sSL "https://github.com/IBM/devex-skit-assets/raw/<release>/scripts/verification_experience_test.sh")
-        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh") || EXIT_CODE=$?
+        source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/verification_experience_test.sh")
 
-        if [ $EXIT_CODE == 0 ]; then
+        if [ $VERIFY_EXIT == 0 ]; then
           # Record task results
           if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
             echo "${DEPLOY_TARGET}_status=success" >> $SHUTTLE_PROPERTIES_FILE
@@ -191,13 +197,14 @@ spec:
           echo -n "false" > $(results.slack-notify.path)
         else
           echo "Skit Experience Test failed! Pipeline will fail at the end."
-          EXIT_CODE=0
         fi
 
         if [ $PIPELINE_DEBUG == 1 ]; then
             pwd
             ls -l
-            cat $SHUTTLE_PROPERTIES_FILE
+            if [ -f "$SHUTTLE_PROPERTIES_FILE" ]; then
+              cat $SHUTTLE_PROPERTIES_FILE
+            fi
         fi
       volumeMounts:
         - mountPath: /cd-config
