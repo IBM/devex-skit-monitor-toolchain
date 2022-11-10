@@ -10,7 +10,7 @@ spec:
       default: "0"
   steps:
     - name: run-sleep
-      image: ibmcom/pipeline-base-image:2.13
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.13
       env:
         - name: SLEEP_DURATION
           value: $(params.sleep-duration)
