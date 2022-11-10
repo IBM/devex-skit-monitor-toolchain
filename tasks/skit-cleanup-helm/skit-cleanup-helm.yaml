@@ -19,7 +19,7 @@ spec:
       default: "60"
   steps:
     - name: run-sleep
-      image: ibmcom/pipeline-base-image:2.13
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.13
       env:
         - name: SLEEP_DURATION
           value: $(params.sleep-duration)
@@ -30,7 +30,7 @@ spec:
         printf 'Allowing app to run for %d minutes before deleting it.\n' $((SLEEP_DURATION%3600/60))
         sleep "$SLEEP_DURATION"
     - name: cleanup-helm
-      image: ibmcom/pipeline-base-image:2.13
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.13
       onError: continue
       env:
         - name: API_KEY

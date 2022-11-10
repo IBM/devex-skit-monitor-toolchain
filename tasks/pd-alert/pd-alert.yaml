@@ -65,7 +65,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: send-alert
-      image: ibmcom/pipeline-base-image:2.12
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12
       workingDir: /artifacts
       env:
         - name: IBM_CLOUD_REGION
