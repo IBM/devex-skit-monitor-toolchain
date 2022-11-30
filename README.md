@@ -83,7 +83,7 @@ fi
 
 echo "Creating new toolchain $TOOLCHAIN_NAME..."
 curl -X POST -H "Authorization: $IAM_TOKEN" -H "Accept: application/json" \
-  -d "repository=$TEMPLATE_GIT_URL&branch=$TEMPLATE_GIT_BRANCH&autocreate=true&apiKey=$IAM_KEY&env_Id=ibm:yp:$IBM_CLOUD_REGION&resourceGroupId=$RESOURCE_GROUP_ID&toolchainName=$TOOLCHAIN_NAME&sourceRepoUrl=$SKIT_REPO_URL&skitAssetsBranch=$DEVX_SKIT_ASSETS_GIT_BRANCH&prodRegion=$PROD_REGION_ID&prodResourceGroup=$RESOURCE_GROUP&prodClusterName=$PROD_CLUSTER_NAME&prodClusterNamespace=$PROD_CLUSTER_NAMESPACE&prodOrganization=$ORG&prodSpace=$SPACE&registryRegion=ibm:yp:$CONTAINER_REGISTRY_REGION&registryNamespace=$CONTAINER_REGISTRY_NAMESPACE&enableHelm=$ENABLE_HELM&slackWebhookURL=$SLACK_WEBHOOK&slackOwnersChannel=$OWNER_SLACK_CHANNEL&pagerDutyAPIToken=$PAGERDUTY_API_TOKEN&pagerDutySvcName=$PAGERDUTY_SVC_NAME&enablePDAlerts=$ENABLE_PD_ALERTS" \
+  -d "repository=$TEMPLATE_GIT_URL&branch=$TEMPLATE_GIT_BRANCH&autocreate=true&apiKey=$IAM_KEY&env_Id=ibm:yp:$IBM_CLOUD_REGION&resourceGroupId=$RESOURCE_GROUP_ID&toolchainName=$TOOLCHAIN_NAME&sourceRepoUrl=$SKIT_REPO_URL&skitAssetsBranch=$DEVX_SKIT_ASSETS_GIT_BRANCH&prodRegion=$PROD_REGION_ID&prodResourceGroup=$RESOURCE_GROUP&prodClusterName=$PROD_CLUSTER_NAME&prodClusterNamespace=$PROD_CLUSTER_NAMESPACE&registryRegion=ibm:yp:$CONTAINER_REGISTRY_REGION&registryNamespace=$CONTAINER_REGISTRY_NAMESPACE&enableHelm=$ENABLE_HELM&slackWebhookURL=$SLACK_WEBHOOK&slackOwnersChannel=$OWNER_SLACK_CHANNEL&pagerDutyAPIToken=$PAGERDUTY_API_TOKEN&pagerDutySvcName=$PAGERDUTY_SVC_NAME&enablePDAlerts=$ENABLE_PD_ALERTS" \
   -k https://cloud.ibm.com/devops/setup/deploy?env_id=ibm:yp:us-south
 echo "Toolchain $TOOLCHAIN_NAME created successfully!"
 ```
