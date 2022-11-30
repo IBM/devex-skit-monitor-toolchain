@@ -63,9 +63,20 @@ CONTAINER_REGISTRY_NAMESPACE="my_namespace"
 PROD_CLUSTER_NAME="my-kube-cluster"
 PROD_CLUSTER_NAMESPACE="default"
 
+# target CF env
+ibmcloud target --cf-api https://api.us-south.cf.cloud.ibm.com -o "your-org" -s "your-space"
+
 IBM_CLOUD_REGION=$(ibmcloud target |grep Region | sed 's/Region\: [ ]*//g')
 IBM_CLOUD_REGION=$(echo -e "${IBM_CLOUD_REGION}" | tr -d '[:space:]')
 PROD_REGION_ID="ibm:yp:$IBM_CLOUD_REGION"
+
+ORG=$(ibmcloud target |grep Org | sed 's/Org\:[ ]*//g')
+ORG=$(echo -e "${ORG}" | tr -d '[:space:]')
+ORG_GUID=$(ibmcloud --quiet cf org $ORG --guid)
+
+SPACE=$(ibmcloud target |grep Space | sed 's/Space\: [ ]*//g')
+SPACE=$(echo -e "${SPACE}" | tr -d '[:space:]')
+SPACE_GUID=$(ibmcloud --quiet cf space $SPACE --guid)
 
 RESOURCE_GROUP=$(ibmcloud target |grep "Resource group" | sed 's/Resource group\:  [ ]*//g')
 RESOURCE_GROUP=$(echo -e "${RESOURCE_GROUP}" | tr -d '[:space:]')
