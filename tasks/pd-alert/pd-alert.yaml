@@ -12,7 +12,7 @@ spec:
       description: name of the properties file that contain properties to include in the environment for the script execution
       default: ""
     - name: app-name
-      description: name of the cf or helm app
+      description: name of the helm app
     - name: skit-name
       description: name of the skit
     - name: skit-git-url

@@ -28,8 +28,6 @@ deploy.clusternsDescription: "If the cluster namespace doesn't exist already, it
 deploy.organizationDescription: "The IBM Cloud organization."
 deploy.spaceDescription: "The IBM Cloud space."
 
-deploy.enableCfTitle: "Enable a Cloud Foundry Pipeline"
-deploy.enableCfDescription: "If checked, a pipeline to deploy to Cloud Foundry will be created."
 deploy.enableHelmTitle: "Enable a Helm Pipeline"
 deploy.enableHelmDescription: "If checked, a pipeline to deploy to Kubernetes using Helm will be created."
 

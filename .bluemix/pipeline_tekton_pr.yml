@@ -23,10 +23,6 @@ inputs:
   - type: git
     branch: ${PIPELINE_REPO_BRANCH}
     service: ${PIPELINE_REPO}
-    path: tasks/skit-cleanup-cf
-  - type: git
-    branch: ${PIPELINE_REPO_BRANCH}
-    service: ${PIPELINE_REPO}
     path: tasks/skit-cleanup-helm
   - type: git
     service: ${TEKTON_CATALOG_REPO}
@@ -81,17 +77,8 @@ triggers:
     properties: []
 properties:
   - type: text
-    name: cf-app
-    value: ${APP_NAME}-monitored-cf-pr
-  - type: text
     name: APP_NAME
     value: ${APP_NAME}
-  - type: text
-    name: cf-org
-    value: ${PROD_ORG_NAME}
-  - type: text
-    name: cf-space
-    value: ${PROD_SPACE_NAME}
   - type: text
     name: region
     value: ${PROD_REGION_ID}
@@ -142,9 +129,6 @@ properties:
     type: text
   - name: DEVX_SKIT_ASSETS_GIT_URL_CODE
     value: https://codeload.github.com/${DEVX_SKIT_ASSETS_GIT}/tar.gz/${DEVX_SKIT_ASSETS_GIT_RELEASE}
-    type: text
-  - name: ENABLED_CF
-    value: ${ENABLED_CF}
     type: text
   - name: ENABLED_HELM
     value: ${ENABLED_HELM}

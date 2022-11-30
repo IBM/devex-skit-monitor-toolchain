@@ -90,7 +90,6 @@ spec:
     - name: pagerduty-events-api-url
     - name: pagerduty-api-token
     - name: enabled-helm
-    - name: enabled-cf
       default: "false"
     - name: docker-username
     - name: docker-password
@@ -613,8 +612,6 @@ spec:
           value: $(tasks.skit-git-clone.results.git-commit)
         - name: enabled-helm
           value: $(params.enabled-helm)
-        - name: enabled-cf
-          value: $(params.enabled-cf)
         - name: deploy-target
           value: $(params.deploy-target)
         - name: devex-skit-assets-git
@@ -656,8 +653,6 @@ spec:
           value: $(tasks.skit-git-clone.results.git-commit)
         - name: enabled-helm
           value: $(params.enabled-helm)
-        - name: enabled-cf
-          value: $(params.enabled-cf)
         - name: deploy-target
           value: $(params.deploy-target)
         - name: devex-skit-assets-git

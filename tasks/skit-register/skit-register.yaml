@@ -14,7 +14,7 @@ spec:
     - name: api-key
       description: IBM Cloud API key
     - name: app-name
-      description: name of the cf or helm app
+      description: name of the helm app
     - name: skit-name
       description: name of the skit
     - name: skit-git-url
@@ -25,8 +25,6 @@ spec:
       description: repo commit of the skit
     - name: enabled-helm
       description: whether helm pipeline is enabled
-    - name: enabled-cf
-      description: whether cf pipeline is enabled
     - name: deploy-target
       description: the deployment target
     - name: devex-skit-assets-git
@@ -70,8 +68,6 @@ spec:
           value: $(params.app-name)
         - name: ENABLED_HELM
           value: $(params.enabled-helm)
-        - name: ENABLED_CF
-          value: $(params.enabled-cf)
         - name: DEPLOY_TARGET
           value: $(params.deploy-target)
         - name: SKIT_NAME
@@ -127,11 +123,6 @@ spec:
             exit 0
         fi
 
-        if [ "${DEPLOY_TARGET}" == "cf" ] || [ "${DEPLOY_TARGET}" == "both" ] && [ "${ENABLED_CF}" == "false" ]; then
-            echo "CF pipeline is disabled for this toolchain"
-            exit 0
-        fi
-
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
           source $SHUTTLE_PROPERTIES_FILE
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
@@ -139,7 +130,7 @@ spec:
 
         ibmcloud login -a "cloud.ibm.com" -r "us-south" --apikey "${API_KEY}" -g "devex-governance"
 
-        if [ "$EXP_TEST_PASSED" == "true" ] && [ "$DEPLOY_TARGET" != "cf" ] && [ "$REGISTER_SKIT" == "true" ]; then
+        if [ "$EXP_TEST_PASSED" == "true" ] && [ "$REGISTER_SKIT" == "true" ]; then
           source <(curl -sSL "$DEVX_SKIT_ASSETS_GIT_URL_RAW/scripts/skit_registration.sh")
           echo "Beginning skit registration..."
           register_skit

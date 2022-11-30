@@ -6,7 +6,6 @@ template:
   name: Create a code monitor for a starter kit
   required:
   - skitgitrepo
-  - pipeline_cf
   - pipeline_helm
 toolchain:
   name: >
@@ -96,7 +95,6 @@ services:
           PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
           PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
           PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
-          ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
           HELM_CHART_NAME: >
             $env.helmChartName ? '{{helmChartName}}' : ''
@@ -143,73 +141,7 @@ services:
       execute: >
           $env.pipeline_type === 'tekton' ? 'manual-run' : true
     service_id: pipeline
-      
-  pipeline_cf:
-    parameters:
-      configuration:
-        content:
-          $text: >
-            if ( $env.pipeline_type === 'tekton') {
-              "pipeline_tekton_cf.yml"
-            } else {
-              "pipeline_cf.yml"
-            }
-        env:
-          GIT_REPO: skitgitrepo
-          GIT_URL: '{{services.skitgitrepo.parameters.source_repo_url}}'
-          DEVX_SKIT_ASSETS_GIT: 'IBM/devex-skit-assets'
-          DEVX_SKIT_ASSETS_GIT_RELEASE: '{{form.pipeline.parameters.skit-assets-release}}'
-          APP_NAME: '{{services.skitgitrepo.parameters.repo_name}}'
-          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
-          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
-          API_KEY: '{{form.pipeline.parameters.api-key}}'
-          PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
-          PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
-          PROD_SPACE_NAME: '{{form.pipeline.parameters.prod-space}}'
-          PROD_ORG_NAME: '{{form.pipeline.parameters.prod-organization}}'
-          ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
-          ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
-          DEVX_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.devx-slack-channel-webhook}}'
-          OWNER_SLACK_CHANNEL_WEBHOOK: '{{form.pipeline.parameters.owner-slack-channel-webhook}}'
-          PAGERDUTY_API_URL: 'https://api.pagerduty.com/'
-          PAGERDUTY_EVENTS_API_URL: 'https://events.pagerduty.com/v2/enqueue'
-          PAGERDUTY_API_TOKEN: '{{form.pipeline.parameters.pagerduty-api-token}}'
-          PAGERDUTY_SVC_NAME: '{{form.pipeline.parameters.pagerduty-service-name}}'
-          ENABLE_PD_ALERTS: '{{form.pipeline.parameters.enable-pd-alerts}}'
-          SKIT_REG_ENDPOINT: '{{form.pipeline.parameters.skit-reg-endpoint}}'
-          SKIT_REG_AUTH_TOKEN: '{{form.pipeline.parameters.skit-reg-auth-token}}'
-          PIPELINE_REPO: pipeline-repo
-          PIPELINE_REPO_BRANCH: >
-            $env.branch ? $env.branch : "master"
-          TEKTON_CATALOG_REPO: tekton-catalog-repo
-          GIT_COMMIT_EVENT_LISTENER_NAME: >
-            if ( $env.source_provider === 'githubconsolidated' ) {
-              'github-commit';
-            } else if ( $env.source_provider === 'gitlab' ) {
-              'grit-or-gitlab-commit';
-            } else if ( $env.source_provider === 'bitbucketgit' ) {
-              'bitbucket-commit';
-            } else if ( $env.source_provider === 'github_integrated' ) {
-              'github-ent-commit';
-            } else {
-              'grit-or-gitlab-commit';
-            }
-          DOCKER_USERNAME: >
-            $env.dockerUsername ? '{{dockerUsername}}' : ''
-          DOCKER_PASSWORD: >
-            $env.dockerPassword ? '{{dockerPassword}}' : ''
-          FORCE_VERIFY_FAILURE: >
-            $env.forceVerifyFailure ? '{{forceVerifyFailure}}' : 'false'
-      label: Pipeline for deploying a starter kit app via Cloud Foundry
-      name: '{{services.skitgitrepo.parameters.repo_name}}-pipeline-cf'
-      services:
-      - skitgitrepo
-      type: >
-        $env.pipeline_type === 'tekton' ? 'tekton': 'classic'
-      ui_pipeline: true
-    service_id: pipeline
-  
-  
+
   pipeline_pr:
     parameters:
       configuration:
@@ -235,7 +167,6 @@ services:
           PROD_ORG_NAME: '{{form.pipeline.parameters.prod-organization}}'
           PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
           PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
-          ENABLED_CF: '{{form.pipeline.parameters.enable-cf}}'
           ENABLED_HELM: '{{form.pipeline.parameters.enable-helm}}'
           HELM_CHART_NAME: >
             $env.helmChartName ? '{{helmChartName}}' : ''
@@ -321,7 +252,6 @@ form:
       prod-cluster-name: '{{prodClusterName}}'
       prod-space: '{{prodSpace}}'
       prod-organization: '{{prodOrganization}}'
-      enable-cf: "$env.enableCF === 'true'"
       enable-helm: "$env.enableHelm === 'true'"
       devx-slack-channel-webhook: '{{devxSlackChannelWebhook}}'
       owner-slack-channel-webhook: '{{ownersSlackChannelWebhook}}'
