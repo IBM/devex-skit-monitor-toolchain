@@ -24,9 +24,6 @@ spec:
       default: ""
     - name: apikey
       description: IBM Cloud API key
-    - name: cf-org
-    - name: cf-space
-    - name: cf-app
     # Helm parameters
     - name: fail-on-lint-errors
       description: force failure of task when docker lint errors are found
@@ -82,7 +79,7 @@ spec:
       description: the name of the directory containing the helm chart
     - name: DEPLOY_TARGET
       description: the deployment target
-      default: "cf"
+      default: "helm"
     - name: APP_NAME
       description: the name of the skit being monitored
     - name: SKIT_REG_ENDPOINT
@@ -99,8 +96,6 @@ spec:
       description: PagerDuty Events API URL
     - name: PAGERDUTY_API_TOKEN
       description: PagerDuty API token
-    - name: ENABLED_CF
-      description: whether or not this pipeline is enabled
       default: "true"
     - name: ENABLED_HELM
       description: whether or not helm is enabled
@@ -152,15 +147,8 @@ spec:
             value: $(params.pr-revision)
           - name: pr-url
             value: $(params.pr-url)
-          # CF Parameters
           - name: region
             value: $(params.region)
-          - name: cf-org
-            value: $(params.cf-org)
-          - name: cf-space
-            value: $(params.cf-space)
-          - name: cf-app
-            value: $(params.cf-app)
           - name: api-key
             value: $(params.apikey)
           # Helm Parameters
@@ -227,8 +215,6 @@ spec:
             value: $(params.PAGERDUTY_EVENTS_API_URL)
           - name: pagerduty-api-token
             value: $(params.PAGERDUTY_API_TOKEN)
-          - name: enabled-cf
-            value: $(params.ENABLED_CF)
           - name: enabled-helm
             value: $(params.ENABLED_HELM)
           - name: docker-username

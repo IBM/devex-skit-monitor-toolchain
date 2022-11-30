@@ -9,9 +9,9 @@ spec:
       description: The IBM Cloud region
       default: "us-south"
     - name: app-name
-      description: name of the cf or helm app
+      description: name of the helm app
     - name: app-url
-      description: URL to the cf or helm app
+      description: URL to the helm app
     - name: skit-git-url
       description: repo URL of the skit
     - name: deploy-target

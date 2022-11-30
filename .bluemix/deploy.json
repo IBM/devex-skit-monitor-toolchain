@@ -24,13 +24,6 @@
                 "v-type": "api-key"
             }
         },
-        "enable-cf": {
-            "description": {
-                "$ref": "#/messages/deploy.enableCfDescription"
-            },
-            "type": "boolean",
-            "default": true
-        },
         "enable-helm": {
             "description": {
                 "$ref": "#/messages/deploy.enableHelmDescription"
@@ -100,26 +93,6 @@
             "type": "string",
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
         },
-        "prod-organization": {
-            "description": {
-                "$ref": "#/messages/deploy.organizationDescription"
-            },
-            "type": "string",
-            "validator": {
-                "v-type": "cf-org",
-                "params": ["prod-region"]
-            }
-        },
-        "prod-space": {
-            "description": {
-                "$ref": "#/messages/deploy.spaceDescription"
-            },
-            "type": "string",
-            "validator": {
-                "v-type": "cf-space",
-                "params": ["prod-organization"]
-            }
-        },
         "devx-slack-channel-webhook": {
             "description": {
                 "$ref": "#/messages/verify.devxSlackWebhookURLDescription"
@@ -154,14 +127,6 @@
         {
             "type": "validator",
             "url": "/devops/validator/validator-v1.html"
-        },
-        {
-            "type": "boolean",
-            "default": true,
-            "title": {
-                "$ref": "#/messages/deploy.enableCfTitle"
-            },
-            "key": "enable-cf"
         },
         {
             "type": "boolean",

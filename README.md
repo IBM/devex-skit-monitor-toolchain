@@ -43,12 +43,11 @@ For example, the following script can be used to create an instance of the toolc
 # set -x
 
 SKIT_NAME=$1
-ENABLE_CF=$2
-ENABLE_HELM=$3
-SLACK_WEBHOOK=$4
-OWNER_SLACK_CHANNEL=$5
-PAGERDUTY_API_TOKEN=$6
-PAGERDUTY_SVC_NAME=$7
+ENABLE_HELM=$2
+SLACK_WEBHOOK=$3
+OWNER_SLACK_CHANNEL=$4
+PAGERDUTY_API_TOKEN=$5
+PAGERDUTY_SVC_NAME=$6
 
 TEMPLATE_GIT_URL="https%3A%2F%2Fgithub.com%2FIBM%2Fdevex-skit-monitor-toolchain"
 TEMPLATE_GIT_BRANCH="master"
@@ -68,14 +67,6 @@ IBM_CLOUD_REGION=$(ibmcloud target |grep Region | sed 's/Region\: [ ]*//g')
 IBM_CLOUD_REGION=$(echo -e "${IBM_CLOUD_REGION}" | tr -d '[:space:]')
 PROD_REGION_ID="ibm:yp:$IBM_CLOUD_REGION"
 
-ORG=$(ibmcloud target |grep Org | sed 's/Org\:[ ]*//g')
-ORG=$(echo -e "${ORG}" | tr -d '[:space:]')
-ORG_GUID=$(ibmcloud --quiet cf org $ORG --guid)
-
-SPACE=$(ibmcloud target |grep Space | sed 's/Space\: [ ]*//g')
-SPACE=$(echo -e "${SPACE}" | tr -d '[:space:]')
-SPACE_GUID=$(ibmcloud --quiet cf space $SPACE --guid)
-
 RESOURCE_GROUP=$(ibmcloud target |grep "Resource group" | sed 's/Resource group\:  [ ]*//g')
 RESOURCE_GROUP=$(echo -e "${RESOURCE_GROUP}" | tr -d '[:space:]')
 RESOURCE_GROUP_ID=$(ibmcloud resource group $RESOURCE_GROUP --id)
@@ -92,7 +83,7 @@ fi
 
 echo "Creating new toolchain $TOOLCHAIN_NAME..."
 curl -X POST -H "Authorization: $IAM_TOKEN" -H "Accept: application/json" \
-  -d "repository=$TEMPLATE_GIT_URL&branch=$TEMPLATE_GIT_BRANCH&autocreate=true&apiKey=$IAM_KEY&env_Id=ibm:yp:$IBM_CLOUD_REGION&resourceGroupId=$RESOURCE_GROUP_ID&toolchainName=$TOOLCHAIN_NAME&sourceRepoUrl=$SKIT_REPO_URL&skitAssetsBranch=$DEVX_SKIT_ASSETS_GIT_BRANCH&prodRegion=$PROD_REGION_ID&prodResourceGroup=$RESOURCE_GROUP&prodClusterName=$PROD_CLUSTER_NAME&prodClusterNamespace=$PROD_CLUSTER_NAMESPACE&prodOrganization=$ORG&prodSpace=$SPACE&registryRegion=ibm:yp:$CONTAINER_REGISTRY_REGION&registryNamespace=$CONTAINER_REGISTRY_NAMESPACE&enableCF=$ENABLE_CF&enableHelm=$ENABLE_HELM&slackWebhookURL=$SLACK_WEBHOOK&slackOwnersChannel=$OWNER_SLACK_CHANNEL&pagerDutyAPIToken=$PAGERDUTY_API_TOKEN&pagerDutySvcName=$PAGERDUTY_SVC_NAME&enablePDAlerts=$ENABLE_PD_ALERTS" \
+  -d "repository=$TEMPLATE_GIT_URL&branch=$TEMPLATE_GIT_BRANCH&autocreate=true&apiKey=$IAM_KEY&env_Id=ibm:yp:$IBM_CLOUD_REGION&resourceGroupId=$RESOURCE_GROUP_ID&toolchainName=$TOOLCHAIN_NAME&sourceRepoUrl=$SKIT_REPO_URL&skitAssetsBranch=$DEVX_SKIT_ASSETS_GIT_BRANCH&prodRegion=$PROD_REGION_ID&prodResourceGroup=$RESOURCE_GROUP&prodClusterName=$PROD_CLUSTER_NAME&prodClusterNamespace=$PROD_CLUSTER_NAMESPACE&prodOrganization=$ORG&prodSpace=$SPACE&registryRegion=ibm:yp:$CONTAINER_REGISTRY_REGION&registryNamespace=$CONTAINER_REGISTRY_NAMESPACE&enableHelm=$ENABLE_HELM&slackWebhookURL=$SLACK_WEBHOOK&slackOwnersChannel=$OWNER_SLACK_CHANNEL&pagerDutyAPIToken=$PAGERDUTY_API_TOKEN&pagerDutySvcName=$PAGERDUTY_SVC_NAME&enablePDAlerts=$ENABLE_PD_ALERTS" \
   -k https://cloud.ibm.com/devops/setup/deploy?env_id=ibm:yp:us-south
 echo "Toolchain $TOOLCHAIN_NAME created successfully!"
 ```
