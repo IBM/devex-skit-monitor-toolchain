@@ -59,4 +59,8 @@ spec:
         echo "Deleting Helm deployment: $HELM_CHART_NAME..."
         kubectl delete deployment.apps/$HELM_CHART_NAME-deployment
         echo "Deleting Helm service: $HELM_CHART_NAME..."
-        kubectl delete service/$HELM_CHART_NAME-application-service
+        if [[ $HELM_CHART_NAME = java* ]]; then
+            kubectl delete service/$HELM_CHART_NAME-service
+        else
+            kubectl delete service/$HELM_CHART_NAME-application-service
+        fi
